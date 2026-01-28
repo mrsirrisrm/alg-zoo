@@ -2,7 +2,9 @@
 
 ## Overview
 
-We investigated whether the Fourier-like activity observed in the comparator neurons (docs 5, 8, 14) has a direct origin in the weight matrices. The answer: **W_out is a DFT-like decoder**, but the oscillation itself emerges from a **nonlinear oscillator** where ReLU clipping stabilizes an inherently unstable linear system and shifts its frequency to match the decoder.
+We investigated whether the Fourier-like activity observed in the comparator neurons (docs 5, 8, 14) has a direct origin in the weight matrices. The answer: **W_out is a DFT-like decoder**, and position is encoded through a **transient impulse response** whose shape is determined by the interplay of unstable linear dynamics and ReLU clipping.
+
+**Correction (doc 16):** Deeper analysis revealed that the original "frequency shift" narrative was incorrect. ReLU does not shift a steady-state oscillation frequency. Instead, it performs **spectral reshaping** of the impulse response through mode-dependent damping, and position encoding relies on **two complementary mechanisms** — comparator amplitude discrimination and wave neuron phase readout.
 
 ## W_hh Eigenvalue Analysis
 
@@ -23,7 +25,7 @@ Without ReLU, the system **diverges** — energy grows exponentially. The domina
 | Eigenvalue | |λ| | Frequency | Period | Role |
 |-----------|-----|-----------|--------|------|
 | -0.106 ± 0.895j | 0.902 | 1.69 rad | 3.72 | Higher harmonic |
-| +0.644 ± 0.400j | 0.758 | 0.56 rad | 11.30 | Slow mode |
+| +0.644 ± 0.400j | 0.758 | 0.56 rad | 11.30 | Slow mode — close to k=1 (period 10) |
 | +0.406 ± 0.526j | 0.664 | 0.91 rad | 6.88 | Medium mode |
 
 ## W_out: A DFT-like Decoder
@@ -70,7 +72,7 @@ If W_hh were an orthogonal rotation matrix, the system would implement a direct 
 2. **W_hh has unstable eigenvalues** — the dominant oscillatory mode grows at |λ|=1.115 per step
 3. **The eigenfrequency (1.17 rad) doesn't match W_out (0.63-0.93 rad)**
 
-Instead, the system is a **nonlinear oscillator** where ReLU creates the useful dynamics.
+Instead, the system uses a **transient impulse response** shaped by ReLU dynamics.
 
 ### The Energy Balance
 
@@ -85,24 +87,27 @@ At each timestep, there's a battle between growth and damping:
 | t=5 | 3.3× | 0.43 | 1.4 | 3.8 |
 | t=6-9 | 3.5-3.9× | 0.43-0.47 | 1.5-1.8 | 3-4 |
 
-**W_hh amplifies energy 2-4× per step**, but **ReLU removes 40-60%** by clipping negative pre-activations. The net effect is slightly above 1 — the system is "barely unstable," which sustains the oscillation over 10 timesteps without diverging badly.
+**W_hh amplifies energy 2-4× per step**, but **ReLU removes 40-60%** by clipping negative pre-activations. The net effect is slightly above 1 — the system is "barely unstable," which sustains activity over 10 timesteps without diverging badly.
 
-### The Frequency Shift
+### ~~The Frequency Shift~~ Spectral Reshaping (Corrected)
 
-The critical insight: **ReLU shifts the oscillation frequency downward**.
+**Original claim (incorrect):** ReLU shifts the oscillation frequency downward from 1.17 rad to ~0.7 rad, a ~40% reduction.
 
-| Level | Frequency | Period | Source |
-|-------|-----------|--------|--------|
-| Raw W_hh eigenvalue | 1.17 rad | 5.37 | Linear dynamics |
-| Effective (with ReLU) | 0.7-0.9 rad | 7-9 | Measured from h_final |
-| W_out decoder | 0.6-0.9 rad | 7-10 | Matched filters |
-| Ideal for 10 positions | 0.628 rad | 10.0 | 2π/10 |
+**Corrected understanding (doc 16):** ReLU does not shift a continuous oscillation frequency. Instead, it performs **spectral reshaping** of the transient impulse response through **mode-dependent damping**:
+
+| Mode | ω | |λ| | Linear growth (5 steps) | Nonlinear growth | Suppression ratio |
+|------|---|-----|------------------------|------------------|-------------------|
+| Sign-flipper | π | 1.274 | 3.36× | 0.36× | 0.11 (10× suppressed) |
+| Complex oscillatory | 1.17 | 1.115 | 1.72× | 1.55× | 0.90 (mild suppression) |
+| High harmonic | 1.69 | 0.902 | 0.60× | 0.86× | 1.44 (boosted) |
+| Slow mode | 0.56 | 0.758 | 0.25× | 0.62× | 2.47 (strongly boosted) |
+| Medium mode | 0.91 | 0.664 | 0.13× | 1.08× | 8.35 (massively boosted) |
 
 The mechanism:
-1. W_hh drives oscillation at ω ≈ 1.17 rad (too fast)
-2. ReLU clips different neurons at each step, changing the active subspace
-3. The **effective subspace eigenvalues** have lower frequency (ω ≈ 0.7-0.8 rad)
-4. W_out is tuned to this effective frequency, not the raw eigenfrequency
+- **High-frequency modes** (ω ≈ π) alternate sign rapidly, creating negative pre-activations that ReLU clips → heavy damping
+- **Low-frequency modes** (ω < 1) vary slowly, rarely triggering negative pre-activations → relative preservation
+- Net spectral centroid shift: only **7.3%** (from 1.46 to 1.35 rad), not 40%
+- The k=1 (ω=0.63 rad) pattern in h_final comes from a **different source** — see "Wave Neurons" below
 
 ### The Varying Active Set
 
@@ -131,7 +136,7 @@ Based on clipping behavior and recurrence structure:
 | **Comparator** | n1, n6, n8 | 7-38% | +0.36 to +0.62 | Encode position through clipping patterns |
 | **Switch** | n3, n5, n15 | 22-59% | -0.42 to +0.23 | Alternate clipped/active, drive oscillation |
 | **Usually clipped** | n4, n9 | 73-97% | -0.98 to -0.55 | Active only in specific circuits |
-| **Mixed** | n0, n10, n11 | 15-18% | -0.00 to +0.20 | Variable roles |
+| **Wave** | n10, n11, n12 | 15-18% | -0.00 to +0.61 | Carry traveling wave for position encoding |
 
 ### Switch Neurons Drive the Oscillation
 
@@ -142,7 +147,7 @@ The **switch neurons** (n3, n5, n15) are the engine of the oscillator:
 - Their negative self-recurrence (n3: -0.36, n5: -0.42) promotes alternation
 - Phase relationships: n3-n15 are in-phase (r=+0.44), n5-n15 are anti-phase (r=-0.36)
 
-When switch neurons clip, they change the effective W_hh subspace, which shifts the eigenvalues. This is how the ReLU-based frequency modification works mechanically — it's not a smooth frequency shift, but a **stroboscopic effect** from rapidly switching between different linear subsystems.
+When switch neurons clip, they change the effective W_hh subspace, which shifts the eigenvalues.
 
 ### Backbone Neurons Carry State
 
@@ -213,67 +218,105 @@ N13 h_final correlations:
 
 Combined with the Nyquist W_out pattern, n13 provides **fine-grained position information** through its alternating contribution — it pushes toward even positions when h_final is negative and odd positions when positive. This supplements the coarser k=1 encoding from the comparators.
 
-## The Full Picture
+## The Full Picture (Revised)
 
-### How Fourier-like Activity Emerges
+### Two Encoding Mechanisms
+
+Position encoding relies on two complementary systems:
 
 ```
-W_hh eigenvalues (ω = 1.17 rad, UNSTABLE)
-         │
-         ▼
-  ┌─────────────────────┐
-  │   ReLU at each step  │
-  │   3-6 neurons clip   │
-  │   Active set rotates │
-  └──────────┬──────────┘
-             │
-             ▼
-  Effective frequency: ω ≈ 0.7-0.9 rad
-  (40% lower than raw eigenfrequency)
-             │
-             ▼
-  W_out matched filters (ω ≈ 0.6-0.9 rad)
-  Decode position from oscillation phase
+                      ┌──────────────────────────────────────┐
+                      │        COMPARATORS (n1, n6, n7, n8)  │
+                      │                                      │
+  Max input arrives → │  h_final varies ~1-2 units by pos    │
+                      │  W_out columns: 85-95% sinusoidal    │
+                      │  → Amplitude × sinusoidal filter     │
+                      │  → Strong max-position SUPPRESSION   │
+                      │  Gap: +9.96 between 2nd and max      │
+                      └──────────────────────────────────────┘
+
+                      ┌──────────────────────────────────────┐
+                      │      WAVE NEURONS (n10, n11, n12)    │
+                      │                                      │
+  n4 burst →          │  Traveling wave through feedback     │
+                      │  Natural freq: ω ≈ 0.51 rad (T≈12)  │
+                      │  h_final: 74% sinusoidal at k=1      │
+                      │  W_out: also sinusoidal at k=1       │
+                      │  → Phase readout encodes position    │
+                      └──────────────────────────────────────┘
 ```
 
-The system is **not** a linear DFT. It is a **nonlinear oscillator** with three key properties:
+### Comparator Mechanism (Amplitude-Based)
 
-1. **Self-sustaining**: Unstable eigenvalues provide energy; ReLU provides damping
-2. **Frequency-modified**: ReLU clipping shifts the natural frequency down to match the decoder
-3. **Input-dependent**: The clipping pattern depends on the input, so the oscillation encodes information about when events occurred
+The comparators encode position through **how much** they activate, not through oscillation:
+- h_final for n7 ranges from 5.2 (max at pos 2) to 6.3 (max at pos 8), with 0 at pos 9
+- This ~1-unit variation is decoded by the sinusoidal W_out column (amplitude range ±7.3)
+- The sinusoidal decoder acts as a **position-dependent amplifier**: small h_final differences become large output differences at specific positions
+- Key role: **suppress the max position** in the output (gap = +9.96 logits between 2nd_pos and max_pos)
 
-### Multi-Resolution Encoding
+### Wave Neuron Mechanism (Phase-Based)
 
-The four comparators encode at slightly different effective frequencies:
+The wave neurons encode position through the **phase** of a decaying transient:
+- n4 (W_ih = +10.16) fires a burst when a large input arrives
+- This burst propagates through n10 ↔ n11 ↔ n12 feedback loops
+- The {n10, n11, n12} sub-block has a complex eigenvalue pair at ω = 0.51 rad (T ≈ 12)
+- The wave's phase at readout time (t=9) encodes when the impulse occurred
+- h_final traces out the impulse response curve, which is 74% sinusoidal at k=1
 
-| Neuron | ω_effective | ω_wout | Period | Resolution |
-|--------|------------|--------|--------|------------|
-| n8 | 0.64 | 0.59 | ~10 | Coarsest |
-| n7 | 0.72 | 0.70 | ~9 | Medium |
-| n6 | 0.86 | 0.94 | ~7 | Finer |
-| n1 | 0.96 | 0.92 | ~7 | Finest (k=2) |
-| n13 | Nyquist | Nyquist | 2 | Even/odd parity |
+### Wave Propagation Chain
 
-This multi-frequency scheme is analogous to having multiple DFT bins — each comparator captures a different "spectral component" of the position information, and together they provide robust position encoding.
+```
+Max input → n4 (W_ih=+10.16, burst)
+             ↓ W_hh[10,4]=+1.76     ↓ W_hh[12,4]=+1.28
+             n10 ──→ n11 ──→ n12
+              ↑  W_hh[10,11]=+1.10   ↑ W_hh[11,12]=+0.66
+              └───── feedback ────────┘
+
+Sub-block eigenvalues: λ = 0.529 ± 0.297j
+  |λ| = 0.606, ω = 0.511 rad, T = 12.3 steps
+```
+
+### How "Fourier-like Activity" Actually Emerges
+
+The original description of a "nonlinear oscillator with frequency shift" was partly wrong. The corrected picture:
+
+1. **W_out IS a DFT-like decoder** (correct) — columns are genuinely sinusoidal
+2. **Comparators encode via amplitude** (revised) — not via oscillation frequency
+3. **Wave neurons carry a genuine oscillation** (new finding) — the n10-n11-n12 subsystem has a natural frequency near k=1
+4. **ReLU performs spectral reshaping** (corrected) — suppresses high-frequency modes through differential damping, but the spectral centroid shift is only 7.3%, not 40%
+5. **The k=1 pattern has a specific origin** (new finding) — it comes from the ω ≈ 0.51 rad eigenmode of the n10-n11-n12 sub-block, not from frequency-shifting the whole-network ω = 1.17 rad mode
+
+### ReLU's Role (Corrected)
+
+ReLU does **not** shift a continuous oscillation frequency. Its actual roles:
+
+| Function | Mechanism |
+|----------|-----------|
+| **Stabilization** | Clips negative pre-activations, preventing divergence from |λ|>1 modes |
+| **Spectral reshaping** | Differentially damps modes: high-freq → 10× suppressed, low-freq → 2-8× boosted |
+| **Event detection** | Creates clipping events that mark "new max found" (doc 14 diagonal boundaries) |
+| **Impulse shaping** | Shapes the transient decay curve to match the W_out decoder's expected profile |
 
 ## Connection to Prior Findings
 
 | Doc | Finding | Connection |
 |-----|---------|------------|
 | 5 | Fourier-like W_out patterns | These ARE the DFT-like decoder columns |
-| 8 | Multi-frequency position encoding | Emerges from multi-frequency oscillator |
+| 8 | Multi-frequency position encoding | Two sources: comparator amplitude + wave phase |
 | 13 | N2-N4 noise cancellation | N2 is a backbone neuron that never clips |
-| 14 | Diagonal boundaries | Comparators clip based on input comparisons; the post-clipping dynamics are the oscillator |
+| 14 | Diagonal boundaries | Comparators clip based on input comparisons; post-clipping dynamics feed the wave |
+| 16 | Corrected frequency mechanism | Spectral reshaping, not frequency shift |
 
 ## Summary
 
 | Aspect | Linear DFT | This RNN |
 |--------|-----------|----------|
-| Oscillation source | Rotation matrix | Unstable eigenvalues + ReLU damping |
-| Frequency | Fixed by matrix structure | Emergent from growth/damping balance |
-| Stability | Orthogonal → unit eigenvalues | Nonlinear limit cycle |
+| Position encoding | Phase of rotation | Amplitude (comparators) + phase (wave neurons) |
+| Oscillation source | Rotation matrix | Sub-block eigenvalues (ω ≈ 0.51) + transient decay |
+| Frequency | Fixed by matrix structure | Emergent from sub-network dynamics |
+| Stability | Orthogonal → unit eigenvalues | ReLU clips unstable modes |
 | Decoder | Inverse DFT matrix | Matched sinusoidal filters (W_out) |
-| Freq shift | None | ReLU shifts ω down ~40% |
-| Multi-resolution | Multiple DFT bins | Multiple comparators at different ω |
+| ReLU role | N/A | Spectral reshaping (mode-dependent damping) |
+| Multi-resolution | Multiple DFT bins | Multiple comparators + wave neurons at different ω |
 
-The RNN has learned a **nonlinear oscillator** that serves the same function as a DFT — encoding temporal position as phase — but through a fundamentally different mechanism. Rather than precise rotation, it uses the balance between unstable linear dynamics and ReLU clipping to generate sustained oscillations at frequencies the output layer can decode.
+The RNN has learned a **dual encoding system** that serves the same function as a DFT — encoding temporal position for output decoding — but through two complementary mechanisms: comparator neurons that discriminate max from non-max positions through amplitude differences decoded by sinusoidal filters, and wave neurons that carry a genuine low-frequency oscillation seeded by the n4 impulse burst and sustained through n10-n11-n12 feedback.

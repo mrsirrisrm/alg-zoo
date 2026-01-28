@@ -7,10 +7,16 @@ How does Fourier-like activity emerge from W_hh + ReLU dynamics?
 Key findings:
 1. W_out columns are highly sinusoidal (up to 95-100%) → DFT-like decoder
 2. W_hh eigenvalues include 3 unstable modes (|λ|>1)
-3. ReLU stabilizes the system AND shifts eigenfrequencies downward
-4. The effective frequency matches what W_out expects → self-consistent
+3. ReLU stabilizes the system through spectral reshaping (mode-dependent damping)
+4. Position encoding uses TWO mechanisms:
+   - Comparators (n1,n6,n7,n8): amplitude variation × sinusoidal W_out
+   - Wave neurons (n10,n11,n12): phase of traveling wave at ω≈0.51 rad
 5. n13 operates at Nyquist frequency via W_hh[13,13] = -0.605
-6. Switch neurons (n3, n5, n15) drive oscillation via clipping/unclipping
+6. Switch neurons (n3, n5, n15) drive dynamics via clipping/unclipping
+
+Note: Doc 16 corrected the original "frequency shift" narrative from doc 15.
+The 40% frequency shift was an artifact of comparing different subsystems.
+Actual spectral centroid shift from ReLU is ~7.3%.
 """
 
 import torch as th
