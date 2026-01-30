@@ -1,13 +1,11 @@
 """
-Why doesn't 1AM restart the n4→n2→comp cascade?
-
-1AM DOES fire n4 again. So why doesn't the second n4 kick corrupt n2's memory?
-Trace the exact values through n4→n2→comps for both impulses.
+Round 2 Claims 9-15.
 """
 
 import torch as th
 import numpy as np
 from alg_zoo.architectures import DistRNN
+from collections import defaultdict
 
 
 def load_local_model():
@@ -20,20 +18,48 @@ def load_local_model():
     return model
 
 
-def get_full_trajectory(model, x):
-    W_ih = model.rnn.weight_ih_l0.data.squeeze()
-    W_hh = model.rnn.weight_hh_l0.data
-    batch_size = x.shape[0]
-    hidden = th.zeros(batch_size, 16, 10)
-    pre_act = th.zeros(batch_size, 16, 10)
+def make_clean_dataset():
+    samples, labels, max_positions, sec_positions = [], [], [], []
+    for max_pos in range(10):
+        for sec_pos in range(10):
+            if max_pos == sec_pos:
+                continue
+            x = th.zeros(10)
+            x[max_pos] = 1.0
+            x[sec_pos] = 0.8
+            samples.append(x)
+            labels.append(sec_pos)
+            max_positions.append(max_pos)
+            sec_positions.append(sec_pos)
+    return th.stack(samples), th.tensor(labels), max_positions, sec_positions
+
+
+def run_model_hidden(W_ih, W_hh, X):
+    """Return h_final for all samples."""
+    batch_size = X.shape[0]
     h = th.zeros(batch_size, 16)
     for t in range(10):
-        x_t = x[:, t:t+1]
+        x_t = X[:, t:t+1]
         pre = h @ W_hh.T + x_t * W_ih.unsqueeze(0)
-        pre_act[:, :, t] = pre
         h = th.relu(pre)
-        hidden[:, :, t] = h
-    return hidden, pre_act
+    return h.detach().numpy()
+
+
+def run_model(W_ih, W_hh, W_out, X):
+    h = th.zeros(X.shape[0], 16)
+    for t in range(10):
+        x_t = X[:, t:t+1]
+        pre = h @ W_hh.T + x_t * W_ih.unsqueeze(0)
+        h = th.relu(pre)
+    return h @ W_out.T
+
+
+def _acc(preds, y, mask=None):
+    if mask is not None:
+        if mask.sum() == 0:
+            return float('nan')
+        return (preds[mask] == y[mask]).float().mean().item() * 100
+    return (preds == y).float().mean().item() * 100
 
 
 def section(title):
@@ -42,468 +68,421 @@ def section(title):
     print('='*80)
 
 
-# =============================================================================
-# PART 1: n4 fires TWICE — trace both firings
-# =============================================================================
-def n4_fires_twice(model):
-    section("PART 1: n4 FIRES TWICE — TRACE BOTH IMPULSES")
-    print("Reversed pair: 2AM=3 (mag 0.8), 1AM=7 (mag 1.0)")
-    print("n4 has W_ih=+10.16 → fires on BOTH inputs.")
-    print("Question: what does n4 look like at each firing?\n")
-
-    W_ih = model.rnn.weight_ih_l0.data.squeeze().numpy()
-    W_hh = model.rnn.weight_hh_l0.data.numpy()
-
-    # Three cases: 2AM only, 1AM only, both
-    cases = {
-        '2AM only (0.8@3)': [(3, 0.8)],
-        '1AM only (1.0@7)': [(7, 1.0)],
-        'Both (0.8@3, 1.0@7)': [(3, 0.8), (7, 1.0)],
-    }
-
-    trajs = {}
-    pre_trajs = {}
-    for name, inputs in cases.items():
-        x = th.zeros(1, 10)
-        for pos, val in inputs:
-            x[0, pos] = val
-        h, pre = get_full_trajectory(model, x)
-        trajs[name] = h[0].numpy()
-        pre_trajs[name] = pre[0].numpy()
-
-    # n4 trajectory
-    print("--- n4 activation (h) trajectory ---")
-    print(f"{'t':>3}", end="")
-    for name in cases:
-        print(f"  {name:>22}", end="")
-    print()
-    print("-" * 75)
-    for t in range(10):
-        print(f"{t:>3}", end="")
-        for name in cases:
-            print(f"  {trajs[name][4, t]:>22.3f}", end="")
-        print(f"  {'<-- 2AM' if t==3 else '<-- 1AM' if t==7 else ''}")
-
-    # n4 pre-activation at both impulse times
-    print(f"\n--- n4 pre-activation decomposition ---")
-    for t_imp, label, mag in [(3, '2AM', 0.8), (7, '1AM', 1.0)]:
-        print(f"\nAt t={t_imp} ({label} arrives, x={mag}):")
-        for name in cases:
-            if t_imp > 0:
-                h_prev = trajs[name][:, t_imp-1]
-            else:
-                h_prev = np.zeros(16)
-            recur = h_prev @ W_hh[4, :]
-            inp = mag * W_ih[4] if any(pos == t_imp for pos, _ in cases[name]) else 0
-            # Correct: get actual input at that time
-            x_test = th.zeros(1, 10)
-            for pos, val in cases[name]:
-                x_test[0, pos] = val
-            actual_inp = x_test[0, t_imp].item() * W_ih[4]
-            actual_pre = pre_trajs[name][4, t_imp]
-            h_val = trajs[name][4, t_imp]
-            print(f"  {name:<25} recurrent={recur:>+8.2f}  input={actual_inp:>+8.2f}  pre={actual_pre:>+8.2f}  h={h_val:>8.2f}")
+COMPS = [1, 6, 7, 8]
+WAVES = [0, 10, 11, 12, 14]
+BRIDGES = [3, 5, 13, 15]
 
 
 # =============================================================================
-# PART 2: What does n4's second firing do to n2?
+# CLAIM 9: n7 is a pure M-position encoder
 # =============================================================================
-def n4_second_kick_to_n2(model):
-    section("PART 2: n4's SECOND FIRING → WHAT HAPPENS TO n2?")
-    print("When 1AM fires n4 again at t=7, n4 passes signal to n2 at t=8.")
-    print("But n2 already holds the 2AM memory. Does the new n4 kick add/overwrite?\n")
+def test_claim_9(W_ih, W_hh, X, max_pos_list, sec_pos_list):
+    section("CLAIM 9: n7 as pure M-position encoder")
+    print("Does n7's h_final depend only on Mt, not St?\n")
 
-    W_ih = model.rnn.weight_ih_l0.data.squeeze().numpy()
-    W_hh = model.rnn.weight_hh_l0.data.numpy()
+    h_final = run_model_hidden(W_ih, W_hh, X)
 
-    cases = {
-        '2AM only': [(3, 0.8)],
-        '1AM only': [(7, 1.0)],
-        'Both': [(3, 0.8), (7, 1.0)],
-    }
+    # Group n7 values by Mt
+    by_mt = defaultdict(list)
+    by_st = defaultdict(list)
+    for i, (mp, sp) in enumerate(zip(max_pos_list, sec_pos_list)):
+        by_mt[mp].append(h_final[i, 7])
+        by_st[sp].append(h_final[i, 7])
 
-    trajs = {}
-    pre_trajs = {}
-    for name, inputs in cases.items():
-        x = th.zeros(1, 10)
-        for pos, val in inputs:
-            x[0, pos] = val
-        h, pre = get_full_trajectory(model, x)
-        trajs[name] = h[0].numpy()
-        pre_trajs[name] = pre[0].numpy()
+    print("n7 h_final grouped by Mt:")
+    print(f"{'Mt':>4} {'mean':>8} {'std':>8} {'min':>8} {'max':>8} {'range':>8}")
+    print("-" * 50)
+    for mp in range(10):
+        vals = by_mt[mp]
+        print(f"{mp:>4} {np.mean(vals):>8.2f} {np.std(vals):>8.3f} "
+              f"{np.min(vals):>8.2f} {np.max(vals):>8.2f} {np.max(vals)-np.min(vals):>8.3f}")
 
-    # n2 trajectory
-    print("--- n2 activation trajectory ---")
-    print(f"{'t':>3}  {'2AM only':>10}  {'1AM only':>10}  {'Both':>10}  {'Sum':>10}  {'Both-Sum':>10}")
-    print("-" * 65)
-    for t in range(10):
-        v_2am = trajs['2AM only'][2, t]
-        v_1am = trajs['1AM only'][2, t]
-        v_both = trajs['Both'][2, t]
-        v_sum = v_2am + v_1am
-        diff = v_both - v_sum
-        marker = " <-- 2AM" if t == 3 else (" <-- 1AM" if t == 7 else "")
-        print(f"{t:>3}  {v_2am:>10.3f}  {v_1am:>10.3f}  {v_both:>10.3f}  {v_sum:>10.3f}  {diff:>+10.3f}{marker}")
+    print("\nn7 h_final grouped by St:")
+    print(f"{'St':>4} {'mean':>8} {'std':>8} {'min':>8} {'max':>8} {'range':>8}")
+    print("-" * 50)
+    for sp in range(10):
+        vals = by_st[sp]
+        print(f"{sp:>4} {np.mean(vals):>8.2f} {np.std(vals):>8.3f} "
+              f"{np.min(vals):>8.2f} {np.max(vals):>8.2f} {np.max(vals)-np.min(vals):>8.3f}")
 
-    # n2 pre-activation decomposition at t=8 (first step after 1AM)
-    print(f"\n--- n2 pre-activation decomposition at t=8 (step after 1AM) ---")
-    for name in cases:
-        h7 = trajs[name][:, 7]
-        self_term = h7[2] * W_hh[2, 2]
-        from_n4 = h7[4] * W_hh[2, 4]
-        inp = 0  # no input at t=8
-        other_recur = pre_trajs[name][2, 8] - self_term - from_n4 - inp
-        total = pre_trajs[name][2, 8]
-        h_val = trajs[name][2, 8]
-        print(f"  {name:<12} self(n2)={self_term:>+8.2f}  from_n4={from_n4:>+8.2f}  other_recur={other_recur:>+8.2f}  total_pre={total:>+8.2f}  h={h_val:>8.2f}")
+    # R² for Mt-only model
+    all_n7 = np.array([h_final[i, 7] for i in range(len(max_pos_list))])
+    mt_means = np.array([np.mean(by_mt[mp]) for mp in max_pos_list])
+    ss_res = np.sum((all_n7 - mt_means)**2)
+    ss_tot = np.sum((all_n7 - all_n7.mean())**2)
+    r2_mt = 1 - ss_res / ss_tot
+    print(f"\nR²(Mt only) = {r2_mt:.4f}")
 
-    print(f"\n  W_hh[2,4] = {W_hh[2,4]:+.4f} (n4 → n2 connection)")
-
-
-# =============================================================================
-# PART 3: n4 state at 1AM — WHY is n4 different in 'both' vs '1AM only'?
-# =============================================================================
-def n4_at_1am_decomposed(model):
-    section("PART 3: n4 STATE AT t=7 — WHY DIFFERENT IN 'BOTH' VS '1AM ONLY'?")
-    print("In '1AM only', n4 at t=7 starts from h[6]=0 (nothing happened before).")
-    print("In 'both', n4 at t=7 starts from h[6] that carries 2AM cascade residue.")
-    print("Show n4's pre-act decomposition at t=7 for both cases.\n")
-
-    W_ih = model.rnn.weight_ih_l0.data.squeeze().numpy()
-    W_hh = model.rnn.weight_hh_l0.data.numpy()
-
-    cases = {
-        '1AM only': [(7, 1.0)],
-        'Both': [(3, 0.8), (7, 1.0)],
-    }
-
-    trajs = {}
-    pre_trajs = {}
-    for name, inputs in cases.items():
-        x = th.zeros(1, 10)
-        for pos, val in inputs:
-            x[0, pos] = val
-        h, pre = get_full_trajectory(model, x)
-        trajs[name] = h[0].numpy()
-        pre_trajs[name] = pre[0].numpy()
-
-    for name in cases:
-        h6 = trajs[name][:, 6]
-        inp = 1.0 * W_ih[4]
-        recur = h6 @ W_hh[4, :]
-        total = recur + inp
-        h_val = max(0, total)
-
-        print(f"{name}:")
-        print(f"  input term:     1.0 * W_ih[4] = {inp:+.2f}")
-        print(f"  recurrent term: h[6] @ W_hh[4,:] = {recur:+.2f}")
-        print(f"  total pre:      {total:+.2f}")
-        print(f"  h[4,7]:         {h_val:.2f}")
-        print()
-
-        # Break down recurrent by source neurons
-        print(f"  Top recurrent contributions to n4 at t=7:")
-        contribs = [(j, h6[j] * W_hh[4, j]) for j in range(16)]
-        contribs.sort(key=lambda x: abs(x[1]), reverse=True)
-        for j, c in contribs[:8]:
-            if abs(c) > 0.01:
-                grp = 'comp' if j in [1,6,7,8] else ('wave' if j in [0,10,11,12,14] else 'other')
-                print(f"    n{j:<3} ({grp:>5}): h={h6[j]:>8.2f} × W_hh[4,{j}]={W_hh[4,j]:>+7.3f} = {c:>+8.2f}")
-        print()
-
-    # The key difference
-    diff_h6 = trajs['Both'][:, 6] - trajs['1AM only'][:, 6]
-    diff_recur = diff_h6 @ W_hh[4, :]
-    print(f"Difference in n4's recurrent term: {diff_recur:+.2f}")
-    print(f"This comes from the 2AM cascade still echoing in h[6].")
+    # Compare all comps
+    print("\nR²(Mt only) for all comps:")
+    for c in COMPS:
+        all_c = np.array([h_final[i, c] for i in range(len(max_pos_list))])
+        by_mt_c = defaultdict(list)
+        for i, mp in enumerate(max_pos_list):
+            by_mt_c[mp].append(h_final[i, c])
+        mt_means_c = np.array([np.mean(by_mt_c[mp]) for mp in max_pos_list])
+        ss_res = np.sum((all_c - mt_means_c)**2)
+        ss_tot = np.sum((all_c - all_c.mean())**2)
+        r2 = 1 - ss_res / ss_tot
+        print(f"  n{c}: R²(Mt) = {r2:.4f}")
 
 
 # =============================================================================
-# PART 4: The critical question — does the 1AM n4 kick ADD to n2?
+# CLAIM 10: n2 encodes first-impulse timing
 # =============================================================================
-def does_1am_add_to_n2(model):
-    section("PART 4: THE CRITICAL QUESTION — DOES 1AM's n4 KICK ADD TO n2?")
-    print("Compare n2 values at t=8 and t=9 (after 1AM) across all three cases.")
-    print("If 1AM adds a SECOND dose to n2, we should see n2(both) > n2(2AM only).\n")
+def test_claim_10(W_ih, W_hh, X, max_pos_list, sec_pos_list):
+    section("CLAIM 10: n2 encodes first-impulse timing")
+    print("n2's h_final should correlate with first-impulse position.\n")
 
-    W_ih = model.rnn.weight_ih_l0.data.squeeze().numpy()
-    W_hh = model.rnn.weight_hh_l0.data.numpy()
+    h_final = run_model_hidden(W_ih, W_hh, X)
 
-    cases = {
-        '2AM only': [(3, 0.8)],
-        '1AM only': [(7, 1.0)],
-        'Both': [(3, 0.8), (7, 1.0)],
-    }
+    first_pos = []
+    for mp, sp in zip(max_pos_list, sec_pos_list):
+        first_pos.append(min(mp, sp))
 
-    trajs = {}
-    for name, inputs in cases.items():
-        x = th.zeros(1, 10)
-        for pos, val in inputs:
-            x[0, pos] = val
-        h, pre = get_full_trajectory(model, x)
-        trajs[name] = h[0].numpy()
+    all_n2 = np.array([h_final[i, 2] for i in range(len(max_pos_list))])
+    first_arr = np.array(first_pos)
 
-    print("--- n2 values at key timesteps ---")
-    print(f"{'':>12} {'t=6':>8} {'t=7':>8} {'t=8':>8} {'t=9':>8}")
-    print("-" * 46)
-    for name in cases:
-        print(f"{name:>12}", end="")
-        for t in [6, 7, 8, 9]:
-            print(f" {trajs[name][2, t]:>7.2f}", end="")
-        print()
+    # Group by first impulse position
+    by_first = defaultdict(list)
+    for i, fp in enumerate(first_pos):
+        by_first[fp].append(h_final[i, 2])
 
-    # Does n2(both) = n2(2AM) + n2(1AM)?
-    print(f"\n--- Is n2 additive? ---")
-    for t in [7, 8, 9]:
-        n2_2am = trajs['2AM only'][2, t]
-        n2_1am = trajs['1AM only'][2, t]
-        n2_both = trajs['Both'][2, t]
-        print(f"  t={t}: n2(both)={n2_both:.2f}, n2(2AM)+n2(1AM)={n2_2am+n2_1am:.2f}, "
-              f"diff={n2_both - n2_2am - n2_1am:+.2f}")
+    print("n2 h_final grouped by first-impulse position:")
+    print(f"{'first':>6} {'mean':>8} {'std':>8} {'n':>4}")
+    print("-" * 30)
+    for fp in range(10):
+        if by_first[fp]:
+            vals = by_first[fp]
+            print(f"{fp:>6} {np.mean(vals):>8.2f} {np.std(vals):>8.3f} {len(vals):>4}")
 
-    # The key: does the 1AM cause n2 to GROW beyond the 2AM-only case?
-    print(f"\n--- Does 1AM make n2 bigger than 2AM-only? ---")
-    for t in [7, 8, 9]:
-        n2_2am = trajs['2AM only'][2, t]
-        n2_both = trajs['Both'][2, t]
-        print(f"  t={t}: n2(both)={n2_both:.2f} vs n2(2AM only)={n2_2am:.2f}, "
-              f"Δ={n2_both - n2_2am:+.2f}")
+    # R² with first position
+    first_means = np.array([np.mean(by_first[fp]) for fp in first_pos])
+    ss_res = np.sum((all_n2 - first_means)**2)
+    ss_tot = np.sum((all_n2 - all_n2.mean())**2)
+    r2_first = 1 - ss_res / ss_tot
+    print(f"\nR²(first_impulse_pos) = {r2_first:.4f}")
+
+    # Also check: is it monotonic?
+    means_by_pos = [np.mean(by_first[fp]) for fp in range(10) if by_first[fp]]
+    diffs = [means_by_pos[i+1] - means_by_pos[i] for i in range(len(means_by_pos)-1)]
+    all_decreasing = all(d < 0 for d in diffs)
+    all_increasing = all(d > 0 for d in diffs)
+    print(f"Monotonic? {'decreasing' if all_decreasing else 'increasing' if all_increasing else 'NO'}")
+    print(f"Consecutive diffs: {['%.2f' % d for d in diffs]}")
+
+    # Separate fwd/rev
+    print("\nBy ordering:")
+    for label, cond in [("Forward (Mt first)", lambda mp, sp: mp < sp),
+                         ("Reversed (St first)", lambda mp, sp: sp < mp)]:
+        vals = [(first_pos[i], all_n2[i]) for i, (mp, sp) in enumerate(zip(max_pos_list, sec_pos_list)) if cond(mp, sp)]
+        if vals:
+            fps, n2s = zip(*vals)
+            corr = np.corrcoef(fps, n2s)[0, 1]
+            print(f"  {label}: correlation(first_pos, n2) = {corr:.4f}")
 
 
 # =============================================================================
-# PART 5: n4→n2→comp chain for BOTH impulses, step by step
+# CLAIM 11: (last_clip, gap, ordering) lookup predicts accuracy
 # =============================================================================
-def full_chain_both_impulses(model):
-    section("PART 5: FULL n4→n2→COMP CHAIN — BOTH IMPULSES")
-    print("Trace n4, n2, and n7 step by step for 'both' case.")
-    print("Show: which impulse drives which signal through the chain.\n")
+def test_claim_11(W_ih, W_hh, W_out, X, y, max_pos_list, sec_pos_list):
+    section("CLAIM 11: (last_clip, gap, ordering) lookup table")
+    print("Build lookup from actual model outputs. Check if every cell is correct.\n")
 
-    W_ih = model.rnn.weight_ih_l0.data.squeeze().numpy()
-    W_hh = model.rnn.weight_hh_l0.data.numpy()
+    logits = run_model(W_ih, W_hh, W_out, X)
+    preds = logits.argmax(dim=-1).numpy()
+    y_np = y.numpy()
 
-    x = th.zeros(1, 10); x[0, 3] = 0.8; x[0, 7] = 1.0
-    h, pre = get_full_trajectory(model, x)
-    h = h[0].numpy()
-    pre = pre[0].numpy()
+    # Build lookup: (last_clip, gap, ordering) → prediction
+    lookup = {}
+    for i, (mp, sp) in enumerate(zip(max_pos_list, sec_pos_list)):
+        last_clip = max(mp, sp)
+        gap = abs(sp - mp)
+        ordering = "fwd" if sp > mp else "rev"
+        key = (last_clip, gap, ordering)
 
-    print(f"{'t':>3} {'x':>5} {'n4':>8} {'n2':>8} {'n7':>8} {'n7_pre':>8} {'n7 from n2':>11} {'n7 from n4':>11} {'event'}")
-    print("-" * 80)
+        if key not in lookup:
+            lookup[key] = {'pred': preds[i], 'target': y_np[i], 'pairs': []}
+        lookup[key]['pairs'].append((mp, sp, y_np[i], preds[i]))
 
-    for t in range(10):
-        x_t = x[0, t].item()
-        n4_h = h[4, t]
-        n2_h = h[2, t]
-        n7_h = h[7, t]
-        n7_pre = pre[7, t]
+    # Check consistency — all pairs in same cell should get same prediction
+    inconsistent = 0
+    for key, val in sorted(lookup.items()):
+        preds_in_cell = set(p[3] for p in val['pairs'])
+        if len(preds_in_cell) > 1:
+            inconsistent += 1
+            print(f"  INCONSISTENT: {key} → preds {preds_in_cell}")
 
-        # n7's contributions from n2 and n4 at this timestep
-        if t > 0:
-            n7_from_n2 = h[2, t-1] * W_hh[7, 2]
-            n7_from_n4 = h[4, t-1] * W_hh[7, 4]
+    print(f"Total cells: {len(lookup)}")
+    print(f"Inconsistent cells: {inconsistent}")
+
+    # Check correctness
+    correct_cells = sum(1 for v in lookup.values() if all(p[2] == p[3] for p in v['pairs']))
+    total_cells = len(lookup)
+    print(f"Correct cells: {correct_cells}/{total_cells}")
+
+    # Show the lookup table
+    print(f"\nLookup table (last_clip, gap, ordering → target, pred, correct?):")
+    print(f"{'lc':>3} {'gap':>4} {'ord':>4} {'tgt':>4} {'pred':>5} {'ok':>3}")
+    print("-" * 28)
+    for key in sorted(lookup.keys()):
+        val = lookup[key]
+        # All pairs in cell have same target? (should, since target = St)
+        targets = set(p[2] for p in val['pairs'])
+        preds_set = set(p[3] for p in val['pairs'])
+        tgt_str = str(targets.pop()) if len(targets) == 1 else str(targets)
+        pred_str = str(preds_set.pop()) if len(preds_set) == 1 else str(preds_set)
+        ok = "Y" if all(p[2] == p[3] for p in val['pairs']) else "N"
+        print(f"{key[0]:>3} {key[1]:>4} {key[2]:>4} {tgt_str:>4} {pred_str:>5} {ok:>3}")
+
+
+# =============================================================================
+# CLAIM 12: n9 compensates for insufficient cascade time
+# =============================================================================
+def test_claim_12(W_ih, W_hh, X, max_pos_list, sec_pos_list):
+    section("CLAIM 12: n9 activity vs gap in reversed pairs")
+    print("n9 should be more active for small-gap reversed pairs.\n")
+
+    h_final = run_model_hidden(W_ih, W_hh, X)
+
+    # Group n9 h_final by (gap, ordering)
+    by_gap_ord = defaultdict(list)
+    for i, (mp, sp) in enumerate(zip(max_pos_list, sec_pos_list)):
+        gap = abs(sp - mp)
+        ordering = "fwd" if sp > mp else "rev"
+        by_gap_ord[(gap, ordering)].append(h_final[i, 9])
+
+    print(f"{'gap':>4} {'fwd_mean':>10} {'rev_mean':>10} {'fwd_n':>6} {'rev_n':>6}")
+    print("-" * 40)
+    for g in range(1, 10):
+        fwd = by_gap_ord.get((g, 'fwd'), [])
+        rev = by_gap_ord.get((g, 'rev'), [])
+        fwd_mean = np.mean(fwd) if fwd else float('nan')
+        rev_mean = np.mean(rev) if rev else float('nan')
+        print(f"{g:>4} {fwd_mean:>10.3f} {rev_mean:>10.3f} {len(fwd):>6} {len(rev):>6}")
+
+    # Correlation: gap vs n9 in reversed pairs
+    rev_gaps, rev_n9 = [], []
+    for i, (mp, sp) in enumerate(zip(max_pos_list, sec_pos_list)):
+        if sp < mp:  # reversed
+            rev_gaps.append(abs(sp - mp))
+            rev_n9.append(h_final[i, 9])
+
+    if rev_gaps:
+        corr = np.corrcoef(rev_gaps, rev_n9)[0, 1]
+        print(f"\nCorrelation(gap, n9) in reversed pairs: {corr:.4f}")
+
+
+# =============================================================================
+# CLAIM 13: n4 second firing is approximately constant (gain control)
+# =============================================================================
+def test_claim_13(W_ih, W_hh, X, max_pos_list, sec_pos_list):
+    section("CLAIM 13: n4 second-impulse firing — gain control check")
+    print("n4 at second impulse should be ~constant across all pairs.\n")
+
+    second_fires = []
+    n2_at_second = []
+    for i, (mp, sp) in enumerate(zip(max_pos_list, sec_pos_list)):
+        x = X[i:i+1]
+        second_pos = max(mp, sp)  # second in time
+
+        h = th.zeros(1, 16)
+        for t in range(10):
+            x_t = x[:, t:t+1]
+            pre = h @ W_hh.T + x_t * W_ih.unsqueeze(0)
+            h = th.relu(pre)
+            if t == second_pos:
+                second_fires.append(h[0, 4].item())
+                # n2 value just before this step
+                # Actually h is already updated, let's get pre-step n2
+        # Redo to get n2 before second impulse
+        h = th.zeros(1, 16)
+        for t in range(10):
+            if t == second_pos:
+                n2_at_second.append(h[0, 2].item())
+            x_t = x[:, t:t+1]
+            pre = h @ W_hh.T + x_t * W_ih.unsqueeze(0)
+            h = th.relu(pre)
+
+    fires = np.array(second_fires)
+    n2s = np.array(n2_at_second)
+
+    print(f"n4 at second impulse:")
+    print(f"  mean={fires.mean():.2f}, std={fires.std():.2f}, "
+          f"min={fires.min():.2f}, max={fires.max():.2f}")
+    print(f"  CV (std/mean) = {fires.std()/fires.mean():.3f}")
+
+    print(f"\nn2 just before second impulse:")
+    print(f"  mean={n2s.mean():.2f}, std={n2s.std():.2f}, "
+          f"min={n2s.min():.2f}, max={n2s.max():.2f}")
+
+    # By ordering
+    fwd_fires, rev_fires = [], []
+    for i, (mp, sp) in enumerate(zip(max_pos_list, sec_pos_list)):
+        if sp > mp:
+            fwd_fires.append(second_fires[i])
         else:
-            n7_from_n2 = 0
-            n7_from_n4 = 0
+            rev_fires.append(second_fires[i])
 
-        event = ""
-        if t == 3: event = "2AM arrives"
-        elif t == 4: event = "1st n4→n2 pass"
-        elif t == 7: event = "1AM arrives, clips n7"
-        elif t == 8: event = "2nd n4→n2 pass + comp rebuild"
+    fwd_arr = np.array(fwd_fires)
+    rev_arr = np.array(rev_fires)
+    print(f"\nBy ordering:")
+    print(f"  Forward:  mean={fwd_arr.mean():.2f}, std={fwd_arr.std():.2f}, range=[{fwd_arr.min():.2f}, {fwd_arr.max():.2f}]")
+    print(f"  Reversed: mean={rev_arr.mean():.2f}, std={rev_arr.std():.2f}, range=[{rev_arr.min():.2f}, {rev_arr.max():.2f}]")
 
-        print(f"{t:>3} {x_t:>5.1f} {n4_h:>8.2f} {n2_h:>8.2f} {n7_h:>8.2f} {n7_pre:>+8.2f} {n7_from_n2:>+11.2f} {n7_from_n4:>+11.2f}  {event}")
-
-
-# =============================================================================
-# PART 6: Compare n4 values at both firings — is 2nd firing different?
-# =============================================================================
-def n4_both_firings(model):
-    section("PART 6: n4 AT BOTH FIRINGS — HOW ARE THEY DIFFERENT?")
-    print("First firing (t=3, 2AM=0.8): n4 starts from h=0, gets kicked by input.")
-    print("Second firing (t=7, 1AM=1.0): n4 starts from h[6] which has cascade residue.")
-    print()
-    print("If n4 at t=7 is SMALLER or DIFFERENT than a fresh firing, that's the key.\n")
-
-    W_ih = model.rnn.weight_ih_l0.data.squeeze().numpy()
-    W_hh = model.rnn.weight_hh_l0.data.numpy()
-
-    x = th.zeros(1, 10); x[0, 3] = 0.8; x[0, 7] = 1.0
-    h, pre = get_full_trajectory(model, x)
-    h = h[0].numpy()
-    pre = pre[0].numpy()
-
-    # First firing: t=3
-    print("FIRST FIRING (t=3, 2AM=0.8):")
-    h_prev = h[:, 2] if 3 > 0 else np.zeros(16)  # h at t=2
-    h_prev = np.zeros(16)  # actually t=2 has nothing yet... let me check
-    # Before 2AM, everything is 0 (no input before t=3)
-    if True:
-        h_prev_3 = h[:, 2]  # h at t=2
-    recur_3 = h_prev_3 @ W_hh[4, :]
-    inp_3 = 0.8 * W_ih[4]
-    print(f"  h_prev[4] (at t=2) = {h_prev_3[4]:.4f}")
-    print(f"  recurrent = {recur_3:+.2f}")
-    print(f"  input = 0.8 × {W_ih[4]:.2f} = {inp_3:+.2f}")
-    print(f"  pre = {pre[4, 3]:+.2f}")
-    print(f"  h[4,3] = {h[4, 3]:.2f}")
-
-    # Second firing: t=7
-    print(f"\nSECOND FIRING (t=7, 1AM=1.0):")
-    h_prev_7 = h[:, 6]
-    recur_7 = h_prev_7 @ W_hh[4, :]
-    inp_7 = 1.0 * W_ih[4]
-    print(f"  h_prev[4] (at t=6) = {h_prev_7[4]:.4f}")
-    print(f"  recurrent = {recur_7:+.2f}")
-    print(f"  input = 1.0 × {W_ih[4]:.2f} = {inp_7:+.2f}")
-    print(f"  pre = {pre[4, 7]:+.2f}")
-    print(f"  h[4,7] = {h[4, 7]:.2f}")
-
-    # Fresh 1AM-only firing
-    x_1am = th.zeros(1, 10); x_1am[0, 7] = 1.0
-    h_1am, pre_1am = get_full_trajectory(model, x_1am)
-    h_1am = h_1am[0].numpy()
-    pre_1am = pre_1am[0].numpy()
-
-    print(f"\nFRESH 1AM-ONLY FIRING (t=7, 1.0):")
-    h_prev_7f = h_1am[:, 6]
-    recur_7f = h_prev_7f @ W_hh[4, :]
-    inp_7f = 1.0 * W_ih[4]
-    print(f"  h_prev[4] (at t=6) = {h_prev_7f[4]:.4f}")
-    print(f"  recurrent = {recur_7f:+.2f}")
-    print(f"  input = {inp_7f:+.2f}")
-    print(f"  pre = {pre_1am[4, 7]:+.2f}")
-    print(f"  h[4,7] = {h_1am[4, 7]:.2f}")
-
-    # Compare
-    print(f"\nCOMPARISON:")
-    print(f"  n4(both)@t=7  = {h[4,7]:.2f}")
-    print(f"  n4(fresh)@t=7 = {h_1am[4,7]:.2f}")
-    print(f"  Difference     = {h[4,7] - h_1am[4,7]:+.2f}")
-    print(f"\n  The 2AM cascade residue in h[6] CHANGES n4's recurrent term.")
-    print(f"  recurrent(both) = {recur_7:+.2f} vs recurrent(fresh) = {recur_7f:+.2f}")
-    print(f"  Δrecurrent = {recur_7 - recur_7f:+.2f}")
+    # Expected: n4_fire ≈ 10.16*mag + n2*(-0.49) + other recurrent
+    # Check if n4_fire + n2*0.49 is more constant
+    compensated = fires + n2s * 0.49
+    print(f"\nn4 + n2*0.49 (should be ~constant if pure gain control):")
+    print(f"  mean={compensated.mean():.2f}, std={compensated.std():.2f}, "
+          f"CV={compensated.std()/compensated.mean():.3f}")
 
 
 # =============================================================================
-# PART 7: What n2 actually gets from n4 at t=8 — both firings contribute
+# CLAIM 14: Comp→wave direct edges damage specific positions
 # =============================================================================
-def n2_receives_from_n4(model):
-    section("PART 7: WHAT n2 RECEIVES FROM n4 AT EACH STEP")
-    print("n2 at t+1 gets: self × 0.97 + n4[t] × 1.73 + other contributions")
-    print("Track the n4 contribution to n2 at EVERY timestep.\n")
+def test_claim_14(model):
+    section("CLAIM 14: Comp→wave damage by position")
+    print("Zeroing direct comp→wave edges — which positions are hurt?\n")
 
-    W_ih = model.rnn.weight_ih_l0.data.squeeze().numpy()
-    W_hh = model.rnn.weight_hh_l0.data.numpy()
+    W_ih = model.rnn.weight_ih_l0.data.squeeze().clone()
+    W_hh_orig = model.rnn.weight_hh_l0.data.clone()
+    W_out = model.linear.weight.data.clone()
+    X, y, max_pos_list, sec_pos_list = make_clean_dataset()
+    sec_arr = np.array(sec_pos_list)
 
-    x = th.zeros(1, 10); x[0, 3] = 0.8; x[0, 7] = 1.0
-    h, pre = get_full_trajectory(model, x)
-    h = h[0].numpy()
-    pre = pre[0].numpy()
+    # Zero all direct comp→wave
+    W_hh = W_hh_orig.clone()
+    for w in WAVES:
+        for c in COMPS:
+            W_hh[w, c] = 0.0
+            W_hh[c, w] = 0.0
 
-    print(f"{'t':>3} {'n4[t]':>8} {'→n2 via n4':>11} {'n2[t]':>8} {'n2_self':>8} {'n2_inp':>8} {'n2_other':>9} {'n2_total':>9}")
-    print("-" * 80)
+    logits = run_model(W_ih, W_hh, W_out, X)
+    preds = logits.argmax(dim=-1).numpy()
+    correct = (preds == y.numpy())
 
-    for t in range(10):
-        n4_t = h[4, t]
-        n2_t = h[2, t]
+    print(f"By St (target) position:")
+    print(f"{'St':>4} {'acc':>6}")
+    print("-" * 12)
+    for sp in range(10):
+        mask = sec_arr == sp
+        if mask.sum() > 0:
+            print(f"{sp:>4} {correct[mask].mean()*100:>5.1f}%")
 
-        if t < 9:
-            # What n4[t] contributes to n2 at t+1
-            n4_to_n2 = n4_t * W_hh[2, 4]
-        else:
-            n4_to_n2 = 0  # no next step
-
-        # n2's pre-act decomposition at this t
-        if t > 0:
-            n2_self = h[2, t-1] * W_hh[2, 2]
-            n2_from_n4 = h[4, t-1] * W_hh[2, 4]
-            n2_inp = x[0, t].item() * W_ih[2]
-            n2_other = pre[2, t] - n2_self - n2_from_n4 - n2_inp
-        else:
-            n2_self = 0
-            n2_from_n4 = 0
-            n2_inp = x[0, t].item() * W_ih[2]
-            n2_other = pre[2, t] - n2_inp
-
-        event = ""
-        if t == 3: event = " <-- 2AM"
-        elif t == 4: event = " <-- 1st n4→n2"
-        elif t == 7: event = " <-- 1AM"
-        elif t == 8: event = " <-- 2nd n4→n2"
-
-        print(f"{t:>3} {n4_t:>8.2f} {n4_to_n2:>+11.2f} {n2_t:>8.2f} {n2_self:>+8.2f} {n2_inp:>+8.2f} {n2_other:>+9.2f} {pre[2,t]:>+9.2f}{event}")
-
-    print(f"\nKey: n4→n2 via W_hh[2,4] = {W_hh[2,4]:+.4f}")
-    print(f"     n2 self-recurrence   = {W_hh[2,2]:+.4f}")
+    # Also by Mt
+    max_arr = np.array(max_pos_list)
+    print(f"\nBy Mt position:")
+    print(f"{'Mt':>4} {'acc':>6}")
+    print("-" * 12)
+    for mp in range(10):
+        mask = max_arr == mp
+        if mask.sum() > 0:
+            print(f"{mp:>4} {correct[mask].mean()*100:>5.1f}%")
 
 
 # =============================================================================
-# PART 8: The bottom line — does the 2nd kick HELP or HURT the answer?
+# CLAIM 15: W_out uses comps and waves as two channels
 # =============================================================================
-def bottom_line(model):
-    section("PART 8: THE BOTTOM LINE — DOES THE 2ND KICK HELP OR HURT?")
-    print("Compare the final logits for three cases.")
-    print("If the 2nd n4 kick corrupts things, 'both' should be worse than '2AM only'.\n")
+def test_claim_15(model):
+    section("CLAIM 15: W_out comp vs wave channel ablation")
+    print("Zero comp or wave columns in W_out — different damage patterns?\n")
 
-    W_ih = model.rnn.weight_ih_l0.data.squeeze().numpy()
-    W_hh = model.rnn.weight_hh_l0.data.numpy()
-    W_out = model.linear.weight.data.numpy()
+    W_ih = model.rnn.weight_ih_l0.data.squeeze().clone()
+    W_hh = model.rnn.weight_hh_l0.data.clone()
+    W_out_orig = model.linear.weight.data.clone()
+    X, y, max_pos_list, sec_pos_list = make_clean_dataset()
 
-    cases = {
-        '2AM only (0.8@3)': [(3, 0.8)],
-        '1AM only (1.0@7)': [(7, 1.0)],
-        'Both (0.8@3, 1.0@7)': [(3, 0.8), (7, 1.0)],
-    }
+    forward_mask = th.tensor([s > m for m, s in zip(max_pos_list, sec_pos_list)])
+    reversed_mask = ~forward_mask
 
-    h_finals = {}
-    for name, inputs in cases.items():
-        x = th.zeros(1, 10)
-        for pos, val in inputs:
-            x[0, pos] = val
-        h, _ = get_full_trajectory(model, x)
-        h_finals[name] = h[0, :, 9].numpy()
+    max_arr = np.array(max_pos_list)
+    sec_arr = np.array(sec_pos_list)
+    gaps = np.abs(sec_arr - max_arr)
 
-    print("--- h_final for key neurons ---")
-    key_neurons = [2, 4, 7, 8, 0, 10, 11]
-    print(f"{'':>22}", end="")
-    for n in key_neurons:
-        grp = 'comp' if n in [1,6,7,8] else ('wave' if n in [0,10,11,12,14] else 'other')
-        print(f"  n{n}({grp[:1]})", end="")
-    print()
-    for name in cases:
-        print(f"{name:>22}", end="")
-        for n in key_neurons:
-            print(f"  {h_finals[name][n]:>7.2f}", end="")
-        print()
+    # Baseline
+    logits = run_model(W_ih, W_hh, W_out_orig, X)
+    preds = logits.argmax(dim=-1)
+    print(f"Baseline: fwd={_acc(preds, y, forward_mask):.1f}%, "
+          f"rev={_acc(preds, y, reversed_mask):.1f}%, all={_acc(preds, y):.1f}%")
 
-    # Logits
-    print(f"\n--- Logits (target = position 3, the 2AM position) ---")
-    print(f"{'':>22}", end="")
-    for p in range(10):
-        print(f"  pos{p}", end="")
-    print()
-    for name in cases:
-        logits = h_finals[name] @ W_out.T
-        pred = np.argmax(logits)
-        print(f"{name:>22}", end="")
-        for p in range(10):
-            marker = "*" if p == pred else " "
-            print(f" {logits[p]:>5.1f}{marker}", end="")
-        print()
+    # Zero comp columns in W_out
+    W_out = W_out_orig.clone()
+    for c in COMPS:
+        W_out[:, c] = 0.0
+    logits = run_model(W_ih, W_hh, W_out, X)
+    preds = logits.argmax(dim=-1)
+    print(f"No comps in readout: fwd={_acc(preds, y, forward_mask):.1f}%, "
+          f"rev={_acc(preds, y, reversed_mask):.1f}%, all={_acc(preds, y):.1f}%")
 
-    print(f"\nTarget answer: position 3 (the 2AM position)")
+    # Zero wave columns in W_out
+    W_out = W_out_orig.clone()
+    for w in WAVES:
+        W_out[:, w] = 0.0
+    logits = run_model(W_ih, W_hh, W_out, X)
+    preds = logits.argmax(dim=-1)
+    print(f"No waves in readout: fwd={_acc(preds, y, forward_mask):.1f}%, "
+          f"rev={_acc(preds, y, reversed_mask):.1f}%, all={_acc(preds, y):.1f}%")
+
+    # Zero both
+    W_out = W_out_orig.clone()
+    for c in COMPS:
+        W_out[:, c] = 0.0
+    for w in WAVES:
+        W_out[:, w] = 0.0
+    logits = run_model(W_ih, W_hh, W_out, X)
+    preds = logits.argmax(dim=-1)
+    print(f"No comps+waves: fwd={_acc(preds, y, forward_mask):.1f}%, "
+          f"rev={_acc(preds, y, reversed_mask):.1f}%, all={_acc(preds, y):.1f}%")
+
+    # Gap breakdown for comp vs wave ablation
+    print("\nGap breakdown:")
+    print(f"{'gap':>4} {'no_comp_fwd':>12} {'no_comp_rev':>12} {'no_wave_fwd':>12} {'no_wave_rev':>12}")
+    print("-" * 56)
+
+    # No comps
+    W_out = W_out_orig.clone()
+    for c in COMPS:
+        W_out[:, c] = 0.0
+    logits_nc = run_model(W_ih, W_hh, W_out, X)
+    preds_nc = logits_nc.argmax(dim=-1).numpy()
+    correct_nc = (preds_nc == y.numpy())
+
+    # No waves
+    W_out = W_out_orig.clone()
+    for w in WAVES:
+        W_out[:, w] = 0.0
+    logits_nw = run_model(W_ih, W_hh, W_out, X)
+    preds_nw = logits_nw.argmax(dim=-1).numpy()
+    correct_nw = (preds_nw == y.numpy())
+
+    is_fwd = sec_arr > max_arr
+    for g in range(1, 10):
+        fwd_mask_g = (gaps == g) & is_fwd
+        rev_mask_g = (gaps == g) & ~is_fwd
+
+        nc_fwd = correct_nc[fwd_mask_g].mean()*100 if fwd_mask_g.sum() > 0 else float('nan')
+        nc_rev = correct_nc[rev_mask_g].mean()*100 if rev_mask_g.sum() > 0 else float('nan')
+        nw_fwd = correct_nw[fwd_mask_g].mean()*100 if fwd_mask_g.sum() > 0 else float('nan')
+        nw_rev = correct_nw[rev_mask_g].mean()*100 if rev_mask_g.sum() > 0 else float('nan')
+
+        print(f"{g:>4} {nc_fwd:>11.0f}% {nc_rev:>11.0f}% {nw_fwd:>11.0f}% {nw_rev:>11.0f}%")
 
 
 def main():
     model = load_local_model()
+    W_ih = model.rnn.weight_ih_l0.data.squeeze().clone()
+    W_hh = model.rnn.weight_hh_l0.data.clone()
+    W_out = model.linear.weight.data.clone()
+    X, y, max_pos_list, sec_pos_list = make_clean_dataset()
 
-    n4_fires_twice(model)
-    n4_second_kick_to_n2(model)
-    n4_at_1am_decomposed(model)
-    does_1am_add_to_n2(model)
-    full_chain_both_impulses(model)
-    n4_both_firings(model)
-    n2_receives_from_n4(model)
-    bottom_line(model)
+    test_claim_9(W_ih, W_hh, X, max_pos_list, sec_pos_list)
+    test_claim_10(W_ih, W_hh, X, max_pos_list, sec_pos_list)
+    test_claim_11(W_ih, W_hh, W_out, X, y, max_pos_list, sec_pos_list)
+    test_claim_12(W_ih, W_hh, X, max_pos_list, sec_pos_list)
+    test_claim_13(W_ih, W_hh, X, max_pos_list, sec_pos_list)
+    test_claim_14(model)
+    test_claim_15(model)
 
 
 if __name__ == "__main__":
