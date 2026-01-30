@@ -1,0 +1,45 @@
+%%{ init: { "theme": "base", "themeVariables": { "fontSize": "14px" } } }%%
+flowchart TD
+    subgraph INPUT["Sequential Input (t = 0..9)"]
+        1AM["1AM impulse (mag 1.0) at position M"]
+        2AM["2AM impulse (mag 0.8) at position S > M"]
+    end
+
+    subgraph COMPS["Comparators (n1, n6, n7, n8)<br/>W_ih ≈ -10 to -13"]
+        clip1["t = M: 1AM clips comps<br/>(pre-act driven negative → ReLU zeros)"]
+        rebuild1["t = M+1..S-1: comps rebuild<br/>via W_hh recurrence (oscillatory)"]
+        clip2["t = S: 2AM clips comps again<br/>(threshold-dependent: n7 hardest, n1 easiest)"]
+        rebuild2["t = S+1..9: comps rebuild again<br/>h_final = rebuild_trajectory[9 - S]"]
+    end
+
+    subgraph WAVES["Wave Neurons (n0, n10, n11, n12, n14)<br/>W_ih ≈ small"]
+        wave_prop["t = S+1..9: disruption propagates<br/>from comps → waves via W_hh"]
+        wave_state["Wave h_final encodes disruption pattern<br/>Dominant neuron ROTATES with position<br/>(n10 → n11 → n12 → n0 as M increases)"]
+    end
+
+    subgraph READOUT["W_out Readout (h_final → 10 logits)"]
+        comp_channel["Comp channel:<br/>delta_h direction aligned with W_out[M]<br/>(angle 24-47°)<br/>opposed to W_out[S]<br/>(angle 107-131°)<br/>→ peaks at 1AM position"]
+        wave_channel["Wave channel:<br/>delta_logit peaks exactly at S<br/>(ratio = 1.00 for early pairs)<br/>→ peaks at 2AM position"]
+        cancel["Baseline cancellation:<br/>undisturbed comp + wave signals<br/>cancel ~97% (range 100+ → 4-6)"]
+        answer["Correct logit = baseline + comp_delta + wave_delta<br/>comp_delta points to 1AM (not the answer)<br/>wave_delta points to 2AM (the answer)"]
+    end
+
+    subgraph TRANSITION["Role Transition by Position"]
+        early["Early pairs (M = 0-2):<br/>many timesteps for W_hh propagation<br/>→ waves dominate 2AM readout"]
+        late["Late pairs (M = 5-6):<br/>few timesteps, waves can't propagate<br/>→ comps carry 2AM signal directly"]
+    end
+
+    1AM --> clip1
+    clip1 --> rebuild1
+    rebuild1 --> clip2
+    2AM --> clip2
+    clip2 --> rebuild2
+    clip2 -->|"W_hh coupling"| wave_prop
+    wave_prop --> wave_state
+    rebuild2 --> comp_channel
+    wave_state --> wave_channel
+    comp_channel --> answer
+    wave_channel --> answer
+    cancel --> answer
+    early -.-> wave_channel
+    late -.-> comp_channel
