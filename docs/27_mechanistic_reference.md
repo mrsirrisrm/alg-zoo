@@ -119,14 +119,34 @@ s_mag   fwd%   rev%   all%
 
 ### Odd/even gap asymmetry (reversed, low S magnitude)
 
-19. **Reversed failures at low S concentrate at odd gaps**. At s_mag=0.1: gaps 1,3,7,9 fail (0-67%); gaps 2,4,5,6,8 pass (100%). Gap 5 is the odd-gap exception.
+19. **Reversed failures at low S concentrate at odd gaps**. Pattern holds across all s_mag:
 
-20. **W_hh has 4 negative real eigenvalues** (λ=-1.27, -0.75, -0.57, -0.02), which create parity structure in rebuild trajectories. Negative eigenvalues flip sign each step, so even-step separations return to "original" sign while odd-step separations are inverted.
+    ```
+    s_mag  g1o  g2e  g3o  g4e  g5o  g6e  g7o  g8e  g9o
+     0.20  100  100  100  100  100  100   67  100  100
+     0.12   78  100   57  100  100  100   67  100    0
+     0.10   67  100   29  100  100  100   67  100    0
+     0.08   44   88   14  100  100  100   67   50    0
+     0.05   11   50    0   83  100  100   67    0    0
+    ```
 
-21. **Logit margins confirm the parity pattern**. Mean margins by gap at s_mag=0.1:
-    - Even gaps: +0.73 to +2.38 (always positive, always correct)
-    - Odd gaps: -1.12 to +1.30 (often negative, often wrong)
-    - The margin difference is not about n2/n4 (those are ~identical across gaps) — it's about the cascade state in waves/bridges/comps at M arrival time.
+    Gap 3 is the worst odd gap. Gap 5 is the exception (holds to s_mag=0.04).
+
+20. **Mt=9 is NOT a special case** — it's actually the most robust Mt. Excluding M9 pairs, the pattern is the same or slightly worse. The M9,S0 gap=9 failure is the only M9 weakness, because gap=9 has exactly one pair.
+
+21. **W_hh has 4 negative real eigenvalues** (λ=-1.27, -0.75, -0.57, -0.02), which create parity structure in rebuild trajectories. Negative eigenvalues flip sign each step, so even-step separations return to "original" sign while odd-step separations are inverted.
+
+22. **The parity is NOT in n2/n4** — those are nearly identical across gaps at M arrival (~1.7 and ~9.2 for all gaps at s_mag=0.1). It's in the wave/bridge/comp cascade state at M arrival.
+
+23. **Gap=3 fails because the readout channels fight each other.** Logit decomposition for (M5,S2) at s_mag=0.1:
+    - Comps→logit[2] = +67.2 (vs +22.6 clean) — overshoots massively
+    - Waves→logit[2] = -42.3 (vs -8.9 clean) — pushes hard wrong
+    - Bridges→logit[2] = -19.1 (vs +9.2 clean) — flips sign
+    - Net = -1.2 (wrong)
+
+    At gap=2 weak, the same channels: comps +24.0, waves -16.4, bridges -1.1 — net positive (correct). The channels stay proportionate.
+
+24. **Rescuing n2 alone makes things worse** (0/7 vs 2/7 at gap=3). Injecting clean n2 (~13.8) into weak cascade creates a mismatched state: strong n2 but weak waves/bridges/comps. The encoding requires coherence across all channels, not just the right n2 value.
 
 ### 3-impulse failure mode (Tt close to St)
 

@@ -360,7 +360,7 @@ def main():
         for t in range(10):
             if t == mt:
                 # Inject clean n2 just before M processes
-                h[0, 2] = n2_clean_pre
+                h[0, 2] = float(n2_clean_pre)
             x_t = x[t:t+1].unsqueeze(0)
             pre = h @ W_hh.T + x_t * W_ih.unsqueeze(0)
             h = th.relu(pre)
