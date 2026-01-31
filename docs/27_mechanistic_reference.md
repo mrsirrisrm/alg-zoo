@@ -1,6 +1,6 @@
 # 27: Mechanistic Reference — M₁₆,₁₀
 
-Condensed reference of established facts from 15 falsifiable claims (Rounds 1–2).
+Condensed reference of established facts from 21 falsifiable claims (Rounds 1–3).
 
 ## Model
 
@@ -150,26 +150,56 @@ s_mag   fwd%   rev%   all%
 
 ### 3-impulse failure mode (Tt close to St)
 
-22. **A 3rd impulse after St is a severe failure mode**. With M=1.0, S=0.8, T after S:
+25. **A 3rd impulse after St is a severe failure mode**. With M=1.0, S=0.8, T after S:
     - T=0.79: accuracy drops to **65.8%** (from 100% without T)
     - T=0.80 (equal to S): **43.3%**
     - The transition is sharp: 0.75→94%, 0.78→79%, 0.79→66%
 
-23. **Every failure predicts Tt instead of St** — pred_Tt = 34.2%, pred_other = 0%. The model is not confused in general; it specifically identifies the wrong impulse as S.
+26. **Every failure predicts Tt instead of St** — pred_Tt = 34.2%, pred_other = 0%. The model is not confused in general; it specifically identifies the wrong impulse as S.
 
-24. **The mechanism is last-clip hijacking**. The trace shows T clips comps just as M and S do (n7: 11.95 → 1.12 at T). The rebuild trajectory after T encodes T's position, and W_out extracts that as the answer. The model's "find the last clip, decode from there" strategy is fooled.
+27. **The mechanism is last-clip hijacking**. The trace shows T clips comps just as M and S do (n7: 11.95 → 1.12 at T). The rebuild trajectory after T encodes T's position, and W_out extracts that as the answer. The model's "find the last clip, decode from there" strategy is fooled.
 
-25. **T between M and S is less damaging** (83.9% vs 65.8%) because S still arrives last and defines last_clip. The 16.1% failures here are cases where T's clip disrupts the encoding enough that the rebuild from S produces the wrong answer.
+28. **T between M and S is less damaging** (83.9% vs 65.8%) because S still arrives last and defines last_clip. The 16.1% failures here are cases where T's clip disrupts the encoding enough that the rebuild from S produces the wrong answer.
 
-26. **Logit margins are razor-thin near failure**. At T=0.79, example (M1,S4,T7): logit_S=11.58, logit_T=11.45, margin=0.13. At T=0.80: margin goes to -0.64 and T wins.
+29. **Logit margins are razor-thin near failure**. At T=0.79, example (M1,S4,T7): logit_S=11.58, logit_T=11.45, margin=0.13. At T=0.80: margin goes to -0.64 and T wins.
+
+### Encoding structure (Claims 16, 17, 18)
+
+30. **Single impulse does NOT produce a position-independent default**. 5 distinct outputs across 10 positions. Early impulses (pos 0–4, 7) converge to position 9 via long rebuild into oscillatory regime. Late impulses (pos 5→0, 6→8, 8→6, 9→4) produce position-dependent outputs because rebuild is too short to converge.
+
+31. **Gap is NOT cleanly encoded in any single channel**. R²(gap) for waves = 0.40, for comps = 0.20. Meanwhile comps encode last_clip almost perfectly (R² = 0.98). Gap information needed for `St = last_clip - gap` emerges from the joint 16-neuron pattern, not from waves alone.
+
+32. **The encoding is holographic — all 16 neurons are required for readout**. No neuron subset supports a working linear readout:
+
+    ```
+    Subset               Forward  Reversed
+    Comps + n2 (5)        28.9%    11.1%
+    Waves + n2 (6)        46.7%    31.1%
+    Comps only (4)         8.9%    13.3%
+    Full W_out (16)      100.0%   100.0%
+    ```
+
+    W_out reads a 16-dimensional pattern; the "comp channel" and "wave channel" are meaningful for ablation (which group is MORE critical) but not for reconstruction (no subset is sufficient).
+
+### Parity mechanism (Claim 19)
+
+33. **The parity pattern is eigenvalue-driven and method-independent**. Cascade attenuation (scaling h at t=S+1 by α < 1) reproduces the identical odd/even failure pattern as magnitude reduction. Wave/bridge-only attenuation has **zero effect** (100% at α=0.05). The parity structure is entirely in the comp cascade through W_hh's negative eigenvalues.
+
+### Predictability (Claims 20, 21)
+
+34. **Clean logit margins are a useful but imperfect failure predictor**. Spearman rho(margin, failure_smag): overall = -0.36, forward = -0.23, reversed = -0.50. Correctly identifies most-vulnerable group (gap-1 reversed, margins 3.6–4.8) but doesn't precisely rank individual pairs.
+
+35. **Random 2-impulse accuracy is trivially predictable**. N=5000 random inputs: actual = 99.5%, simple margin predictor = 100.0%, diff = 0.5pp. Failures concentrate at S/M ratio ∈ [0.9, 1.0) where ordering becomes ambiguous.
 
 ## Scorecard
 
 Round 1: 3 supported, 5 broken (of 8).
 Round 2: 3 supported, 4 disproved (of 7).
+Round 3: 2 supported, 1 partial, 3 disproved (of 6).
 
 ## Open Questions
 
-1. How does W_out decode the (last_clip, gap, ordering) tuple from h_final into St?
+1. How does W_out decode the (last_clip, gap, ordering) tuple from the 16-dim holographic representation into St?
 2. What exactly does n9 compute for small-gap reversed pairs?
-3. Can we predict accuracy from the circuit? (ARC challenge goal)
+3. Can we predict accuracy on multi-impulse / training-distribution inputs from the circuit? (ARC challenge goal — 2-impulse random is solved at 99.5%)
+4. What determines the single-impulse convergence regime boundary (why pos 5–6 diverge from the pos 0–4 default)?

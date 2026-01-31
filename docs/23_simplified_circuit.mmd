@@ -2,25 +2,30 @@
 flowchart LR
     Input["Input x[t]"]
 
-    n4["n4<br/>Detector"]
-    n2["n2<br/>Latch"]
+    n4["n4 Relay"]
+    n2["n2 Latch"]
+    n9["n9"]
     Comps["Comps<br/>n1 n6 n7 n8"]
     Waves["Waves<br/>n0 n10 n11 n12 n14"]
     Bridges["Bridges<br/>n3 n5 n13 n15"]
-    Readout["W_out"]
+    Readout["W_out<br/><i>all 16 neurons</i>"]
 
     Input --> n4
     Input --> Comps
 
     n4 --> n2
-    n4 --> Comps
+    n4 --> n9
     n4 --> Waves
     n4 --> Bridges
 
+    n2 -.->|"gate"| n4
     n2 --> Comps
-    n2 -.->|"−"| n4
+    n2 --> Waves
+    n2 --> Bridges
+
+    n9 --> Comps
 
     Comps <--> Bridges <--> Waves
+    Comps --> Waves
 
-    Comps --> Readout
-    Waves --> Readout
+    Comps & Waves & Bridges & n2 & n4 --> Readout
