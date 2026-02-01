@@ -45,7 +45,7 @@ Every cell with ≥10 active neurons has **tropical rank 10** — maximum discri
 
 For the dominant cell's 10×13 effective W_out, all **286** possible 10×10 submatrices are tropically non-singular. There are no ties in the optimal assignment problem — W_out has learned weights where every choice of 10 neurons gives a unique optimal readout.
 
-This is the definition of **tropical genericity**: the matrix has no accidental structure that would cause assignment ambiguity.
+However, the learned W_out has gaps ~1.9× smaller than random matrices with the same statistics. The model sits closer to tropical singularity than a random matrix would — though all submatrices remain non-singular.
 
 ### 5. Cross-Cell Robustness
 
@@ -75,7 +75,7 @@ These are Mt=9 forward pairs with minimal rebuild time. Despite all comps being 
 
 The model has achieved a tropically clean solution:
 
-1. **W_out is tropically generic**: no singularities, unique assignments everywhere
+1. **W_out is tropically non-singular**: no ties in assignment, but gaps are 1.9× smaller than random (sitting near the boundary of genericity)
 2. **The ReLU layer does essential work**: suppressing neurons that would corrupt readout
 3. **Cells share structure**: most pairs use 12–13 of 16 neurons, differing by 1–3 neurons
 4. **Discrimination is within-cell**: 23 pairs in one cell, discriminated by continuous values
