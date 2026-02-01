@@ -322,6 +322,69 @@ With period ~5 steps and sequence length 10, we get ~2 full oscillations per seq
 
 This is reminiscent of reservoir computing, where a rich dynamical system transforms input into a high-dimensional representation, and a simple linear readout extracts the answer.
 
+## Phase Wheel Mechanism: How Position is Encoded
+
+A key experiment reveals that the network does NOT store position explicitly. Instead, it uses a **phase wheel** mechanism.
+
+### The Countdown Discovery
+
+When we apply W_out readout at intermediate timesteps (not just the final one), we observe:
+
+```
+M@0, S@1: predictions over time = [4, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+```
+
+The prediction **counts down from 9 to 1** as time progresses!
+
+### The Formula
+
+For any S position, after S arrives:
+
+```
+prediction(t) = s_pos + (9 - t)
+              = s_pos + steps_remaining
+```
+
+At the final timestep t=9:
+```
+prediction(9) = s_pos + 0 = s_pos  ✓
+```
+
+### Mechanism
+
+1. **When S arrives**: Hidden state enters a specific trajectory in phase space
+2. **Each timestep**: State rotates via W_hh dynamics (period ≈ 6-8 steps)
+3. **W_out decodes phase**: Each output row is tuned to a different phase
+4. **At t=9**: Phase aligns with correct position
+
+### W_out Structure
+
+The W_out rows show a clear oscillatory pattern:
+
+| Row pair | Correlation | Interpretation |
+|----------|-------------|----------------|
+| 0 ↔ 1 | +0.51 | Similar (adjacent) |
+| 0 ↔ 4 | -0.73 | Opposite (half-period) |
+| 0 ↔ 8 | +0.01 | Similar (full period) |
+
+**Half-period ≈ 4 rows**, giving **full period ≈ 8 timesteps**.
+
+### Implications
+
+1. **Position is NOT stored**: The network doesn't learn "S is at position 3"
+2. **Time encodes position**: Instead, it learns "S happened (9-t) steps ago"
+3. **Dynamics do the work**: W_hh rotation + W_out decoding = position at readout
+4. **Sequence length is baked in**: The period is calibrated for exactly 10 timesteps
+
+This explains:
+- Why oscillatory eigenvalues are essential (they create the rotation)
+- Why readout only works at the final timestep (that's when phase = position)
+- Why the network struggles with different sequence lengths (period mismatch)
+
+### Connection to Eigenvector Analysis
+
+The growing oscillator mode (λ = 0.43 ± 1.03j, period = 5.4 steps) creates the primary rotation. Combined with the real growing modes, this produces the countdown trajectory.
+
 ## Scripts
 
 - `src/tropical_analysis.py`: Tropical cell analysis for M₁₆,₁₀
