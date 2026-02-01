@@ -201,6 +201,127 @@ Comparing our local model against 5 GCS models (same architecture, different ran
 
 The specific tropical cell structure and neuron role assignments are ONE valid solution, not THE solution.
 
+## Bipartite Hypothesis Investigation
+
+The consistent 8 positive / 8 negative eigenvalue split across seeds prompted investigation of a "bipartite" or "tick-tock" hypothesis: does W_hh have a bipartite structure where neurons alternate between two groups?
+
+### Hypothesis
+
+If W_hh were bipartite, the 16 neurons would partition into two groups where:
+- Within-group connections are weak
+- Between-group connections are strong
+- Odd powers of W_hh map between groups, even powers map within groups
+
+### Tests Performed
+
+1. **Spectral partitioning**: Used Fiedler vector (graph Laplacian) to find optimal 2-partition
+2. **Dominant eigenvector partitioning**: Used sign of dominant eigenvector
+3. **Odd/even power analysis**: Compared energy distribution in W^1, W^2, ..., W^10
+4. **Sorted weight matrix visualization**: Checked for checkerboard pattern
+
+### Results: Hypothesis FALSIFIED
+
+| Test | Expected (bipartite) | Observed |
+|------|---------------------|----------|
+| Between/Within ratio | >> 1 | 0.49-0.75 |
+| Odd power between-energy | High | Mixed (0.5-1.2) |
+| Even power within-energy | High | Mixed (0.8-1.0) |
+| Sorted W_hh pattern | Checkerboard | No clear structure |
+
+**Key finding**: The 8/8 sign split occurs in random matrices too!
+
+```
+Distribution of positive eigenvalues in random 16×16 matrices:
+  6:   8.6%
+  7:  23.9%
+  8:  31.1%  ← most common
+  9:  22.5%
+  10: 10.0%
+Mean: 8.02
+```
+
+### What the Eigenvalue Structure Actually Represents
+
+Instead of bipartite structure, the eigenvalues show:
+
+| Type | Count | Function |
+|------|-------|----------|
+| Growing modes (|λ| > 1) | 4 | Sustain signal during rebuild |
+| Stable oscillators (|λ| < 1, complex) | 8 | Decay over ~2-10 steps |
+| Fast-decaying real modes | 4 | Clear old information quickly |
+
+The decay timescales match the sequence length (~10 steps):
+- 2 modes decay in ~10 steps (memory of full sequence)
+- 6 modes decay in 2-4 steps (short-term processing)
+- 4 modes decay in < 1 step (instantaneous filtering)
+
+### Conclusion
+
+The 8/8 eigenvalue sign split is NOT a learned bipartite structure. It is:
+1. A **statistical property of random matrices** (Central Limit Theorem applies)
+2. **Preserved during training** because it doesn't harm the solution
+3. **Not functionally meaningful** — the important structure is in magnitude and eigenvector direction
+
+What IS learned:
+- Spectral radius > 1 for some modes (sustains oscillation)
+- Decay timescales matching sequence length
+- Eigenvector directions (which neurons contribute to which dynamical modes)
+
+## Eigenvector Structure: The Processing Pipeline
+
+Analysis of which neurons participate in growing, stable, and damped eigenmodes reveals a clear signal processing pipeline:
+
+```
+INPUT ──→ GROWING MODES ──→ STABLE MODES ──→ DAMPED MODES ──→ OUTPUT
+          (amplify)         (process)        (readout)
+
+Input       8.2, 5.7          <2.1            2.4, 2.2       Output
+coupling    (strong)          (weak)          (medium)       coupling
+                                                             5.4, 4.0
+                                                             (strong)
+```
+
+### Mode Coupling Summary
+
+| Mode Type | Count | Input Coupling | Output Coupling | Function |
+|-----------|-------|----------------|-----------------|----------|
+| GROWING   | 4     | **Strong** (5.7-8.2) | Medium (2.6-3.9) | Amplify signal |
+| STABLE    | 10    | Weak (<2.1) | Medium (2.5-3.3) | Process/transform |
+| DAMPED    | 2     | Medium (2.2-2.4) | **Strong** (4.0-5.4) | Read out result |
+
+### Neuron Participation by Mode Type
+
+| Mode Type | Dominant Neurons | Essential % | Interpretation |
+|-----------|------------------|-------------|----------------|
+| GROWING   | n0*, n9*, n14*, n13*, n11, n12 | **54.6%** | Essential neurons amplify |
+| STABLE    | n3, n14*, n15, n13*, n12 | 34.9% | Dependent neurons process |
+| DAMPED    | n14*, n3, n8, n13*, n1* | **59.6%** | Essential neurons read out |
+
+**Key insight**: Essential neurons (from matroid analysis) dominate both GROWING and DAMPED modes, while dependent neurons dominate STABLE modes. This explains why essential neurons are essential — they're the input/output interface!
+
+### Phase Structure in Growing Oscillator
+
+The complex growing mode (λ = 0.43 ± 1.03j, period = 5.4 steps) creates a "rotating wave" pattern:
+
+```
+Phase ≈   0°: n11              (leading)
+Phase ≈  50°: n8, n12
+Phase ≈ 130°: n9*, n14*
+Phase ≈ 165°: n0*, n1*
+Phase ≈-135°: n6, n13*
+Phase ≈ -50°: n3, n10, n15     (lagging)
+```
+
+With period ~5 steps and sequence length 10, we get ~2 full oscillations per sequence. This may enable the network to "cycle through" different comparisons.
+
+### Why This Architecture?
+
+1. **Prevents output saturation**: Growing modes don't directly couple to output
+2. **Enables non-linear processing**: Stable modes can transform the amplified signal
+3. **Clean readout**: Damped modes project strongly to output without being overwhelmed
+
+This is reminiscent of reservoir computing, where a rich dynamical system transforms input into a high-dimensional representation, and a simple linear readout extracts the answer.
+
 ## Scripts
 
 - `src/tropical_analysis.py`: Tropical cell analysis for M₁₆,₁₀
