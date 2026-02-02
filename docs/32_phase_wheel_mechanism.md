@@ -215,6 +215,7 @@ Five falsifiable predictions were derived from the phase wheel model and tested:
 
 ## Related Documents
 
+- [33: Offset Discrimination Mechanism](33_offset_discrimination_mechanism.md) — How forward/reverse are distinguished
 - [30: Model Comparison](30_model_comparison.md) — Cross-model analysis
 - [31: Matroid Analysis](31_matroid_analysis.md) — Essential neurons
 - Visualizations: `phase_wheel_summary.png`, `spiral_analysis.png`, `countdown_pattern.png`, `impulse_interaction.png`
