@@ -175,12 +175,18 @@ Forward and reverse trajectories cross **different boundaries** at different tim
 The offset `h_fwd - h_rev` can be understood tropically:
 
 1. **Different gating**: Fwd and rev cross different ReLU boundaries
-2. **Different cells**: They land in different tropical cells at t=10
+2. **Different cells**: They land in different tropical cells at t=10 (78% of pairs)
 3. **Antisymmetric readout**: W_out is structured so that the cell difference always favors s_pos
 
 The separable structure `offset ≈ f(m_pos) + g(s_pos)` reflects that:
 - f encodes which boundaries the M-first trajectory crossed
 - g encodes which boundaries the S-first trajectory crossed
+
+**Refined understanding**: The offset has two components:
+- **Boundary component** (~27%): Categorical — which neurons differ in on/off state
+- **Within-cell component** (~73%): Continuous — affine variation within the cell
+
+Both contribute to discrimination, but the continuous component dominates.
 
 ## Quantitative Summary
 
@@ -192,6 +198,15 @@ The separable structure `offset ≈ f(m_pos) + g(s_pos)` reflects that:
 | n2 self-loop | 0.97 | Memory latch |
 | Corr(trop_v, active%) | 0.64 | Dominance predicts activation |
 | Corr(trop_v, ||W_out||) | -0.17 | Anti-correlated (division of labor) |
+| Unique cells at S=0.8 | 38 | Tropical cell diversity |
+| Fwd/rev same cell | 22% | Usually different cells |
+| Cell boundary adherence | 100% | offset[n] sign matches boundary crossing |
+| Boundary component | 27% | Categorical (cell identity) |
+| Within-cell component | 73% | Continuous (affine variation) |
+| PC1+PC2 offset coverage | 58% | Missing ~42% in higher PCs |
+| PCs for 90% offset var | 9 | Signal spread across dimensions |
+| Wave offset contribution | 60% | Waves generate the signal |
+| Comp offset contribution | 22% | Comps amplify at readout |
 
 ## Implications
 
@@ -204,6 +219,8 @@ The separable structure `offset ≈ f(m_pos) + g(s_pos)` reflects that:
 4. **The "cycle" is really a cascade**: Energy flows INPUT → n4 → sustained network → comparators. The tropical "cycle" captures the backbone of this flow.
 
 5. **ReLU boundaries are the mechanism**: The offset between fwd/rev is fundamentally about crossing different hyperplanes, landing in different affine regions.
+
+6. **Offset = categorical + continuous**: The discrimination signal combines cell identity (which neurons are on/off) with continuous affine variation within cells. The continuous component dominates (73%), but the categorical component provides essential structure.
 
 ## Related Documents
 
@@ -261,6 +278,162 @@ Low-depth pairs (near boundaries) actually have slightly *higher* margins than a
 
 ![Cell depth](tropical_cell_depth.png)
 
+## Tropical Cell Census
+
+At the training distribution (S=0.8, M=1.0), the 180 cases (90 pairs × 2 directions) occupy **38 unique tropical cells**.
+
+### Dominant Cell
+
+| Property | Value |
+|----------|-------|
+| Occupancy | **46/180 (25.6%)** |
+| Active neurons | 0, 1, 2, 3, 6, 7, 8, 10, 11, 12, 13, 14, 15 (13/16) |
+| Dead neurons | **n4, n5, n9** |
+
+The dead neurons are exactly the "transient" neurons:
+- **n4**: Input transducer (fires and dies)
+- **n5**: Bridge (often off)
+- **n9**: Auxiliary relay
+
+### Neuron Consistency
+
+| Category | Neurons |
+|----------|---------|
+| **Always active** (100%) | n2 only (the latch) |
+| **Never active** | none |
+| **Variable** | all 15 others |
+
+### Forward vs Reverse Cell Sharing
+
+A remarkable finding: **forward and reverse share ALL 38 cells** with nearly equal frequency:
+- Dominant cell: fwd=23, rev=23
+- Every cell is used by both directions
+
+However, for the **same position pair**:
+- Same cell: **22%** of pairs
+- Different cells: **78%** of pairs
+
+This means fwd and rev typically land in different cells, but the overall cell distribution is symmetric. The discrimination happens through the **offset between cells**, not through cell identity alone.
+
+![Cell census](tropical_cell_census.png)
+
+## Offset Encodes Cell Boundary Crossings
+
+The offset `h_fwd - h_rev` has a direct geometric meaning in tropical terms:
+
+### The Fundamental Rule (100% Verified)
+
+For each neuron n:
+
+| Condition | Offset Sign | Meaning |
+|-----------|-------------|---------|
+| n active in fwd, dead in rev | **offset[n] > 0** | Fwd crossed INTO active region |
+| n dead in fwd, active in rev | **offset[n] < 0** | Rev crossed INTO active region |
+| Same state in both | offset[n] ≈ h_fwd[n] - h_rev[n] | Continuous variation within cell |
+
+This rule holds for **100% of boundary crossings** across all 180 cases. No exceptions.
+
+### Offset Decomposition
+
+The offset can be decomposed:
+
+```
+offset = boundary_component + within_cell_component
+```
+
+| Component | Mean ||·|| | Interpretation |
+|-----------|---------|----------------|
+| Boundary | **2.85** | Encodes WHICH neurons differ in state |
+| Within-cell | **9.89** | Continuous variation (affine) |
+| Total | **10.54** | Full discrimination signal |
+
+**Key insight**: The within-cell component dominates (78% of offset norm). This means:
+
+1. **Cell identity provides categorical information** — which neurons are on/off
+2. **Within-cell variation provides continuous discrimination** — the actual margin
+
+The circuit uses BOTH: categorical (cell) + continuous (affine) information.
+
+### Geometric Picture
+
+```
+                    h_fwd lands here
+                          ↓
+    ┌─────────────────────●─────────────────────┐
+    │                                           │
+    │    CELL A (n7 active, n4 dead)           │
+    │                                           │
+    │    offset = (boundary_diff) + (within)    │
+    │              ↑                    ↑        │
+    │         categorical          continuous   │
+    │                                           │
+────┼───────────────────────────────────────────┼────  ReLU boundary
+    │                                           │
+    │    CELL B (n7 dead, n4 active)           │
+    │                          ●                │
+    │                          ↑                │
+    │                    h_rev lands here       │
+    └───────────────────────────────────────────┘
+```
+
+![Offset cell geometry](offset_cell_geometry.png)
+
+## PCA Spectrum: Beyond PC1-PC2
+
+Analysis of the full 16D hidden state reveals we've been missing significant structure by only looking at PC1-PC2.
+
+### Hidden State vs Offset Variance
+
+| PC | Hidden State Var | Offset Var |
+|----|-----------------|------------|
+| PC1 | 35.6% | 17.5% |
+| PC2 | 24.7% | **40.8%** |
+| PC3 | 17.8% | 4.0% |
+| PC4 | 9.6% | 7.7% |
+| PC5 | 5.5% | **9.0%** |
+| PC9 | 0.7% | **7.3%** |
+
+**Key insight**: The offset (discrimination signal) lives in a **different subspace** than the hidden state variance. PC2 dominates the offset but is secondary for hidden state variance.
+
+### Offset Variance by Neuron Category
+
+| Category | % of Offset Variance | Role |
+|----------|---------------------|------|
+| **Waves** | **59.8%** | Generate/carry the offset signal |
+| Comparators | 22.5% | Amplify at readout |
+| Bridges | 11.0% | Couple dynamics |
+| Others | 6.7% | Auxiliary |
+
+**Surprise**: Waves, not comparators, carry the discrimination signal! Top neurons by offset variance:
+- n10 (wave): 14.7%
+- n12 (wave): 13.7%
+- n0 (wave): 12.2%
+- n8 (comp): 11.6%
+- n11 (wave): 10.7%
+
+### Refined Division of Labor
+
+The circuit has a two-stage architecture:
+
+1. **Signal generation (waves)**: Create offset variance through differential activation
+2. **Signal amplification (comparators)**: High W_out weights project the wave differences to output
+
+PC loadings confirm this:
+- **PC1**: Waves n12, n11 (hidden state variance)
+- **PC2**: Waves n10, n0, n14 (offset variance)
+- **PC3**: Comparators n7, n8, n6 (readout, but low offset variance)
+- **PC4-6**: Bridges n5, n3, n13, n15
+
+### Implications for Visualization
+
+- PC1-PC2 captures only **58% of offset variance**
+- PC2-PC5 view shows **cleaner fwd/rev separation**
+- Need **9 PCs** for 90% of offset variance
+- ReLU boundary analysis in PC1-PC2 misses ~40% of the discrimination mechanism
+
+![PCA spectrum](pca_spectrum_analysis.png)
+![Offset PC decomposition](offset_pc_decomposition.png)
+
 ## Visualizations
 
 - `docs/tropical_eigenvector_analysis.png` — Eigenvector vs activation/output
@@ -269,3 +442,9 @@ Low-depth pairs (near boundaries) actually have slightly *higher* margins than a
 - `docs/tropical_pca_analysis_*.png` — ReLU boundaries with trajectories
 - `docs/tropical_animation_pos_*.mp4` — Animated boundary crossings
 - `docs/tropical_cell_stability.png` — Margin variation within cells
+- `docs/tropical_cell_depth.png` — Distance to nearest boundary
+- `docs/tropical_cell_census.png` — Cell occupancy by position pair
+- `docs/offset_cell_geometry.png` — Offset encodes boundary crossings
+- `docs/pca_spectrum_analysis.png` — PCA spectrum and offset distribution
+- `docs/pca_multi_view.png` — Multiple PC pair views
+- `docs/offset_pc_decomposition.png` — Offset variance by neuron and PC
