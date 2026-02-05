@@ -231,3 +231,15 @@ The interference interpretation doesn't replace the leave-one-out view - it *com
 2. **Derive accuracy quantitatively** - use interference model to predict 89%
 3. **Explain gap-accuracy curve** - why does accuracy peak at gap ~0.2-0.3?
 4. **Test on other AlgZoo models** - does interference encoding generalize?
+
+## Update: Mechanistic Discrimination (Doc 43)
+
+Subsequent work achieved near-zero residual surprise through the **canonical D sequence** discovery:
+
+| Metric | This Document | Doc 43 |
+|--------|--------------|--------|
+| Explanation bits | ~24-35 | ~17 |
+| Accuracy prediction | Qualitative | **100% simplified, ~95% real** |
+| Residual surprise | Moderate | **~0 bits** |
+
+The key insight: ReLU activation patterns are almost entirely determined by a universal sequence precomputable from weights. See [43: Mechanistic Discrimination](43_mechanistic_discrimination.md).
