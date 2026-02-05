@@ -211,16 +211,49 @@ class MechanisticDiscriminator:
             'logits': logits,
         }
 
+    def predict_sequence(self, x):
+        """
+        Predict the 2nd argmax for a real input sequence.
+
+        This extracts M (max) and S (2nd max) positions and values from
+        the input, then uses the mechanistic predictor. Note that this
+        ignores other input values (simplified model).
+
+        Args:
+            x: Input sequence, shape (seq_len,)
+
+        Returns:
+            Dictionary with prediction details
+        """
+        x = np.asarray(x)
+        sorted_idx = np.argsort(x)
+        m = sorted_idx[-1]   # Position of max
+        s = sorted_idx[-2]   # Position of 2nd max (target)
+        M_val = x[m]
+        S_val = x[s]
+
+        pred, margin, D_seq = self.predict(m, s, M_val, S_val)
+
+        return {
+            'input': x,
+            'target': s,
+            'prediction': pred,
+            'correct': pred == s,
+            'margin': margin,
+            'm': m,
+            's': s,
+            'M_val': M_val,
+            'S_val': S_val,
+            'gap_MS': M_val - S_val,
+            'gap_S3': S_val - x[sorted_idx[-3]] if len(x) > 2 else None,
+            'D_sequence': D_seq,
+        }
+
 
 def load_from_weights_file(path):
     """Load discriminator from weights file."""
     w = np.load(path)
     return MechanisticDiscriminator(w['W_ih'], w['W_hh'], w['W_out'])
-
-
-# ============================================================
-# DEMONSTRATION
-# ============================================================
 
 if __name__ == '__main__':
     # Load weights
@@ -269,3 +302,31 @@ if __name__ == '__main__':
         elif t == 7:
             label = " <- S arrives"
         print(f"  t={t}: {len(D):2d} neurons{label}")
+
+    # Test on real data sequences
+    print("\n" + "=" * 70)
+    print("REAL DATA SEQUENCES (randn)")
+    print("=" * 70)
+
+    np.random.seed(42)
+    for i in range(5):
+        x = np.random.randn(10)
+        result = disc.predict_sequence(x)
+
+        status = "OK" if result['correct'] else "MISS"
+        print(f"\n### Sample {i+1}: [{status}]")
+        print(f"  Input: [{', '.join(f'{v:+.2f}' for v in x)}]")
+        print(f"  M at pos {result['m']} = {result['M_val']:+.2f}")
+        print(f"  S at pos {result['s']} = {result['S_val']:+.2f} (target)")
+        print(f"  Prediction: {result['prediction']}, Margin: {result['margin']:.2f}")
+        print(f"  Gap M-S: {result['gap_MS']:.3f}, Gap S-3rd: {result['gap_S3']:.3f}")
+
+    # Accuracy on larger sample
+    print("\n### Accuracy on 1000 real sequences:")
+    correct = 0
+    for _ in range(1000):
+        x = np.random.randn(10)
+        result = disc.predict_sequence(x)
+        if result['correct']:
+            correct += 1
+    print(f"  {correct}/1000 = {100*correct/1000:.1f}%")
