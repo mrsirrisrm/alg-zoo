@@ -215,9 +215,9 @@ class MechanisticDiscriminator:
         """
         Predict the 2nd argmax for a real input sequence.
 
-        This extracts M (max) and S (2nd max) positions and values from
-        the input, then uses the mechanistic predictor. Note that this
-        ignores other input values (simplified model).
+        Extracts M (max) and S (2nd max) positions and values, ignoring
+        other inputs. This is the core of the mechanistic model - the
+        canonical D sequence only applies when we have two impulses.
 
         Args:
             x: Input sequence, shape (seq_len,)
