@@ -23,6 +23,36 @@ sampling in MSE vs compute, measured on average over noisy copies of the weights
 - "Lucky seed" claim is wrong: all 5 zoo h16/T10 seeds reach 88–95%
   (example model 95.3%, best). h8 fails (35–43%), h32 ≈ 99%.
 
+## Mechanism (derived from weights, then checked)
+- Activation-weighted contributions E|W_ij h_j| (not raw weights — "small" weights
+  from large periphery neurons matter; cutting periphery→core drops acc to 45%).
+- n2 = memory: n2' = 0.97 n2 + 1.73 n4; on a record of value a with n4 = 10.16a − 0.49 n2,
+  n2' = 17.58 a + 0.12 n2. Measured median n2/runmax = 17.6 (IQR 16.6–18.4). ✔
+- n4 = soft comparator vs n2. One-term threshold 0.49·17.58/10.16 = 0.848·runmax is
+  WRONG (prediction of a break at vS/vM ≈ 0.85 falsified: accuracy is smooth in the
+  ratio). Full recurrent drive averages −9.53/runmax ⇒ mean threshold ≈ 0.94, but
+  context-dependent: P(n4 on) = 0.25 at x = 0.90·max, 0.90 at 0.98, 0.994 at 1.00.
+  Main threshold movers after n2: n4 self (−1.0), n6 (+0.93), n8 (−0.76).
+- n6, n7 (and n1, n8 with mixing) = relu(−11..13·x + 0.5..0.7·n2): gap-below-max signals.
+- Fragility lives in the W_hh rows of n1, n2, n6, n7, n8 (row noise ×4 → 0.75–0.86),
+  not n4 or the periphery (≈0.94).
+- Readout splits into two mechanisms:
+  * S first (reverse, acc 0.9557): S is a record (n4 fires 98.9%), M is the last n4
+    event (99.8%), S is the previous n4 event (95.6%); net outputs the previous event
+    92.8%. Readout is amplitude-weighted, not a hard rule: when a false record
+    intervenes the net still gets 71% right. Error budget: 0.013 from intervening
+    false records, 0.031 with the event chain correct (decode errors).
+  * M first (forward, acc 0.9508): S is not a record (n4 at S only 12%, and those are
+    worse: 0.90). Errors: 65% pick R, 23% pick M, 29% pick something before M.
+    R after M is harder (0.947) than R before M (0.959).
+- Offset rule argmax_{j≠M}(x_j − β(j,m)·x_M) fitted to the net's outputs explains
+  nothing (96.39% vs 96.23% agreement) ⇒ errors are context-dependent measurement
+  noise, not position biases.
+
+## Evaluation harness
+- σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.86–0.93.
+  `noisy_sigma0.005.npz`, 2^30 samples each.
+
 ## Dead ends (with reasons)
 1. **Exact polyhedral enumeration.** 1.65M distinct 160-bit activation patterns in
    4M samples, ~30% unseen mass; 99% of mass needs ~all of them. Even conditioned on
