@@ -38,20 +38,60 @@ def _gl(n, device):
     return _GL[key]
 
 
-def Phi2(h, k, r, n=24):
-    """P(X < h, Y < k), corr(X, Y) = r. Broadcasts over h, k, r."""
-    x, w = _gl(n, h.device)
-    th_max = th.asin(r.clamp(-1.0, 1.0))
-    theta = 0.5 * th_max[..., None] * (x + 1.0)  # [..., n]
-    s, c = th.sin(theta), th.cos(theta).clamp_min(1e-300)
-    hh, kk = h[..., None], k[..., None]
-    f = th.exp(-(hh * hh - 2.0 * hh * kk * s + kk * kk) / (2.0 * c * c))
-    integral = 0.5 * th_max * (f * w).sum(-1)
-    return Phi(h) * Phi(k) + integral / (2.0 * math.pi)
+def bvnu(h, k, r):
+    """P(X > h, Y > k), corr(X, Y) = r. Genz (2004) BVN algorithm, 20-pt GL,
+    with the |r| > 0.925 asymptotic branch. Broadcasts over h, k, r."""
+    h, k, r = th.broadcast_tensors(h, k, r)
+    xg, wg = _gl(20, h.device)
+    x, w = xg[:10], wg[:10]  # one half of the symmetric rule; both (1-x), (1+x) are used
+    tp = 2.0 * math.pi
+    hk = h * k
+
+    # |r| < 0.925
+    hs = (h * h + k * k) / 2
+    asr = th.asin(r) / 2
+    def term(sgn):
+        sn = th.sin(asr[..., None] * (1 + sgn * x))
+        return (w * th.exp((sn * hk[..., None] - hs[..., None]) / (1 - sn * sn))).sum(-1)
+    low = (term(-1) + term(1)) * asr / tp + Phi(-h) * Phi(-k)
+
+    # |r| >= 0.925
+    neg = r < 0
+    k2 = th.where(neg, -k, k)
+    hk2 = h * k2
+    rr = r.abs().clamp_max(1 - 1e-15)
+    as_ = 1 - rr * rr
+    a = th.sqrt(as_)
+    bs = (h - k2) ** 2
+    c = (4 - hk2) / 8
+    d = (12 - hk2) / 80
+    asr2 = -(bs / as_ + hk2) / 2
+    bvn = th.where(asr2 > -100, a * th.exp(asr2) * (1 - c * (bs - as_) * (1 - d * bs) / 3 + c * d * as_ * as_), th.zeros_like(a))
+    b = th.sqrt(bs)
+    sp = math.sqrt(tp) * Phi(-b / a)
+    bvn = bvn - th.where(hk2 > -100, th.exp(-hk2.clamp_min(-100) / 2) * sp * b * (1 - c * bs * (1 - d * bs) / 3), th.zeros_like(a))
+    a2 = a / 2
+    def term2(sgn):
+        xs = (a2[..., None] * (1 + sgn * x)) ** 2
+        rs = th.sqrt(1 - xs)
+        e = -(bs[..., None] / xs + hk2[..., None]) / 2
+        return (w * th.exp(e) * (th.exp(-hk2[..., None] * xs / (2 * (1 + rs) ** 2)) / rs - (1 + c[..., None] * xs * (1 + d[..., None] * xs)))).sum(-1)
+    bvn = bvn + a2 * (term2(-1) + term2(1))
+    bvn = -bvn / tp
+    L = th.where(h < 0, Phi(k2) - Phi(h), Phi(-h) - Phi(-k2))
+    high = th.where(~neg, bvn + Phi(-th.maximum(h, k2)), th.where(h >= k2, -bvn, L - bvn))
+    out = th.where(r.abs() < 0.925, low, high)
+    return out.clamp(0.0, 1.0)
+
+
+def Phi2(h, k, r):
+    """P(X < h, Y < k), corr(X, Y) = r."""
+    return bvnu(-h, -k, r)
 
 
 def relu_moments(mu, S, jitter=1e-12):
     """mu [..., d], S [..., d, d] -> (E[relu z] [..., d], E[relu z relu z^T] [..., d, d])."""
+    S = S.expand(mu.shape + mu.shape[-1:])
     var = th.diagonal(S, dim1=-2, dim2=-1).clamp_min(jitter)
     sd = var.sqrt()
     a = mu / sd
