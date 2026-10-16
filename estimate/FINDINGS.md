@@ -62,6 +62,22 @@ sampling in MSE vs compute, measured on average over noisy copies of the weights
   nothing (96.39% vs 96.23% agreement) ⇒ errors are context-dependent measurement
   noise, not position biases.
 
+## Boundary-layer estimator (`boundary_layer.py`)
+- 77% of errors are within 0.1·vM of a tie (53% within 0.02).
+- vS < 0 (P = 11/1024): net fails 78% ⇒ 0.0084 of inputs, 18% of errors (non-tie mode;
+  record mechanism needs positive values).
+- First-order formula err_k ≈ ½ f_Dk(0) · E_tie[|m0|/|α|], f_D analytic, m0, α from the
+  network at exact tie points (finite differences, width capped at 0.25):
+  * M/S tie: 0.0098 (observed pred==M 0.0095; near-tie only 0.0079), median width 0.0054
+  * S/R tie: 0.0310 (observed pred==R 0.0297; near-tie only 0.0289), median width 0.0145
+  Two layers ≈ 0.041 of 0.047 total error.
+- Variance per FLOP on the tie part: 2.8× better than plain MC (width average still
+  sampled over tie configurations — not yet deductive). Including the residual by MC,
+  the combined estimator is ≈ MC (residual dominates).
+- Noisy models (unchanged code, `bl_noisy_eval.py`): corr(BL, true err) = 0.77;
+  residual 0.018 ± 0.017 (vs 0.006 on the trained model) — noise creates non-tie
+  failures (wrong-sign α, widths beyond the cap, third-element resolutions).
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.86–0.93.
   `noisy_sigma0.005.npz`, 2^30 samples each.
