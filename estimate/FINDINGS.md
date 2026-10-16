@@ -45,6 +45,19 @@ sampling in MSE vs compute, measured on average over noisy copies of the weights
   * M first (forward, acc 0.9508): S is not a record (n4 at S only 12%, and those are
     worse: 0.90). Errors: 65% pick R, 23% pick M, 29% pick something before M.
     R after M is harder (0.947) than R before M (0.959).
+- **Unified decomposition** (`probes/ab_candidates.py`): S = argmax(A, B) with
+  A = max before M (the penultimate record), B = max after M. Error budget, as a
+  fraction of all inputs (total 0.0468):
+  * within S's side, picks the wrong element: 0.0238 (51%) — equal on both sides
+    (0.0121 before M, 0.0117 after M);
+  * A/B swap: 0.0118 (25%) — a clean noisy comparator, P(swap) ≈ Φ(−d/σ),
+    d = |vA − vB|/vM, σ ≈ 0.02 near 0, heavier tail beyond;
+  * predicts M (M/S near-tie, vS/vM > 0.975): 0.0095 (20%);
+  * other side, not its best: 0.0017 (4%).
+  With only one candidate side (M at 0 or 9) accuracy is lower (0.93 vs 0.958), so
+  within-side selection, not the A/B comparison, is the weak step.
+- Weight-level origin of the A trace: after M's record, n2 = 17.58 vM + 0.122·n2_old,
+  where 0.122 = 0.97 − 1.73·0.49 — n2 keeps a ~12% trace of the previous record.
 - Offset rule argmax_{j≠M}(x_j − β(j,m)·x_M) fitted to the net's outputs explains
   nothing (96.39% vs 96.23% agreement) ⇒ errors are context-dependent measurement
   noise, not position biases.
