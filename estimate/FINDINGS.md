@@ -78,6 +78,46 @@ sampling in MSE vs compute, measured on average over noisy copies of the weights
   residual 0.018 ± 0.017 (vs 0.006 on the trained model) — noise creates non-tie
   failures (wrong-sign α, widths beyond the cap, third-element resolutions).
 
+## Making the width deductive: attempts (all negative)
+- **Additive background model** (`probes/additivity.py`, `additivity2.py`): cut-HDMR of the
+  tie margin m0 over the background inputs (anchor = conditional median). R^2 first order:
+  -1.2 (M/S tie), 0.29-0.38 (S/R tie); second order -1.0 / 0.59. Other anchors (0, -1, -3)
+  no better. m0 is a high-order function of the background.
+- **Record skeleton** (`probes/record_skeleton.py`): keep only background inputs that are
+  running-max records, anchor the rest: R^2(m0) <= 0.03 (M/S), <= 0.54 (S/R). Non-record
+  inputs carry much of the margin (via the gap-below-max neurons n1, n6, n7, n8).
+- **Total Sobol indices** (`probes/sobol_groups.py`): background share of Var(m0) is 0.76
+  (M/S) and 0.35 (S/R); per-position indices sum to 1.28 / 0.45 ⇒ strong interactions for
+  M/S. Influence decays with time: inputs early in the sequence matter most (t=0..3 each
+  ~0.18 for M/S, t=9 0.03) — the noise is accumulated in the memory, not injected at readout.
+- Conclusion: the comparator noise that sets the tie width is not a sum of per-input
+  effects or a function of the record chain; a deductive width needs a model of the full
+  distribution of the memory state, which is what the Gaussian closure got wrong.
+
+## Noisy models: where the extra error is (`probes/noisy_residual.py`)
+- Mean over the 32 copies (trained in brackets): error 0.104 (0.047); predicts M 0.031
+  (0.010); predicts R 0.054 (0.030); picks 4th or lower 0.020 (0.006); vS<0 errors 0.009
+  (0.008, unchanged — a property of the input law).
+- Errors within 0.02·vM of a tie 0.040 (0.027), within 0.1 0.085 (0.040): the tie layer
+  widens with noise, it does not get replaced by a new mechanism.
+- BL estimate vs its own target (pred M + pred R): mean bias +0.0017 but rms per-model
+  error 0.0136 (corr 0.74) — first-order linearisation fails when widths grow. An rms bias of
+  0.0136 equals MC with ~500 samples, so BL as is loses to MC beyond ~3 MFLOP.
+
+## Exact line-integral identity (`line_integral.py`)
+- Writing the k-th/(k+1)-th pair as c ± d/2 (Jacobian 1, phi(c+d/2)phi(c-d/2) =
+  phi(c)^2 e^{-d^2/4}) gives the TOTAL error exactly:
+  err = f_Dk(0) · E_tie[ ∫_0^∞ e^{-d²/4} 1{order kept} 1{wrong at d} dd ].
+  Verified unbiased on the trained model and 4 noisy copies (|z| < 1.4, both k).
+- As a variance reducer it loses: 0.07-0.15× MC per forward pass (21 points per line;
+  the variance is in where the line's error set sits, not in the d-integral).
+
+## Stratification ceiling (`probes/strat_gain.py`)
+- Strata on (g1, g2, sign vS), Neyman allocation with the true per-stratum error: gain
+  over MC 3.1× (trained), 2.0× mean / 1.45× min (noisy, 13 bins per gap). Practical gain
+  is lower (allocation needs a pilot). This is the honest "beats MC" result available:
+  mechanism-guided sampling, not deduction.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.86–0.93.
   `noisy_sigma0.005.npz`, 2^30 samples each.
