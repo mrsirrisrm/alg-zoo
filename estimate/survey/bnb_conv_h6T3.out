@@ -1,0 +1,11 @@
+zoo_h6_T3 truth 0.9992189 +- 2.4e-06
+eps 1e-06 Q    256  bias -9.29e-05 +- 1.4e-04  spread 3.8e-04  rms 3.7e-04  lost 4.2e-06  regions 116  sec 0.2
+eps 1e-06 Q   1024  bias +2.80e-06 +- 4.2e-05  spread 1.2e-04  rms 1.1e-04  lost 4.7e-06  regions 115  sec 0.7
+eps 1e-06 Q   4096  bias -2.41e-06 +- 2.2e-05  spread 6.1e-05  rms 5.7e-05  lost 5.1e-06  regions 115  sec 2.4
+eps 1e-06 Q  16384  bias +3.75e-06 +- 1.0e-05  spread 2.8e-05  rms 2.7e-05  lost 5.1e-06  regions 115  sec 10.6
+eps 1e-06 Q  65536  bias +6.14e-06 +- 3.6e-06  spread 1.0e-05  rms 1.1e-05  lost 5.1e-06  regions 115  sec 35.0
+eps 1e-08 Q    256  bias -9.41e-05 +- 1.4e-04  spread 3.8e-04  rms 3.7e-04  lost 2.7e-09  regions 129  sec 0.2
+eps 1e-08 Q   1024  bias +1.51e-06 +- 4.2e-05  spread 1.2e-04  rms 1.1e-04  lost 6.3e-09  regions 133  sec 0.6
+eps 1e-08 Q   4096  bias -3.84e-06 +- 2.2e-05  spread 6.1e-05  rms 5.7e-05  lost 1.4e-09  regions 136  sec 1.9
+eps 1e-08 Q  16384  bias +2.33e-06 +- 1.0e-05  spread 2.8e-05  rms 2.7e-05  lost 1.4e-09  regions 136  sec 7.1
+eps 1e-08 Q  65536  bias +4.72e-06 +- 3.6e-06  spread 1.0e-05  rms 1.1e-05  lost 1.4e-09  regions 136  sec 31.1
