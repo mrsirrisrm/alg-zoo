@@ -161,6 +161,29 @@ Test of the atom-and-merge design (law of the normalised state z_t = h_t / max|x
   (orthant probabilities — `gauss.orthant_prob` exists). Untested; the cost estimate
   (skeleton quadrature × atoms × post-tie input quadrature) is the open question.
 
+## Step 3: polyhedral integration (`polyhedral.py`, `probes/region_count.py`, `freeze_periphery.py`)
+- Region counts per tie skeleton, post-tie steps, 99% of mass: all 16 neurons 2748 (M/S) /
+  424 (S/R); kink neurons {0,4,6,7,9,11} only: 81 / 6; n4 alone: 4 / 1. The blow-up is the
+  periphery.
+- Freezing the periphery gates per kink-pattern class (fitted on independent draws):
+  kink set {0,4,5,6,7,8,9,11} gives M/S 0.0102 vs 0.0098, S/R 0.0281 vs 0.0273; per-skeleton
+  freezing fails (0.0251 vs 0.0097). Inside each region the network is exactly linear.
+- Integrator: region = kink-sign constraints + box u < v (+ linearised in-pair rule); margin
+  affine, alpha constant per region; constraints ordered in time, so u_1..u_6 by a fixed
+  Sobol lattice through interval CDFs (Genz) and u_7 by Gauss-Legendre.
+- S/R tie, 48 sampled skeletons, ~330 regions each: polyhedral 0.0208 / MC of the same
+  linear model 0.0207 / MC of the exact net 0.0211. Per skeleton rms relative error: integrator
+  vs linear model 8-10% (qmc 64-256; 15% at qmc 16), linear model vs exact net 15%;
+  the aggregate agrees to ~1% (errors partly cancel; ±2% expected from 48 skeletons).
+- Cost (estimate, FLOPs): ~1e8 per skeleton (qmc 64, ~330 regions) ≈ 17k plain-MC samples,
+  plus region discovery (still sampled: 4k draws). A deductive estimate also needs quadrature
+  over skeletons (tied positions x M position x v x vM ≈ 1e4 nodes) ⇒ ~1e12 FLOPs for the
+  S/R term alone, where plain MC would reach ~1.5e-5 on the total accuracy. The polyhedral
+  estimate's bias (~1-3% of the tie term ≈ 3e-4-1e-3) is 20-60x larger. Verdict: the
+  explanation is validated (the error IS a few hundred linear regions per skeleton over 8
+  kink neurons), but as an estimator it is 2-3 orders of magnitude behind sampling in compute
+  at equal error, before adding the M/S term (~10x more regions).
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.86–0.93.
   `noisy_sigma0.005.npz`, 2^30 samples each.

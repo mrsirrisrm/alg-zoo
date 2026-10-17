@@ -71,7 +71,18 @@ order statistics) or smooth (linear response).
 2. Context atoms before the tie, each with a Gaussian offset — tested, works.
 3. Comparison step: kink-neuron pre-activations are affine in the offset (and in later
    inputs), so each on/off combination's probability is a polyhedral Gaussian integral
-   (`gauss.orthant_prob`). — being tested.
+   (`gauss.orthant_prob`). — tested for the S/R tie, see section 10.
 4. Linear response within each combination for the remaining steps.
 Open question: whether skeleton nodes × atoms × kink combinations stays under the sampling
 budget at ~5e-4 accuracy.
+
+## 10. Step 3 result
+- The periphery causes the region blow-up; with 8 kink neurons {0,4,5,6,7,8,9,11} and the
+  other gates frozen per region, the network is linear in each region and reproduces the
+  tie widths (M/S 0.0102 vs 0.0098, S/R 0.0281 vs 0.0273).
+- The polyhedral integrator reproduces the linear model (0.0208 vs 0.0207) and the exact
+  net (0.0211) on 48 skeletons; per skeleton 8-15% rms errors that mostly cancel.
+- Cost: ~1e8 FLOPs per skeleton, ~1e4 skeleton nodes ⇒ ~1e12 FLOPs for one tie term, with
+  bias ~3e-4-1e-3. Sampling reaches ~1.5e-5 at that compute. As an explanation it holds; as
+  an estimator it is 2-3 orders of magnitude behind sampling. Region discovery is still
+  sampled.
