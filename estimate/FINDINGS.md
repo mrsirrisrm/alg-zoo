@@ -184,8 +184,55 @@ Test of the atom-and-merge design (law of the normalised state z_t = h_t / max|x
   kink neurons), but as an estimator it is 2-3 orders of magnitude behind sampling in compute
   at equal error, before adding the M/S term (~10x more regions).
 
+## Protocol fixes and ceilings (response to CRITIQUE.md)
+- **Noise level** (`sigma_sweep.py`, 8 copies each, 2^21 samples): mean acc 0.948 (σ=0.001),
+  0.936 (0.0025), 0.900 (0.005), 0.827 (0.01), 0.53 (0.02), 0.34 (0.05), 0.19 (0.1). σ = 0.005
+  is the largest level that keeps the mechanism (acc 0.85-0.93, error doubled) and so
+  "significantly alters accuracy" in ARC's sense. At σ ≥ 0.02 the model is destroyed.
+- **Seeds 0-4** (`seeds.py`, `seeds_h16.npz`, 2^26 each): acc 0.910, 0.880, 0.949, 0.932,
+  0.890. None is the 0.9531 example model.
+- **MSE vs compute** (`mse_curves.py`, `mse_curves.png`, `.json`). rms error averaged over
+  each model set; crossover = largest budget at which the estimator still beats MC.
+
+  | set | BL rms bias | BL crossover | BL+r (trained residual as advice) | strat-prop gain | Neyman ceiling |
+  |---|---|---|---|---|---|
+  | trained | 0.0066 | 3 MFLOP | (circular) | 1.43× | 3.1× |
+  | noisy σ=0.005 (32) | 0.0248 | 0.4 MFLOP | 0.021, 0.6 MFLOP | 1.30× | 1.88× |
+  | seeds 0-4 | 0.0244 | 0.4 MFLOP | 0.021, 0.5 MFLOP | 1.31× | 1.92× |
+
+  The critique's "3 MFLOP on noisy" used the rms error vs the tie-error target only (0.0136).
+  Against the total error, BL's bias is 0.025, so the crossover is ~0.4 MFLOP (~70 samples).
+  Advice from the trained model does not transfer: the residual is model-specific.
+  The polyhedral S/R term sits at 1e12 FLOPs with bias 3e-4-1e-3, where MC is at ~1.5e-5.
+- **Only unbiased estimator ahead of MC at every budget**: proportional stratification on
+  (g1, g2, sign vS). The stratum probabilities come from the input law only. Gain 1.3×
+  (noisy, seeds) and 1.4× (trained); oracle Neyman allocation 1.9× / 3.1×.
+- **Conditioning ceiling vs feature cost** (`probes/cond_ceiling.py`, `.json`; pick-freeze,
+  2^21 pairs). R2 = Var(E[y|Z])/Var(y), y = 1{wrong}. A CV or proportional stratification
+  using Z gains at most 1/(1-R2), and only if E[g(Z)] is free.
+
+  | Z | cost | trained | noisy (8) | seeds 0-4 |
+  |---|---|---|---|---|
+  | top-1 (pos, value of max) | 0 | 0.04 | 0.03 | 0.04 |
+  | top-2 | 0 | 0.25 | 0.25-0.45 | 0.19-0.24 |
+  | top-3 | 0 | 0.63 (2.7×) | 0.63-0.76 (2.7-4×) | 0.53-0.58 (2.1-2.4×) |
+  | top-5 | 0 | 0.83 | 0.79-0.87 | 0.73-0.80 |
+  | top-9 | 0 | 0.96 | 0.95-0.97 | 0.94-0.96 |
+  | prefix x_<5 (state h_5) | 0.5 pass | 0.045 | 0.05-0.09 | 0.05-0.08 |
+  | prefix x_<9 (state h_9) | 0.9 pass | 0.49 | 0.49-0.60 | 0.48-0.56 |
+
+  - Input order statistics carry most of the predictable variance. The positions and
+    values of the top 3 explain 53-76%, against 19-45% for the 13-bin gap strata.
+  - The hidden state explains almost nothing until the last input. Conditioning on the
+    forward state (the atom design) cannot be the source of a variance gain.
+  - The headroom left is the gap between strat-prop (1.3×) and the top-3 ceiling (2-4×).
+    Closing it needs an exact quadrature of E[g(top-3)] over the order-statistic law for a
+    g fitted per copy, e.g. the BL formula per (positions, gaps). That would be an unbiased
+    mechanism-guided estimator capped at about 2-4× MC. It has not been tried.
+
 ## Evaluation harness
-- σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.86–0.93.
+- σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
+  Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".
   `noisy_sigma0.005.npz`, 2^30 samples each.
 
 ## Dead ends (with reasons)

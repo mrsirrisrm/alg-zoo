@@ -86,3 +86,21 @@ budget at ~5e-4 accuracy.
   bias ~3e-4-1e-3. Sampling reaches ~1.5e-5 at that compute. As an explanation it holds; as
   an estimator it is 2-3 orders of magnitude behind sampling. Region discovery is still
   sampled.
+
+## 11. After the critique: what the claim is
+- Noise is σ = 0.005, the largest level that keeps the mechanism. At σ = 0.1 the
+  accuracy is 0.19. ARC's preferred test, the zoo seeds 0-4 (acc 0.88-0.95), behaves
+  like the noisy copies.
+- MSE vs compute (`mse_curves.png`): the mechanistic BL estimator beats MC only below
+  ~0.4 MFLOP (~70 samples) on noisy copies and seeds, and below 3 MFLOP on the trained
+  model. The polyhedral step is far behind at its only budget.
+- The one estimator ahead of MC at every budget is proportional stratification on the
+  tie gaps: 1.3× (noisy, seeds), 1.4× (trained). Its stratum probabilities are deductive
+  and its within-stratum error rates are sampled.
+- Ceiling for any hybrid: the top-3 order statistics explain 53-76% of the error
+  variance, so the gain is at most ~2-4×. The forward hidden state explains almost
+  nothing until the last step, so state-conditioned hybrids gain less still.
+- Sharpened claim: (a) no mechanism-derived estimator beats MC above ~0.4 MFLOP on
+  perturbed models; (b) unbiased hybrids are capped at ~2-4× by the conditioning
+  ceiling, and 1.3× is realised today; (c) full deduction would need ~1% relative
+  precision on an error set that lives in multi-neuron kinks.

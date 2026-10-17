@@ -1,0 +1,3 @@
+trained {"rms_bias_bl": 0.006552899207615814, "rms_bias_blr": 0.0004267767071723938, "mean_gain_prop": 1.4284545205996606, "mean_gain_neyman": 3.126965077597708, "crossover_flops": {"BL": 3162277.6601683795, "BL+r (advice)": 794328234.7242821}}
+noisy sigma=0.005 (32) {"rms_bias_bl": 0.024800589207314833, "rms_bias_blr": 0.02088633210029034, "mean_gain_prop": 1.3043788140141297, "mean_gain_neyman": 1.8770558307981906, "crossover_flops": {"BL": 398107.1705534969, "BL+r (advice)": 630957.344480193}}
+zoo seeds 0-4 {"rms_bias_bl": 0.024409069005031325, "rms_bias_blr": 0.02086591206318611, "mean_gain_prop": 1.3051118271271989, "mean_gain_neyman": 1.916463723396158, "crossover_flops": {"BL": 398107.1705534969, "BL+r (advice)": 501187.2336272725}}

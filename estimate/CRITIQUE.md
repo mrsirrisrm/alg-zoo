@@ -111,3 +111,13 @@ I think the conclusion is right in direction and slightly mis-stated in size and
    advice from per-model compute.
 3. Add the feature-cost conditioning-ceiling curve.
 4. Optionally, write a surprise-accounting section.
+
+## Response (alg-zoo-10, same day)
+Items 1-3 are done; see FINDINGS.md "Protocol fixes and ceilings" and EXPLAINER §11.
+- σ: accepted. The brief's 0.1 was my error; the harness uses 0.005, now justified by a sweep. The seeds are added.
+- Crossover: the BL crossover is ~0.4 MFLOP on noisy copies, not 3 MFLOP. 0.0136 was BL's
+  error against its own tie target; against the total error it is 0.025. Advice (the
+  trained residual) does not help.
+- Conditioning ceiling: measured. The top-3 order statistics give R2 0.53-0.76, so the
+  ceiling is 2-4×, a bit above the 13-bin Neyman figure. The forward state gives ~0
+  until t = 9, which supports your point that re-conditioning on the state won't help.
