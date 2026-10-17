@@ -251,6 +251,28 @@ Test of the atom-and-merge design (law of the normalised state z_t = h_t / max|x
   For gain that grows with budget, the open question is how fast cells of those features
   can be resolved, which is a rate. The prefix-state R2 also does not test the atom design;
   the relevant number would be R2(top-3 ∪ h_t) − R2(top-3), not measured.
+- **Position-aware Neyman allocation** (`probes/strat_pos.py`, `.out`). Strata are gaps ×
+  sign vS, optionally × the positions of the top values. The allocation is learned on 2^23
+  pilot samples and scored on an independent 2^23. Every stratum keeps a 10% proportional
+  floor, so the estimator is unbiased.
+
+  | strata | trained | noisy 0-3 | seeds 0-4 |
+  |---|---|---|---|
+  | gaps only (13 bins) | 3.1× | 1.5-2.3× | 1.3-2.5× |
+  | gaps (6 bins) + pos(M,S) | 4.5× | 3.6-4.8× | 2.3-3.5× |
+  | gaps (6 bins) + pos(M,S,R) | 4.8× | 4.7-6.3× | 3.2-4.0× |
+
+  - The 1/(1-R2) cap (2-4× for top-3) binds proportional allocation and control
+    variates only. Neyman allocation can beat it by starving strata with near-zero error.
+    20-57% of the mass sits in (positions, gaps) strata with no pilot errors.
+  - Hard trimming of those strata (zero samples) would miss ~3e-4 of error mass, about MC's
+    own rms at practical budgets, so a floor is needed.
+  - The error rate by (pos M, pos S) is irregular, not a smooth decay with distance. On the
+    trained model: M0/S7 15%; S just before M late in the sequence ~9-10% (M9/S8, M7/S6,
+    M6/S5); most cells 2-4%. The pattern differs across seeds.
+  - The gain is a ceiling: the 2^23 pilot costs more than it saves. It becomes an estimator
+    only if per-stratum error rates come from the weights, e.g. BL tie widths per position
+    pair. Not tried.
 
 ## Model-space map (`MAP.md`, `survey/`)
 - Generic deduction (BnB over activation patterns, `survey/bnb.py`) vs MC on the best zoo
@@ -260,6 +282,10 @@ Test of the atom-and-merge design (law of the normalised state z_t = h_t / max|x
   most regions and kinks at every T, so region count is not a packing signature.
 - BnB is unbiased (h6T3, 8 scrambles, Q to 65536); spread ~Q^-0.6, so its lattice behaves
   close to MC and its edge is the one exactly integrated input.
+- Verifier-style pruning (certify a region all-correct or all-wrong, as in α,β-CROWN) has
+  nothing to prune before the last step. `survey/purity_ceiling.py` finds pure mass 0.000 at
+  every depth < T-1 on all models tested (T=3-6), because the label depends on inputs not yet
+  read. Node-count ceiling at the last step is 1.0-3.7×.
 - hand10 (h22, T10): ≥2 positive inputs (mass 1013/1024) gives no errors in sampling;
   sampling only the rest gives ~950x variance reduction. Explanation-guided deduction escapes the
   region count; generic deduction does not.

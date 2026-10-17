@@ -63,7 +63,10 @@ Our mechanism-level tools behave the same way:
 - deductive or biased estimators lose to MC above ~0.4 MFLOP on the perturbed models;
 - unbiased sampling designed from the mechanism (stratification on tie gaps, RQMC in
   order-statistic coordinates) gains 1.3–3×;
-- the conditioning ceiling for any hybrid on the top-3 order statistics is ~2–4×.
+- control variates or proportional strata on the top-3 order statistics are capped at
+  ~2–4×. Neyman allocation over gaps and the positions of the top three reaches 3–6×
+  held-out (`probes/strat_pos.py`). But it needs per-stratum error rates, learned here
+  from a pilot that costs more than it saves. Predicting them from the weights is untried.
 
 The challenge asks for deduction at the point in model space where both generic and
 mechanism-guided deduction are weakest. Nearby points either have short sequences
@@ -100,6 +103,10 @@ deduction wins by ~950×).
   Its edge is one exactly integrated dimension plus the region structure. That explains
   why it dominates at T = 2 (one lattice dimension) and fades as T grows. A fully exact
   polytope integrator would cost more per region, not less.
+- **Verifier-style pruning can't move the crossover.** Certifying regions as all-correct
+  or all-wrong, as α,β-CROWN does, finds nothing to prune before the last step
+  (`survey/purity_ceiling.py`: pure mass 0.000 at every earlier depth, T = 3–6). The label
+  depends on inputs not yet read.
 - **The best configuration is chosen against the truth.** That is optimistic for
   deduction. The MC baseline is plain sampling; against RQMC (2–3× better) every
   advantage drops by that factor.

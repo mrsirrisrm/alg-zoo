@@ -22,9 +22,10 @@ Error is pure bias; more compute = a finer explanation. The structure of the est
 the explanation, which makes it falsifiable.
 
 ## 3. Shape of the estimator for this task
-- Outer layer, exact: order statistics of 10 Gaussians are analytic, so
+- Outer layer, exact in principle: order statistics of 10 Gaussians are analytic, so
   p = Σ_(pos M, pos S) ∫∫ density(vM, vS) · P(correct | skeleton), with the other 8 inputs
-  iid truncated below vS. Deterministic quadrature.
+  iid truncated below vS. Deterministic quadrature is possible. In the runs so far the
+  skeletons were sampled from this exact law (`sample_ties`), not integrated on a grid.
 - Inner layer, hard: P(correct | skeleton) needs the law of the hidden state driven by the
   background inputs.
 - Error terms: tie layers ≈ ½ f_D(0) · E[width] (~87% of errors; f_D(0) exact), and vS < 0
@@ -67,7 +68,8 @@ side of a multi-neuron kink set at the comparison step. Everything else is exact
 order statistics) or smooth (linear response).
 
 ## 9. Proposed deductive estimator
-1. Skeleton quadrature (tied positions and values) — exact.
+1. Skeleton quadrature (tied positions and values): exact in principle, not built. Runs
+   so far sample skeletons from the exact tie law (48 in section 10).
 2. Context atoms before the tie, each with a Gaussian offset — tested, works.
 3. Comparison step: kink-neuron pre-activations are affine in the offset (and in later
    inputs), so each on/off combination's probability is a polyhedral Gaussian integral
@@ -97,16 +99,18 @@ budget at ~5e-4 accuracy.
 - The one estimator ahead of MC at every budget is proportional stratification on the
   tie gaps: 1.3× (noisy, seeds), 1.4× (trained). Its stratum probabilities are deductive
   and its within-stratum error rates are sampled.
-- Ceiling for any hybrid: the top-3 order statistics explain 53-76% of the error
-  variance, so the gain is at most ~2-4×. The forward hidden state explains almost
-  nothing until the last step, so state-conditioned hybrids gain less still.
+- The top-3 order statistics explain 53-76% of the error variance, so control variates
+  and proportional stratification on them gain at most ~2-4×. Neyman allocation is not
+  bound by that: strata on gaps plus the positions of the top three give 3-6× held-out
+  (`probes/strat_pos.py`), but only with a pilot that costs more than it saves. The
+  forward hidden state explains almost nothing until the last step.
 - RQMC in order-statistic coordinates (Sobol, positions given the leading dimensions)
   is unbiased and gains ~2× (seeds, trained) to ~3× (noisy) over MC at 2^20 samples.
   The gain grows with N up to ~2^18 and then levels off.
 - Sharpened claim: (a) no deductive or biased mechanism-derived estimator beats MC
   above ~0.4 MFLOP on perturbed models; (b) mechanism-chosen unbiased sampling beats MC
-  by ~2-3× at every budget tested, and how far finer order-statistic structure can push
-  that (top-5 R2 0.83, top-9 0.96) is a rate question still open; (c) full deduction would need ~1% relative
+  by ~2-3× at every budget tested. Position-aware allocation shows ~3-6× is available if
+  per-stratum error rates can be predicted from the weights, which has not been tried; (c) full deduction would need ~1% relative
   precision on an error set that lives in multi-neuron kinks.
 
 ## 12. The model-space map (`MAP.md`)
