@@ -118,6 +118,26 @@ sampling in MSE vs compute, measured on average over noisy copies of the weights
   is lower (allocation needs a pilot). This is the honest "beats MC" result available:
   mechanism-guided sampling, not deduction.
 
+## Effective dimension of the memory state (`probes/state_dim.py`, `state_merge.py`, `state_merge_skel.py`)
+Test of the atom-and-merge design (law of the normalised state z_t = h_t / max|x_<=t|).
+- Linear PCA compression of z_t: 95% of variance in 3-6 components, 99% in 5-10, but
+  continuing from the compressed state destroys the tie estimate (12 components at t=4:
+  BL 0.039 vs 0.031). Variance explained is the wrong criterion: the margin needs ~0.5%
+  precision (tie widths 0.005-0.015 of the max).
+- Merge by nearest neighbour (real reachable states, cone respected), 65k atoms:
+  * history BEFORE the tied pair compresses: tie after t=4, 8 PCA features → BL 0.0330
+    vs 0.0333 (S/R) and 0.0090 vs 0.0092 (M/S); 4 features within 5%; t <= 2 exact with 2.
+  * once a tied element is in the state it does not: even with the skeleton (positions, v,
+    values above v) held exact and only background merged, nearest neighbour in all 16 dims
+    gives BL 0.028 vs 0.010 (M/S) and 0.052 vs 0.029 (S/R) at 4k atoms per skeleton.
+    Convergence in atoms is very slow: M/S error 0.036 → 0.022 from 2^10 to 2^16 atoms
+    (~N^-0.12). Merging after BOTH tied elements is biased the other way (0.004 vs 0.009).
+- Conclusion: the context before the tie is low-dimensional (4-8 features); the comparison
+  itself needs the background-induced part of the state to ~1e-3 relative precision, and
+  generic merging cannot reach that at any affordable atom count. A deductive estimator
+  must treat the post-tie dynamics analytically (e.g. propagate the margin's sensitivity
+  directions, not the state), which is the open piece.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.86–0.93.
   `noisy_sigma0.005.npz`, 2^30 samples each.
