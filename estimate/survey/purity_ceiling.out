@@ -1,0 +1,50 @@
+h4T3 acc 0.9845
+  depth t=0: nodes99       2  pure mass 0.000  nodes still to expand       2
+  depth t=1: nodes99       6  pure mass 0.000  nodes still to expand       6
+  depth t=2: nodes99      24  pure mass 0.153  nodes still to expand      18
+  ceiling speedup (node count) 1.23
+h16T3 acc 0.9995
+  depth t=0: nodes99       2  pure mass 0.000  nodes still to expand       2
+  depth t=1: nodes99      16  pure mass 0.003  nodes still to expand      16
+  depth t=2: nodes99     207  pure mass 0.454  nodes still to expand      48
+  ceiling speedup (node count) 3.41
+h4T4 acc 0.6016
+  depth t=0: nodes99       2  pure mass 0.000  nodes still to expand       2
+  depth t=1: nodes99       9  pure mass 0.000  nodes still to expand       9
+  depth t=2: nodes99      44  pure mass 0.000  nodes still to expand      44
+  depth t=3: nodes99     160  pure mass 0.007  nodes still to expand     152
+  ceiling speedup (node count) 1.04
+h8T4 acc 0.9873
+  depth t=0: nodes99       2  pure mass 0.000  nodes still to expand       2
+  depth t=1: nodes99      11  pure mass 0.000  nodes still to expand      11
+  depth t=2: nodes99      63  pure mass 0.000  nodes still to expand      63
+  depth t=3: nodes99     477  pure mass 0.237  nodes still to expand     331
+  ceiling speedup (node count) 1.36
+h16T4 acc 0.9983
+  depth t=0: nodes99       2  pure mass 0.000  nodes still to expand       2
+  depth t=1: nodes99      17  pure mass 0.001  nodes still to expand      17
+  depth t=2: nodes99     199  pure mass 0.020  nodes still to expand     172
+  depth t=3: nodes99    2067  pure mass 0.564  nodes still to expand     430
+  ceiling speedup (node count) 3.68
+h5T5 acc 0.5420
+  depth t=0: nodes99       2  pure mass 0.000  nodes still to expand       2
+  depth t=1: nodes99       9  pure mass 0.000  nodes still to expand       9
+  depth t=2: nodes99      42  pure mass 0.000  nodes still to expand      42
+  depth t=3: nodes99     181  pure mass 0.000  nodes still to expand     181
+  depth t=4: nodes99     749  pure mass 0.040  nodes still to expand     617
+  ceiling speedup (node count) 1.16
+h6T5 acc 0.7023
+  depth t=0: nodes99       2  pure mass 0.000  nodes still to expand       2
+  depth t=1: nodes99      10  pure mass 0.000  nodes still to expand      10
+  depth t=2: nodes99      49  pure mass 0.000  nodes still to expand      49
+  depth t=3: nodes99     259  pure mass 0.000  nodes still to expand     259
+  depth t=4: nodes99    1383  pure mass 0.023  nodes still to expand    1218
+  ceiling speedup (node count) 1.11
+h4T6 acc 0.3938
+  depth t=0: nodes99       2  pure mass 0.000  nodes still to expand       2
+  depth t=1: nodes99       8  pure mass 0.000  nodes still to expand       8
+  depth t=2: nodes99      33  pure mass 0.000  nodes still to expand      33
+  depth t=3: nodes99     135  pure mass 0.000  nodes still to expand     135
+  depth t=4: nodes99     534  pure mass 0.000  nodes still to expand     534
+  depth t=5: nodes99    2009  pure mass 0.006  nodes still to expand    1896
+  ceiling speedup (node count) 1.04
