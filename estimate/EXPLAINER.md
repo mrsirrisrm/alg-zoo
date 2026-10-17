@@ -100,7 +100,11 @@ budget at ~5e-4 accuracy.
 - Ceiling for any hybrid: the top-3 order statistics explain 53-76% of the error
   variance, so the gain is at most ~2-4×. The forward hidden state explains almost
   nothing until the last step, so state-conditioned hybrids gain less still.
-- Sharpened claim: (a) no mechanism-derived estimator beats MC above ~0.4 MFLOP on
-  perturbed models; (b) unbiased hybrids are capped at ~2-4× by the conditioning
-  ceiling, and 1.3× is realised today; (c) full deduction would need ~1% relative
+- RQMC in order-statistic coordinates (Sobol, positions given the leading dimensions)
+  is unbiased and gains ~2× (seeds, trained) to ~3× (noisy) over MC at 2^20 samples.
+  The gain grows with N up to ~2^18 and then levels off.
+- Sharpened claim: (a) no deductive or biased mechanism-derived estimator beats MC
+  above ~0.4 MFLOP on perturbed models; (b) mechanism-chosen unbiased sampling beats MC
+  by ~2-3× at every budget tested, and how far finer order-statistic structure can push
+  that (top-5 R2 0.83, top-9 0.96) is a rate question still open; (c) full deduction would need ~1% relative
   precision on an error set that lives in multi-neuron kinks.

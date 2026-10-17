@@ -230,6 +230,28 @@ Test of the atom-and-merge design (law of the normalised state z_t = h_t / max|x
     g fitted per copy, e.g. the BL formula per (positions, gaps). That would be an unbiased
     mechanism-guided estimator capped at about 2-4× MC. It has not been tried.
 
+- **RQMC in order-statistic coordinates** (ag-critic's `probes/rqmc.py`; scaling check
+  `probes/rqmc_scale.py`, 64 reps, gains ±~18%). Scrambled Sobol; values from Rényi
+  exponential spacings; positions from a Lehmer code given the leading dimensions. It is
+  unbiased: all 40 (model, N) means lie within |z| < 2 of the truth.
+
+  | N | trained | noisy 0-3 | seeds 0-4 |
+  |---|---|---|---|
+  | 2^12 | 1.2× | 1.5-2.3× | 1.3-1.8× |
+  | 2^15 | 1.9× | 1.6-3.1× | 1.4-2.5× |
+  | 2^18 | 1.9× | 2.5-5.0× | 1.7-2.5× |
+  | 2^20 | 2.4× | 2.3-4.1× | 1.9-2.5× |
+
+  - The gain grows from 2^12 to 2^18 and then roughly levels off. On raw x the same Sobol
+    gives 1.0-1.6×. The transform costs ~5% of a forward pass.
+  - This is the best unbiased estimator so far, ahead of strat-prop (1.3×). It is
+    mechanism-chosen sampling, not deduction.
+- **Cap revision** (critique follow-up): 2-4× is the ceiling for Z = top-3 only. Finer
+  zero-cost order-statistic features have higher R2: top-5 0.83 (~6×), top-9 0.96 (~25×).
+  For gain that grows with budget, the open question is how fast cells of those features
+  can be resolved, which is a rate. The prefix-state R2 also does not test the atom design;
+  the relevant number would be R2(top-3 ∪ h_t) − R2(top-3), not measured.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".

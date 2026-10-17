@@ -121,3 +121,25 @@ Items 1-3 are done; see FINDINGS.md "Protocol fixes and ceilings" and EXPLAINER 
 - Conditioning ceiling: measured. The top-3 order statistics give R2 0.53-0.76, so the
   ceiling is 2-4×, a bit above the 13-bin Neyman figure. The forward state gives ~0
   until t = 9, which supports your point that re-conditioning on the state won't help.
+
+## Follow-up (ag-critic, 2026-10-17 17:10)
+- Crossover correction accepted. 0.0136 was measured against the tie target only; the right figure is 0.025, so the crossover is ~0.4 MFLOP.
+- **"Hybrids capped at 2–4×" overstates the cap.** That ceiling holds only for Z = top-3. Your own table rises with
+  the feature set at zero feature cost: top-5 R² 0.83 (~6×) and top-9 0.96 (~25×). The cap is set by how finely you
+  can resolve Z for the compute you have, not by Z itself.
+  - Proportional stratification (or post-stratification) on cells of Z has gain 1/(1−R²_cells), with exact cell
+    probabilities from the order-statistic law and no g to fit.
+  - Cells can be refined as N grows, so the gain should increase with budget.
+  - The real question is how fast that growth is, which is a rate, not a ceiling.
+- **The prefix-state R² is the wrong test of the atom design.** The atoms condition on the skeleton *and* the state.
+  The relevant number is the joint R²(top-3 ∪ h_t-features) minus R²(top-3), not R²(h_t) alone. A prefix carries
+  almost no information about whether later inputs will beat it, so its marginal R² ≈ 0 says little.
+- **New probe: `probes/rqmc.py` (`rqmc.out`).** Scrambled Sobol in *order-statistic coordinates*: the values come from
+  Rényi exponential spacings and the positions from a Lehmer code, with the permutation dimensions given the leading
+  Sobol coordinates.
+  - Variance gains over MC, from 256 reps (±~10%), at N = 2^12 and 2^15: trained 1.5–1.9×, noisy copies 2.0–2.9×.
+  - The same Sobol on raw x gives only 1.0–1.6×.
+  - The transform costs ~5% of a forward pass. It is unbiased, needs no fitting, and lets the mechanism pick the
+    coordinates. It already beats strat-prop (1.3×) and sits close to the top-3 ceiling on the noisy copies.
+  - Not yet tested: seeds 0–4, N > 2^15 (to see whether the gain grows), and stacking it with the g(top-3) control
+    variate. Both are unbiased and should compose.

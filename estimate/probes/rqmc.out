@@ -1,0 +1,10 @@
+trained N=2^12 p=0.9531 mc: gain  1.08  rqmc-x: gain  1.04  rqmc-os: gain  1.75  rqmc-os-perm1st: gain  1.53
+trained N=2^15 p=0.9530 mc: gain  1.04  rqmc-x: gain  1.19  rqmc-os: gain  1.53  rqmc-os-perm1st: gain  1.91
+noisy0 N=2^12 p=0.8684 mc: gain  0.99  rqmc-x: gain  1.30  rqmc-os: gain  2.67  rqmc-os-perm1st: gain  2.66
+noisy0 N=2^15 p=0.8683 mc: gain  0.91  rqmc-x: gain  1.57  rqmc-os: gain  2.37  rqmc-os-perm1st: gain  2.93
+noisy1 N=2^12 p=0.9128 mc: gain  1.06  rqmc-x: gain  1.19  rqmc-os: gain  1.57  rqmc-os-perm1st: gain  1.98
+noisy1 N=2^15 p=0.9129 mc: gain  1.06  rqmc-x: gain  1.30  rqmc-os: gain  1.85  rqmc-os-perm1st: gain  2.10
+noisy2 N=2^12 p=0.9157 mc: gain  0.98  rqmc-x: gain  1.26  rqmc-os: gain  2.21  rqmc-os-perm1st: gain  2.09
+noisy2 N=2^15 p=0.9157 mc: gain  0.96  rqmc-x: gain  1.31  rqmc-os: gain  1.92  rqmc-os-perm1st: gain  2.33
+noisy3 N=2^12 p=0.8908 mc: gain  1.13  rqmc-x: gain  1.06  rqmc-os: gain  2.24  rqmc-os-perm1st: gain  2.49
+noisy3 N=2^15 p=0.8913 mc: gain  0.89  rqmc-x: gain  1.45  rqmc-os: gain  1.62  rqmc-os-perm1st: gain  2.38
