@@ -32,3 +32,6 @@ zoo_h3_T6      acc 0.34052 n99    937  best advantage 0.19168096208326516  at ep
 zoo_h6_T5      acc 0.70287 n99   1389  best advantage 0.03877943315221109  at eps 1e-05 Q 64 flops 1.7e+09 rms 1.2e-03
 zoo_h5_T6      acc 0.45020 n99   1919  best advantage 0.011561810449367386  at eps 1e-04 Q 256 flops 5.4e+09 rms 1.3e-03
 zoo_h4_T6      acc 0.39393 n99   1999  best advantage 0.0712850720642336  at eps 1e-05 Q 256 flops 7.1e+09 rms 3.7e-04
+zoo_h16_T4 1e-05 4096 capped cap: nodes 1707, 328s at t=3 i=10
+zoo_h16_T4 1e-06 4096 capped cap: nodes 2454, 331s at t=3 i=6
+zoo_h16_T4     acc 0.99831 n99   2044  best advantage 0.010928143463857265  at eps 1e-06 Q 64 flops 9.8e+09 rms 1.9e-04
