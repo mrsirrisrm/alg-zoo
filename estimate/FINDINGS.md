@@ -138,6 +138,29 @@ Test of the atom-and-merge design (law of the normalised state z_t = h_t / max|x
   must treat the post-tie dynamics analytically (e.g. propagate the margin's sensitivity
   directions, not the state), which is the open piece.
 
+## Sensitivity propagation after the first tied element (`probes/sensitivity_merge.py`, `kink_diag.py`)
+- Merge at the first tied element (nearest of 4k atoms, skeleton exact), then correct the
+  margin by the forward-mode linear response along the target's own future:
+  m(z) ≈ m(z*) + J(z*)·(z − z*).
+  * S/R tie: merged 0.0533 → linear 0.0321 (true 0.0291).
+  * M/S tie: merged 0.0293 → linear 0.0201 (true 0.0101).
+  * Second order identical to first: the network is piecewise linear, so all remaining
+    error is ReLU switching between z* and z. (Caveat: the in-pair flag uses the true
+    argmax; small leak, same for all variants.)
+- Where the switches are: 100% of the linearisation error comes from targets with a switch
+  (26% of targets M/S, 16% S/R). Error-weighted, 85-90% involve a switch AT the step of the
+  second tied element, 40-60% at +1/+2 steps, ~0 before it. Neurons: n0, n4, n7, n9
+  (0.4-0.5 each), n11, n6 (0.25-0.4) — several at once (single-neuron switches carry only
+  13-25% of the error).
+- Interpretation: the comparison step is a multi-neuron kink event. Before it, the state
+  is a low-dimensional context (4-8 features) and the response is linear; at it, the
+  decision is which polyhedral region (over ~6 neurons) the context offset lands in.
+- What a deductive estimator would then need: per context atom, the law of the offset
+  (e.g. Gaussian cell moments), the pre-activations at the comparison step as affine
+  functions of it, and polyhedral integration over the ~6-neuron kink set at steps b..b+2
+  (orthant probabilities — `gauss.orthant_prob` exists). Untested; the cost estimate
+  (skeleton quadrature × atoms × post-tie input quadrature) is the open question.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.86–0.93.
   `noisy_sigma0.005.npz`, 2^30 samples each.
