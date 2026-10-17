@@ -8,6 +8,15 @@ the same rms error ÷ deductive compute. Blue means deduction wins and red means
 **Right:** linear regions covering 99% of the input mass (n99). The challenge model
 M(16,10), circled, has about 6×10^5.
 
+![slices](survey/slices.png)
+
+**What the ramp looks like** (`survey/slices.py`). Each panel is a typical 2-D slice of input
+space for the h = 16 zoo model, with linear regions coloured, true label walls in black and
+errors in red. The panes shrink and the red slivers along the walls widen as T grows. The
+right-hand panel shows why a slice understates the problem: a slice gains regions only
+slowly, while the whole space gains about 10× per step. The growth is in the dimensions a
+picture cannot show.
+
 ## The map
 
 | T | Advantage across h = 2…32 | Winner |
