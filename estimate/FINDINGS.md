@@ -252,6 +252,18 @@ Test of the atom-and-merge design (law of the normalised state z_t = h_t / max|x
   can be resolved, which is a rate. The prefix-state R2 also does not test the atom design;
   the relevant number would be R2(top-3 ∪ h_t) − R2(top-3), not measured.
 
+## Model-space map (`MAP.md`, `survey/`)
+- Generic deduction (BnB over activation patterns, `survey/bnb.py`) vs MC on the best zoo
+  model per (h, T): advantage ≥1e4 at T=2, 1.3-25 at T=3, 0.01-25 at T=4 (falling with h),
+  0.01-1.2 at T=5-6. Crossover T ≈ 3-4; ~1e3 per step at h16. Grid stopped at n99 ≈ 2000.
+- n99 grows like (hT)^T: width is the base, T the degree. Spare-capacity h32 models have the
+  most regions and kinks at every T, so region count is not a packing signature.
+- BnB is unbiased (h6T3, 8 scrambles, Q to 65536); spread ~Q^-0.6, so its lattice behaves
+  close to MC and its edge is the one exactly integrated input.
+- hand10 (h22, T10): ≥2 positive inputs (mass 1013/1024) gives no errors in sampling;
+  sampling only the rest gives ~950x variance reduction. Explanation-guided deduction escapes the
+  region count; generic deduction does not.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".

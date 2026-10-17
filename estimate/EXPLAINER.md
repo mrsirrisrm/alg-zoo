@@ -108,3 +108,12 @@ budget at ~5e-4 accuracy.
   by ~2-3× at every budget tested, and how far finer order-statistic structure can push
   that (top-5 R2 0.83, top-9 0.96) is a rate question still open; (c) full deduction would need ~1% relative
   precision on an error set that lives in multi-neuron kinks.
+
+## 12. The model-space map (`MAP.md`)
+- Generic deduction (enumerate linear regions, integrate each) beats sampling by ≥1e4 at
+  T=2, narrowly at T=3, and loses from T≈4 on, by ~1e3 per extra step at h16.
+- Regions grow like (hT)^T: sequence length compounds the nonlinearities; width only adds
+  cuts. M(16,10) has ~6e5 regions covering 99% of the mass.
+- A model whose explanation groups regions into events of known mass escapes this: hand10
+  (h22, T10) gets ~950x by sampling only its 11/1024 degenerate stratum. M(16,10)'s error
+  set (tie layers set by multi-neuron kinks) has not grouped that way under any attempt.
