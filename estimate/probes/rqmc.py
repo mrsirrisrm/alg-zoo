@@ -54,7 +54,8 @@ def run(W, label, reps=256):
         p = res['mc'][0]; vb = p * (1 - p) / N
         print(f"{label} N=2^{lg} p={p:.4f} " + "  ".join(f"{k}: gain {vb/v:5.2f}" for k, (m, v) in res.items()), flush=True)
 
-run(load_weights('weights.npz'), 'trained')
-d = np.load('noisy_sigma0.005.npz')
-for i in range(4):
-    run((d['W_ih'][i], d['W_hh'][i], d['W_out'][i]), f'noisy{i}')
+if __name__ == '__main__':
+    run(load_weights('weights.npz'), 'trained')
+    d = np.load('noisy_sigma0.005.npz')
+    for i in range(4):
+        run((d['W_ih'][i], d['W_hh'][i], d['W_out'][i]), f'noisy{i}')

@@ -1,0 +1,30 @@
+
+trained M(16,10): accuracy 0.9530, N_A = N_B = 2^22, 11 bits/param
+predictor    bits/input % of const  params param bits beats const at N >
+chance           3.1730    1160.3%       0          0                nan
+constant         0.2735     100.0%       1         11                nan
+gaps-logit       0.1693      61.9%       8         88                739
+gaps-table       0.1605      58.7%     303       3333           2.94e+04
+pos-table        0.1389      50.8%    4440      48840           3.63e+05
+tie-layer        0.1566      57.3%     542       5962           5.09e+04
+tie+gaps         0.1506      55.1%     551       6061           4.93e+04
+
+seed0: accuracy 0.9097, N_A = N_B = 2^22, 11 bits/param
+predictor    bits/input % of const  params param bits beats const at N >
+chance           3.0358     694.1%       0          0                nan
+constant         0.4374     100.0%       1         11                nan
+gaps-logit       0.3342      76.4%       8         88                746
+gaps-table       0.3160      72.2%     303       3333           2.74e+04
+pos-table        0.2753      62.9%    4440      48840           3.01e+05
+tie-layer        0.3118      71.3%     542       5962           4.74e+04
+tie+gaps         0.3026      69.2%     551       6061           4.49e+04
+
+noisy0: accuracy 0.8682, N_A = N_B = 2^22, 11 bits/param
+predictor    bits/input % of const  params param bits beats const at N >
+chance           2.9041     516.4%       0          0                nan
+constant         0.5624     100.0%       1         11                nan
+gaps-logit       0.4706      83.7%       8         88                839
+gaps-table       0.4520      80.4%     303       3333           3.01e+04
+pos-table        0.2354      41.9%    4440      48840           1.49e+05
+tie-layer        0.4025      71.6%     533       5863           3.66e+04
+tie+gaps         0.3848      68.4%     542       5962           3.35e+04

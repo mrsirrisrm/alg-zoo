@@ -290,6 +290,32 @@ Test of the atom-and-merge design (law of the normalised state z_t = h_t / max|x
   sampling only the rest gives ~950x variance reduction. Explanation-guided deduction escapes the
   region count; generic deduction does not.
 
+## Against ARC's ask: ablation and surprise accounting (`probes/ablation.py`, `probes/surprise.py`)
+- Ablation: the same unbiased designs on models we never explained. Gap strata (Neyman,
+  held-out): trained 3.0x, a network-free blurred comparator matched to the same error
+  3.2x, seeds 1.3-2.5x. Gaps + positions: trained 3.4x, random-weight RNN 5.5x.
+  Order-statistic RQMC: random-weight RNN 2.8x. So every gain over MC so far comes from
+  knowing the task (or from a pilot), not from understanding M(16,10). Exception: hand10,
+  163x on gap strata, because sign(vS) nearly coincides with its explained event.
+- Surprise accounting of the correctness bit c(x) (held-out, 2^22 inputs, 11 bits/param):
+
+  | predictor | trained | seed0 | noisy0 | params |
+  |---|---|---|---|---|
+  | constant accuracy | 0.274 bits/input | 0.437 | 0.562 | 1 |
+  | gaps logistic (task) | 61.9% of const | 76.4% | 83.7% | 8 |
+  | gaps table (task, fitted) | 58.7% | 72.2% | 80.4% | 303 |
+  | tie-layer (mechanism, widths from network margins at ties, not fitted to c) | 57.3% | 71.3% | 71.6% | ~540 |
+  | tie-layer + gaps logistic | 55.1% | 69.2% | 68.4% | ~550 |
+  | gaps x pos(M,S) table (fitted) | 50.8% | 62.9% | 41.9% | 4440 |
+
+  The explanation carries real information beyond the task: label-free, it beats a
+  303-cell table fitted to the labels, most clearly on the noisy copy. But a fitted
+  position table beats it, and ~55% of the surprise is left (the multi-neuron kink
+  residue). Caveat: the observation is c(x) and parameters are charged MDL bits; on that
+  rule the weights themselves (432 params, ~4.8k bits) would explain everything, and the
+  tie-layer predictor partly replays the network, so only explanation-vs-explanation
+  comparisons are meaningful here.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".

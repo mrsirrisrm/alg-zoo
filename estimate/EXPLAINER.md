@@ -121,3 +121,16 @@ budget at ~5e-4 accuracy.
 - A model whose explanation groups regions into events of known mass escapes this: hand10
   (h22, T10) gets ~950x by sampling only its 11/1024 degenerate stratum. M(16,10)'s error
   set (tie layers set by multi-neuron kinks) has not grouped that way under any attempt.
+
+## 13. Against the original ask
+- ARC's bar (a mechanistic estimate at least as good as sampling at every budget) is not
+  met deductively; the unbiased designs that do beat MC (1.3-3x) are task knowledge: a
+  network-free blurred comparator gains as much from gap strata, a random-weight RNN as
+  much from position strata and RQMC (`probes/ablation.py`).
+- Surprise accounting (`probes/surprise.py`): the tie-layer explanation, with widths from
+  the network's margins at ties and nothing fitted to correctness, removes 43% of the
+  surprise of the correctness bit on the trained model (29% seed0, 28% noisy0), more than
+  any fitted task-level gap model, less than a 4440-cell position table. That is the one
+  place the explanation, rather than the task, measurably pays.
+- Next lever: use the tie-layer q(x) as a label-free Neyman allocation (no pilot).
+
