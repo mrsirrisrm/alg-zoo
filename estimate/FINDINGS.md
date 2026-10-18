@@ -377,6 +377,13 @@ Test of the atom-and-merge design (law of the normalised state z_t = h_t / max|x
   comparator's average behaviour and the pair structure is in the background x position
   interaction. At ~3e4 forward-pass equivalents, MC has sd 0.0012; the skeleton bias is
   0.0006 (trained) but 0.011-0.014 on the perturbed models, so MC still wins on average.
+- Across all 10 harness models (`probes/form_abs_all.out`): the trained model's -1.5% is the
+  best of 10, not typical. Relative error vs S/R+M/S ranges -20% to +44%, rms 19%,
+  unchanged from 5x3 to 15x7 nodes (a model error, not quadrature). Against the TOTAL
+  error (missing 'other' errors) bias is -31% to +20%. MSE over the harness: deduced
+  4.6e-4 vs MC at the same cost (33,750 passes) 2.4e-6, so MC is ~200x better. The
+  mean-background skeleton is an order-of-magnitude-correct deduction (within ~20%),
+  not a competitive estimator.
 
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
