@@ -137,3 +137,46 @@ budget at ~5e-4 accuracy.
   comparator whose single width is set to each model's error rate does as well (2.07x), so
   the mechanism's contribution to variance reduction reduces to predicting the error level.
 
+
+## 14. Tools from outside the field (reliability engineering, survival analysis)
+Four probes after the standard interpretability toolbox had stalled. Two measure how
+compressible the error problem is, one is the closest a deductive estimate has come,
+one is new mechanism.
+- **Activation-signature hybrid** (`probes/sig_hybrid.py`): exact cone integrals for the
+  top K error-carrying 160-bit signatures plus MC for the rest. The error mass is spread
+  over ~1.4e5 signatures among 2e5 errors; 62% of held-out errors fall in a signature
+  never seen. Oracle gain 1.5x at K = 1e5 with the integrals free; dead.
+- **Active subspace of the wall margin** (`probes/active_subspace.py`): per ordered
+  position pair, C = E[grad_perp m grad_perp m^T] at sampled ties has effective dimension
+  4-5 of 9 (top 3 directions carry ~80-84%). Intermediate: tabulable in 3-D per pair at
+  the cost of ~20% of the margin variance, not a collapse to one or two directions. The
+  background gradient is only 8-14% of the tie slope alpha on the trained model (random
+  net: 4-5x alpha), which is why the tied pair dominates the margin.
+- **FORM / mean-background skeletons** (`probes/form_bg.py`, `form_abs.py`,
+  `form_abs_all.py`): per skeleton (tie value and other top value at quantile nodes,
+  every ordered pair, background at its truncated-normal mean), one forward and one
+  gradient; 0.5 f_D(0) E[|m0|/alpha] is an ABSOLUTE boundary-layer error estimate with no
+  labels, no random inputs and no fitted scale, from ~3e4 pass-equivalents. Trained:
+  S/R + M/S 0.0386 vs actual 0.0392. Across the 10 harness models that was the best of
+  10: relative error -20% to +44%, rms 19%, unchanged with finer quadrature, and the
+  'other' error type (17% of trained errors) is outside any tie skeleton. MSE over the
+  harness 4.6e-4 vs MC at the same cost 2.4e-6. The background-noise term (FORM proper)
+  improves the per-pair S/R shape (rms log ratio 0.90 -> 0.37; measured widths 0.24) but
+  not the level. The level is deducible to ~20%; the distribution over pairs is not.
+- **Commit step and settling time** (`probes/hazard.py`, `probes/settling.py`): with a
+  decoder-free criterion (benign completion from h_t), ~60-66% of errors are committed at
+  the arrival of the later confused value, the rest lost within 1-2 steps after. At
+  equal relative gap, late close comparisons are resolved 2-4x worse on the trained model
+  (near-tie error by arrival step: S/R 0.155 -> 0.307, M/S 0.056 -> 0.244 over t = 1..9;
+  gap conditioning excludes the task-level 'closer ties among more values'). Settling
+  curves show why: a near M/S tie is 59-82% right immediately and 84-98% one benign step
+  later, margin still growing; comparisons arriving at the last steps are read out
+  unsettled. seed0 has no settling dynamic (flat, 55-70%), just a weaker comparator.
+  This is the position dependence the measured widths carry and the skeletons miss; the
+  gaps+pos design already exploits it, so it is mechanism, not estimator.
+
+Net of the round: the three compressibility measures (signatures, active subspace,
+FORM) agree with everything before them — the error LEVEL is a mean-field quantity and
+is deducible; what remains (per-pair distribution, far field, 'other' errors) needs
+4-5 directions per pair and is where sampling wins. The settling-time result is the
+first explanation of WHY position matters, and it is specific to the trained model.
