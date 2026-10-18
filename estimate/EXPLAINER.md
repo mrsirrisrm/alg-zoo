@@ -180,3 +180,22 @@ FORM) agree with everything before them — the error LEVEL is a mean-field quan
 is deducible; what remains (per-pair distribution, far field, 'other' errors) needs
 4-5 directions per pair and is where sampling wins. The settling-time result is the
 first explanation of WHY position matters, and it is specific to the trained model.
+
+## 15. Weight precision as description length
+A different question from the estimator work: not 'can we beat sampling' but 'why is
+deduction expensive here'. The trained model needs ~10.5 bits per weight (4.5 kbits) to
+hold its accuracy to 1e-3 under isotropic relative noise, and 14 bits/weight by plain
+rounding; the per-neuron rescaling symmetry buys nothing. The Gauss-Newton Hessian in
+relative coordinates says where that precision sits: sparse, in the recurrent weights of
+five neurons (n2, n7, n8, n1, n6 carry 89% of the stiffness; W_out is soft), with the top
+5 directions holding 79% of the trace. But the MDL floor over all linear bases
+(reverse water-filling of the KL budget) is still 1.9 kbits at 1e-3 (1.3 kbits at 1e-2),
+spread over ~350 directions: the top 100 directions take about half, the rest need ~3
+bits each. So a better basis saves a factor of ~2.4 (if it were free to specify, which
+it is not), not an order of magnitude. Against this: the 2nd-argmax algorithm is ~100
+bits, and 8 numbers (two tie-strip widths, two background rates) capture 39 of the 43
+surprise points of the correctness bit. The behaviour is nearly mean-field; the function
+needs 1-2 kbits of fine cancellation. That gap is the honest statement of the project:
+the error set is carried by precision that has no short description in any linear
+coordinates we can name, and sampling is cheaper than any description that long.
+`probes/precision.py`, `precision_blocks.out`, `precision_alloc.out`.

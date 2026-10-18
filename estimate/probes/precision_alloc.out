@@ -1,0 +1,2 @@
+loss 0.001: bits isotropic 4524 | per-weight precisions (diagonal, basis free) 3208 over 428 weights | eigenbasis floor 1882 over 368 dirs; eigenbasis bits in top 5/20/50/100 dirs: 66/238/526/916; bits/dir for the rest: 2.9
+loss 0.01: bits isotropic 3783 | per-weight precisions (diagonal, basis free) 2476 over 419 weights | eigenbasis floor 1264 over 316 dirs; eigenbasis bits in top 5/20/50/100 dirs: 57/202/437/737; bits/dir for the rest: 1.6

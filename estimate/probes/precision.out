@@ -1,0 +1,22 @@
+
+trained M(16,10): accuracy 0.9533 (2097152 inputs, sd 1.5e-04)
+  A. isotropic relative noise sigma -> accuracy loss: 0.0002: 0.0001, 0.0005: 0.0005, 0.001: 0.0020, 0.002: 0.0076, 0.005: 0.0428
+     sigma* for loss 1e-3: 7.04e-04 -> naive 10.5 bits/weight, 4524 bits; for 1e-2: 2.31e-03 -> 8.8 bits/weight
+  B. rounding: min bits/weight for loss < 1e-3 / 1e-2: raw 14 / 11, balanced 14 / 11 (balanced accuracy 0.9533; symmetry check)
+     accuracy loss by bits, raw:      b3:+0.8867 b4:+0.8534 b5:+0.8301 b6:+0.6705 b7:+0.5208 b8:+0.4202 b9:+0.1247 b10:+0.0502 b11:+0.0081 b12:+0.0075
+     accuracy loss by bits, balanced: b3:+0.8153 b4:+0.8762 b5:+0.6947 b6:+0.6934 b7:+0.6320 b8:+0.3352 b9:+0.2121 b10:+0.0526 b11:+0.0085 b12:+0.0066
+     accuracy loss by bits after QAT (balanced start, 400 steps): b2:+0.8537 b3:+0.8066 b4:+0.7703 b5:+0.6653 b6:+0.5779 b7:+0.4234 b8:+0.3031 b9:+0.0474 b10:+0.0525
+  D. Gauss-Newton Hessian (relative coords): trace 1.51e+04, top-1/5/20/50 trace [0.344 0.786 0.964 0.995], participation ratio 5.5, eigenvalues > 1e-3 max: 48
+     KL budget for loss 0.001: 3.73e-03; bits: isotropic (raw basis) 4524, water-filled floor 1882 over 368 directions (0.42 of raw)
+     KL budget for loss 0.01: 4.02e-02; bits: isotropic (raw basis) 3784, water-filled floor 1264 over 316 directions (0.33 of raw)
+
+seed0: accuracy 0.9099 (2097152 inputs, sd 2.0e-04)
+  A. isotropic relative noise sigma -> accuracy loss: 0.0002: 0.0003, 0.0005: 0.0018, 0.001: 0.0068, 0.002: 0.0250, 0.005: 0.0992
+     sigma* for loss 1e-3: 3.67e-04 -> naive 11.4 bits/weight, 4931 bits; for 1e-2: 1.23e-03 -> 9.7 bits/weight
+  B. rounding: min bits/weight for loss < 1e-3 / 1e-2: raw 14 / 12, balanced 13 / 12 (balanced accuracy 0.9099; symmetry check)
+     accuracy loss by bits, raw:      b3:+0.8097 b4:+0.7854 b5:+0.6525 b6:+0.6416 b7:+0.4233 b8:+0.4019 b9:+0.1719 b10:+0.1191 b11:+0.0144 b12:+0.0023
+     accuracy loss by bits, balanced: b3:+0.8328 b4:+0.7940 b5:+0.7902 b6:+0.7006 b7:+0.3777 b8:+0.3421 b9:+0.2045 b10:+0.0771 b11:+0.0264 b12:+0.0058
+     accuracy loss by bits after QAT (balanced start, 400 steps): b2:+0.8101 b3:+0.8007 b4:+0.7351 b5:+0.6215 b6:+0.4577 b7:+0.2937 b8:+0.2051 b9:+0.1597 b10:+0.0836
+  D. Gauss-Newton Hessian (relative coords): trace 2.12e+04, top-1/5/20/50 trace [0.232 0.613 0.941 0.988], participation ratio 9.4, eigenvalues > 1e-3 max: 69
+     KL budget for loss 0.001: 1.42e-03; bits: isotropic (raw basis) 4931, water-filled floor 2331 over 348 directions (0.47 of raw)
+     KL budget for loss 0.01: 1.59e-02; bits: isotropic (raw basis) 4179, water-filled floor 1732 over 319 directions (0.41 of raw)

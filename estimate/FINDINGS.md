@@ -440,6 +440,41 @@ Test of the atom-and-merge design (law of the normalised state z_t = h_t / max|x
   misses, and it is mechanism rather than an estimator: gaps+pos stratification already
   exploits it.
 
+## Weight precision as description length (`probes/precision.py`, `precision_blocks.out`, `precision_alloc.out`)
+How many bits does the mechanism need, and is that intrinsic or a raw-basis artefact?
+- Isotropic relative noise W -> W(1 + sigma eps): accuracy loss 1e-3 at sigma* = 7.0e-4
+  (trained; seed0 3.7e-4), 1e-2 at 2.3e-3. Naive log2(1/sigma*) = 10.5 bits/weight,
+  4.5 kbits. Per-tensor uniform rounding needs 14 bits/weight for 1e-3 (11 for 1e-2);
+  the gap to 10.5 is the exponent/sign overhead and the sqrt(12) of a uniform grid, so
+  the two agree. Dividing out the per-neuron ReLU rescaling symmetry (balanced incoming/
+  outgoing max-abs, scales free to decode) saves nothing: 14 / 11 again. QAT (STE, 400
+  Adam steps) did not lower the rounding threshold; inconclusive rather than negative.
+- Gauss-Newton Hessian of the KL to the original network in relative coordinates
+  (432 x 432, 8192 inputs): top 1/5/20/50 eigenvalues carry 34/79/96/99.5% of the trace,
+  participation ratio 5.5, 48 eigenvalues above 1e-3 of the largest. The stiff directions
+  are SPARSE: the top 6 eigenvectors live on 4-11 weights each, 85-92% in W_hh for the
+  top three; 89% of the per-neuron stiffness is in n2, n7, n8, n1, n6 (n2 alone 30%).
+  W_out is soft (0.24x the mean per-parameter stiffness): the readout is forgiving, the
+  precision sits in a few recurrent weights.
+- MDL floor by reverse water-filling of the KL budget K = 1/2 sigma*^2 tr(H) (tau = 1,
+  i.e. each weight known a priori to within its own size), loss 1e-3 / 1e-2:
+    isotropic, raw basis                       4524 / 3783 bits
+    per-weight precisions (diag H, basis free) 3208 / 2476 bits over ~425 weights
+    optimal linear basis (eigenbasis)          1882 / 1264 bits over 368 / 316 directions
+  In the eigenbasis the top 50 directions take 526 bits and the top 100 take 916; the
+  remaining ~270 directions need ~3 bits each. So the precision is top-heavy but not
+  concentrated: a 100-direction explanation still leaves half the bits in a long tail,
+  and the eigenbasis itself is not free to specify (a 432 x 432 rotation costs far more
+  than it saves; only structured bases such as the per-neuron balance are cheap, and that
+  one saves nothing). The floor is ~1.3-1.9 kbits for the FUNCTION to 1e-3 - 1e-2
+  accuracy, against ~100 bits for the algorithm it implements and 8 numbers for most of
+  the predictability of its correctness bit (surprise accounting). The function and the
+  behaviour have very different description lengths: the behaviour is near mean-field,
+  the function needs a few hundred directions of fine cancellation, mostly in five
+  neurons' recurrent weights. That is the framing for why deduction is expensive here:
+  the error set is carried by ~1-2 kbits of weight precision in the best coordinates
+  and sampling is cheaper than any description that long.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".
