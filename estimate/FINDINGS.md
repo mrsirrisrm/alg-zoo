@@ -400,6 +400,15 @@ Test of the atom-and-merge design (law of the normalised state z_t = h_t / max|x
   logit 61.9%), noisy0 90.2%, seed0 114% — worse than constant, because the 15-node M/S
   width CDF is a sharp step and cross-entropy punishes confident misses. The deduced
   widths get the level but not the per-input calibration; the needle has not moved.
+- How short can the tie-layer explanation be (`probes/surprise_arrival.py`, widths pooled
+  by pair / arrival step of the later tied value / arrival step + which came later / one
+  cell per kind)? Trained: 57.3% (542 params) / 60.2% (56) / 59.6% (110) / 61.3% (8).
+  seed0: 71.2 / 74.9 / 74.5 / 75.0. noisy0: 71.5 / 86.4 / 79.2 / 84.3. On the trained
+  model an 8-number explanation (one lognormal width per tie kind, two background rates)
+  gets 39 of the 43 points; the whole position table adds 4, of which arrival step
+  accounts for 1. Crossover with the constant predictor: N > 728 inputs for the 8-param
+  explanation, N > 5e4 for the per-pair table. On noisy0 position matters more and is not
+  the arrival step (pooling by 'later' loses 15 points, 'later+ord' 8).
 
 ## When is the error committed? Settling time of the comparator (`probes/hazard.py`, `probes/settling.py`)
 - W_out applied to h_t with the logit index rolled by 9-t decodes the RUNNING 2nd-argmax

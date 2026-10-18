@@ -1,0 +1,21 @@
+
+trained M(16,10): accuracy 0.9530; constant 0.2735 bits/input
+pooling    bits/input % of const  params beats const at N >
+pair           0.1567      57.3%     542            5.1e+04
+later          0.1647      60.2%      56           5.56e+03
+later+ord      0.1631      59.6%     110           1.09e+04
+global         0.1676      61.3%       8                728
+
+seed0: accuracy 0.9097; constant 0.4374 bits/input
+pooling    bits/input % of const  params beats const at N >
+pair           0.3116      71.2%     542           4.73e+04
+later          0.3276      74.9%      56           5.51e+03
+later+ord      0.3258      74.5%     110           1.07e+04
+global         0.3281      75.0%       8                704
+
+noisy0: accuracy 0.8682; constant 0.5624 bits/input
+pooling    bits/input % of const  params beats const at N >
+pair           0.4024      71.5%     533           3.66e+04
+later          0.4860      86.4%      56           7.92e+03
+later+ord      0.4456      79.2%     110           1.03e+04
+global         0.4744      84.3%       8                875
