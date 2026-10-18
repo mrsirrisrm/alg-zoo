@@ -1,0 +1,7 @@
+trained: skeleton background b (as a multiple of the tie value v) vs actual per-pair rates
+b=+1.0  S/R corr  0.28  rms log-ratio 1.64 (77 pairs) | M/S corr  0.60  rms log-ratio 2.22 (16 pairs)
+b=+0.5  S/R corr  0.54  rms log-ratio 0.92 (90 pairs) | M/S corr  0.35  rms log-ratio 1.37 (82 pairs)
+b=+0.0  S/R corr  0.54  rms log-ratio 0.80 (90 pairs) | M/S corr  0.67  rms log-ratio 1.05 (90 pairs)
+b=-0.5  S/R corr  0.52  rms log-ratio 0.90 (90 pairs) | M/S corr  0.79  rms log-ratio 0.98 (90 pairs)
+b=-1.0  S/R corr  0.47  rms log-ratio 1.00 (90 pairs) | M/S corr  0.78  rms log-ratio 1.27 (86 pairs)
+b=-2.0  S/R corr  0.31  rms log-ratio 1.46 (88 pairs) | M/S corr  0.63  rms log-ratio 1.56 (79 pairs)

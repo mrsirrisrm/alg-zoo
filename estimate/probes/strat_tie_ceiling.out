@@ -1,0 +1,7 @@
+gains with allocation from the true stratum rates of: tie errors only | all errors (oracle)
+trained  tie share 0.84 | gaps: 3.04 | 3.06 | gaps+pos(M,S): 4.50 | 4.65
+noisy0   tie share 0.71 | gaps: 1.39 | 1.45 | gaps+pos(M,S): 4.28 | 4.86
+noisy1   tie share 0.83 | gaps: 2.22 | 2.26 | gaps+pos(M,S): 3.46 | 3.63
+noisy2   tie share 0.88 | gaps: 1.91 | 1.92 | gaps+pos(M,S): 3.52 | 3.60
+noisy3   tie share 0.77 | gaps: 1.57 | 1.62 | gaps+pos(M,S): 3.66 | 3.88
+seed0    tie share 0.94 | gaps: 1.80 | 1.80 | gaps+pos(M,S): 2.51 | 2.52

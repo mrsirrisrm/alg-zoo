@@ -336,6 +336,22 @@ Test of the atom-and-merge design (law of the normalised state z_t = h_t / max|x
   kink set is the trained model's; for seed0 the neuron labels differ, so only its
   all-16 counts (560 for 90% S/R) compare.
 
+- Position dependence of the tie widths (`probes/pair_widths.py`, `strat_tie_g1.py`;
+  `pair_widths_bsweep.out`, `strat_tie_ceiling.out`, `tie_gap_diag.out` from inline
+  snippets). Per ordered pair, the measured tie widths predict the actual tie-error rate
+  well (log corr 0.88-0.95, rms log ratio 0.2-0.6). The pair dependence does not factor
+  into per-position terms (additive fit corr 0.4-0.9). Constant-background skeletons, one
+  pass per pair and no sampling, get only corr 0.5-0.8 and 2-3x per-pair errors for any
+  background level: the width is a nonlinear average over the context state, which a
+  point skeleton misses. Allocating with the TRUE tie-error rates per stratum would give
+  4.5x (oracle 4.65x), so the shortfall to the pilot is prediction quality, not the
+  non-tie errors. Conditioning S/R widths on g1 adds nothing (2.14x -> 2.17x). The miss
+  is in the far field, where Neyman weights are set by large mass at low rates:
+  S/R errors at g2 > 0.3 are 2-10x under-predicted, M/S errors at g1 > 0.5 (network picks
+  M when M >> S, 24% of M/S errors, mass 0.23) are 100x under-predicted, and the
+  lognormal tail over-predicts M/S at g1 0.03-0.3 by ~5x. The far-field failure is not a
+  boundary layer; the tie-layer explanation does not cover it.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".

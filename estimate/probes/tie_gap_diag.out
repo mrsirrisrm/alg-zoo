@@ -1,0 +1,35 @@
+S/R vs g2 total actual 0.0297 predicted 0.0251
+  [0.000,0.002) mass 0.007  actual 0.4536  pred 0.4272
+  [0.002,0.005) mass 0.010  actual 0.3845  pred 0.3314
+  [0.005,0.010) mass 0.017  actual 0.2958  pred 0.2324
+  [0.010,0.020) mass 0.033  actual 0.1897  pred 0.1403
+  [0.020,0.030) mass 0.032  actual 0.1066  pred 0.0828
+  [0.030,0.050) mass 0.062  actual 0.0512  pred 0.0473
+  [0.050,0.070) mass 0.059  actual 0.0234  pred 0.0261
+  [0.070,0.100) mass 0.083  actual 0.0130  pred 0.0150
+  [0.100,0.150) mass 0.123  actual 0.0072  pred 0.0077
+  [0.150,0.200) mass 0.106  actual 0.0045  pred 0.0039
+  [0.200,0.300) mass 0.166  actual 0.0029  pred 0.0019
+  [0.300,0.500) mass 0.191  actual 0.0015  pred 0.0007
+  [0.500,inf) mass 0.109  actual 0.0020  pred 0.0002
+M/S vs g1 total actual 0.0095 predicted 0.0073
+  [0.000,0.002) mass 0.003  actual 0.4147  pred 0.3721
+  [0.002,0.005) mass 0.005  actual 0.2931  pred 0.2280
+  [0.005,0.010) mass 0.009  actual 0.1791  pred 0.1346
+  [0.010,0.020) mass 0.017  actual 0.0894  pred 0.0711
+  [0.020,0.030) mass 0.017  actual 0.0355  pred 0.0374
+  [0.030,0.050) mass 0.034  actual 0.0111  pred 0.0196
+  [0.050,0.070) mass 0.034  actual 0.0027  pred 0.0101
+  [0.070,0.100) mass 0.051  actual 0.0009  pred 0.0055
+  [0.100,0.150) mass 0.085  actual 0.0004  pred 0.0027
+  [0.150,0.200) mass 0.084  actual 0.0002  pred 0.0013
+  [0.200,0.300) mass 0.160  actual 0.0002  pred 0.0006
+  [0.300,0.500) mass 0.267  actual 0.0001  pred 0.0002
+  [0.500,inf) mass 0.233  actual 0.0099  pred 0.0001
+S/R, g2<0.02, by g1 bin: actual / pred
+  g1 bin 0: mass 0.0032 actual 0.287 pred 0.219
+  g1 bin 1: mass 0.0071 actual 0.282 pred 0.220
+  g1 bin 2: mass 0.0124 actual 0.272 pred 0.221
+  g1 bin 3: mass 0.0270 actual 0.264 pred 0.222
+  g1 bin 4: mass 0.0170 actual 0.284 pred 0.224
+  g1 bin 5: mass 0.0002 actual 0.117 pred 0.223

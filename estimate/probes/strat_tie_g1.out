@@ -1,0 +1,11 @@
+gains over MC (held-out): tie-layer with S/R width per (pair, g1 bin), label-free
+trained  | gaps: 2.42 | gaps+pos(M,S): 2.86
+noisy0   | gaps: 1.32 | gaps+pos(M,S): 2.93
+noisy1   | gaps: 1.82 | gaps+pos(M,S): 2.43
+noisy2   | gaps: 1.70 | gaps+pos(M,S): 2.26
+noisy3   | gaps: 1.46 | gaps+pos(M,S): 2.40
+seed0    | gaps: 1.62 | gaps+pos(M,S): 1.80
+seed1    | gaps: 1.25 | gaps+pos(M,S): 1.50
+seed2    | gaps: 1.98 | gaps+pos(M,S): 2.00
+seed3    | gaps: 2.03 | gaps+pos(M,S): 2.44
+seed4    | gaps: 1.46 | gaps+pos(M,S): 1.74
