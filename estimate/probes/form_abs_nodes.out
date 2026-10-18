@@ -1,0 +1,6 @@
+trained nodes v=5 other=3: S/R skeleton 0.0285 FORM 0.0303 | M/S skeleton 0.0082 FORM 0.0108
+trained nodes v=9 other=5: S/R skeleton 0.0295 FORM 0.0314 | M/S skeleton 0.0083 FORM 0.0166
+trained nodes v=15 other=7: S/R skeleton 0.0304 FORM 0.0324 | M/S skeleton 0.0082 FORM 0.0105
+seed0 nodes v=5 other=3: S/R skeleton 0.0506 FORM 0.0735 | M/S skeleton 0.0415 FORM 0.0752
+seed0 nodes v=9 other=5: S/R skeleton 0.0513 FORM 0.0738 | M/S skeleton 0.0435 FORM 0.0763
+seed0 nodes v=15 other=7: S/R skeleton 0.0524 FORM 0.0751 | M/S skeleton 0.0432 FORM 0.0755

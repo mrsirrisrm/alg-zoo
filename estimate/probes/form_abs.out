@@ -1,0 +1,12 @@
+
+trained M(16,10): error rate by kind, actual vs boundary-layer estimates
+  S/R: actual 0.0297 | sampled ties 0.0309 | skeleton mean-bg 0.0285 | FORM const 0.0303 | FORM perm 0.0592
+  M/S: actual 0.0095 | sampled ties 0.0098 | skeleton mean-bg 0.0082 | FORM const 0.0108 | FORM perm 0.0281
+
+noisy0: error rate by kind, actual vs boundary-layer estimates
+  S/R: actual 0.0631 | sampled ties 0.0667 | skeleton mean-bg 0.0701 | FORM const 0.0715 | FORM perm 0.0902
+  M/S: actual 0.0298 | sampled ties 0.0324 | skeleton mean-bg 0.0363 | FORM const 0.0371 | FORM perm 0.0482
+
+seed0: error rate by kind, actual vs boundary-layer estimates
+  S/R: actual 0.0525 | sampled ties 0.0497 | skeleton mean-bg 0.0505 | FORM const 0.0735 | FORM perm 0.0946
+  M/S: actual 0.0321 | sampled ties 0.0347 | skeleton mean-bg 0.0415 | FORM const 0.0752 | FORM perm 0.0769

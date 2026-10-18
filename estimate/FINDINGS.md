@@ -352,6 +352,32 @@ Test of the atom-and-merge design (law of the normalised state z_t = h_t / max|x
   lognormal tail over-predicts M/S at g1 0.03-0.3 by ~5x. The far-field failure is not a
   boundary layer; the tie-layer explanation does not cover it.
 
+## Reliability-engineering tools: active subspace and FORM skeletons (`probes/active_subspace.py`, `probes/form_bg.py`, `probes/form_abs.py`)
+- Active subspace of the wall margin (C = E[grad_perp m grad_perp m^T] per ordered position
+  pair at sampled ties): trace in the top 1/2/3 directions 0.54/0.73/0.84 (S/R) and
+  0.45/0.68/0.80 (M/S), effective dimension 4-5 of 9. Intermediate: tabulable in 3-D per
+  pair with ~20% of the margin variance lost, not a collapse to 1-2 directions. The wall
+  gradient is only 8-14% of alpha in rms on the trained model (random net: 4-5x alpha).
+- FORM: per skeleton (tie value v at 5-15 quantile nodes, other top value at 3-7 nodes,
+  all ordered pairs, background at its truncated-normal MEAN), one forward + one gradient;
+  the margin is linearised in the background, m ~ N(m0, s^2), s^2 = sum (dm/dx_i)^2 var_i.
+  Per-pair shape (same scoring as pair_widths.py): S/R trained corr 0.81, rms log 0.37
+  (constant-b skeleton 0.52 / 0.90; measured widths 0.88 / 0.24); M/S still 0.5-0.8 rms.
+- ABSOLUTE boundary-layer estimate 0.5 f_D(0) E[|m0|/alpha] from the mean-background
+  skeleton with no noise term, no labels, no random inputs, ~1e4 skeleton evaluations
+  (`form_abs.out`, `form_abs_nodes.out`, 15x7 nodes):
+    trained S/R 0.0304 (actual 0.0297), M/S 0.0082 (0.0095): S/R+M/S 0.0386 vs 0.0392
+    seed0   S/R 0.0524 (0.0525),        M/S 0.0432 (0.0321): 0.0956 vs 0.0846 (+13%)
+    noisy0  S/R 0.0701 (0.0631),        M/S 0.0363 (0.0298): 0.1064 vs 0.0929 (+15%)
+  The noise term (FORM proper) does not help the level: +5-10% on trained, +40-130% on
+  seed0; the permuted-order-statistics background is 2x high. The 'other' error type
+  (neither R nor M, 17% of trained errors) is not covered by any tie skeleton.
+  This is the closest a deductive estimate has come: the level comes out within 2-15%
+  with the per-pair distribution still 2x wrong, i.e. the mean background captures the
+  comparator's average behaviour and the pair structure is in the background x position
+  interaction. At ~3e4 forward-pass equivalents, MC has sd 0.0012; the skeleton bias is
+  0.0006 (trained) but 0.011-0.014 on the perturbed models, so MC still wins on average.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".

@@ -27,7 +27,11 @@ def tie_quantiles(k):
     return np.quantile(v.numpy(), VQ)
 
 
-def form(W, kind, perm):
+def form(W, kind, perm, noise=True):
+    """Returns the per-pair relative-width matrix and the mean ABSOLUTE expected width
+    E[|m0|]/alpha (capped at .25) over skeletons, which times 0.5 f_D(0) is the
+    boundary-layer error estimate of boundary_layer.py. noise=False gives the plain
+    skeleton at the mean background."""
     k = 2 if kind == 'S/R' else 1
     xs, his, los, sig, bgm = [], [], [], [], []
     rng = np.random.default_rng(0)
@@ -53,11 +57,14 @@ def form(W, kind, perm):
     g, = th.autograd.grad(m.sum(), x); g = g.numpy(); m0 = m.detach().numpy(); am = l.argmax(-1).numpy()
     al = (g[ar, hi] - g[ar, lo]) / 2
     s = np.sqrt(((g * np.array(bgm)) ** 2).sum(-1)) * np.array(sig)
+    if not noise: s = np.full_like(s, 1e-9)
     ew = s * norm.pdf(m0 / s) - m0 * norm.sf(m0 / s)          # E[(-m0)_+] under N(m0, s^2)
-    w = np.minimum(ew / np.maximum(al, 1e-9), .25) / np.abs(np.array(xs)).max(-1)
-    w = np.where((al > 0) & ((am == his) | (am == los)), w, 0)
+    ea = 2 * ew + m0                                           # E[|m0|]
+    good = (al > 0) & ((am == his) | (am == los))
+    wa = np.where(good, np.minimum(ea / np.maximum(al, 1e-9), .25), 0)
+    w = np.where(good, np.minimum(ew / np.maximum(al, 1e-9), .25), 0) / np.abs(np.array(xs)).max(-1)
     key = np.array(his) * 10 + np.array(los); M = np.zeros(100); np.add.at(M, key, w)
-    return (M / np.maximum(np.bincount(key, minlength=100), 1)).reshape(10, 10)
+    return (M / np.maximum(np.bincount(key, minlength=100), 1)).reshape(10, 10), wa.mean()
 
 
 def run(name, W):
@@ -69,8 +76,8 @@ def run(name, W):
     for kind, A, Wm, K in (('S/R', aSR, wSR, kSR), ('M/S', aMS, wMS, kMS)):
         print(f"  {kind}: measured widths     {score(A, Wm)}")
         print(f"       skeleton const b   {score(A, K)}")
-        print(f"       FORM const bg      {score(A, form(W, kind, False))}")
-        print(f"       FORM perm bg       {score(A, form(W, kind, True))}", flush=True)
+        print(f"       FORM const bg      {score(A, form(W, kind, False)[0])}")
+        print(f"       FORM perm bg       {score(A, form(W, kind, True)[0])}", flush=True)
 
 
 if __name__ == '__main__':
