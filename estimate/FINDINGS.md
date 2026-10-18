@@ -385,6 +385,36 @@ Test of the atom-and-merge design (law of the normalised state z_t = h_t / max|x
   mean-background skeleton is an order-of-magnitude-correct deduction (within ~20%),
   not a competitive estimator.
 
+## When is the error committed? Settling time of the comparator (`probes/hazard.py`, `probes/settling.py`)
+- W_out applied to h_t with the logit index rolled by 9-t decodes the RUNNING 2nd-argmax
+  (positions are encoded as steps-ago): 0.69 -> 0.95 over t = 1..9. Too noisy early on
+  to define commit steps, so the commit criterion is decoder-free: the state at t is
+  'right' if a benign completion (inputs below the running min) gives the right final
+  answer. Robust to the completion (c = -1 vs running min - .5 agree within 3 points).
+- Trained: 63-66% of S/R errors and ~60% of M/S errors are committed at the arrival of
+  the later of the two confused values (comparison errors); 31-34% of S/R errors are lost
+  later, mostly 1-2 steps after the pair is complete. Caveat: 43% of CORRECT finals pass
+  through a 'wrong' intermediate state under the benign completion, so the intermediate
+  criterion is only approximate (the network was never trained on short sequences).
+- The commit hazard at equal relative gap rises ~100x from step 2 to step 9 (new max,
+  gap < .03: 0.001 -> 0.28). The hazard metric exaggerates (permanent-loss definition
+  pushes commits late), so the decoder- and completion-free check is the final error
+  rate by arrival step of the later confused value, at gap < .03 (`settling.out`):
+    trained S/R  0.155 (t=1) -> 0.307 (t=9);  M/S  0.056 -> 0.244
+    seed0   S/R  flat ~0.35 from t=2;         M/S  0.24 -> 0.44
+  So late close comparisons ARE resolved worse, 2-4x on the trained model; the task-level
+  explanation (closer ties among more values) is excluded by the gap conditioning.
+- Settling curves (margin after k benign steps, read with the rolled W_out): trained M/S
+  near-ties are 59-82% right at k = 0 and 84-98% one step later, margin growing with k;
+  S/R (M already arrived) 67-73% at k = 0, 70-88% after settling. seed0: flat in k,
+  55-70% — no settling dynamic, just a weaker comparator. Mechanism: the trained
+  comparator resolves a close comparison over ~1-2 steps; comparisons arriving at the
+  last steps are read out unsettled. The comparison against the running max is strong
+  (98% at a 3% gap once settled); 2nd-vs-3rd is the weak one (70-88%). This is the
+  position dependence the measured widths capture and the mean-background skeleton
+  misses, and it is mechanism rather than an estimator: gaps+pos stratification already
+  exploits it.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".

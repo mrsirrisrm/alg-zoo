@@ -1,0 +1,64 @@
+
+trained (completion c=-1): error 0.0469; state-right fraction by step 0.59 0.65 0.76 0.84 0.89 0.92 0.94 0.95 0.95
+  S/R errors (0.0298): committed on arrival of the later value 0.66, later (state was right, then lost) 0.31, earlier 0.03; of the 'later' ones, steps after arrival: 1:0.37 2:0.26 3:0.15 4:0.08
+  M/S errors (0.0094): committed on arrival of the later value 0.61, later (state was right, then lost) 0.14, earlier 0.25; of the 'later' ones, steps after arrival: 1:0.40 2:0.22 3:0.14 4:0.09
+  hazard (final-error commit at step t | event at t), steps 2..9:
+    new max  t2:0.0007 t3:0.0025 t4:0.0033 t5:0.0042 t6:0.0086 t7:0.0140 t8:0.0154 t9:0.0509
+    new 2nd  t2:0.0036 t3:0.0049 t4:0.0059 t5:0.0080 t6:0.0092 t7:0.0190 t8:0.0273 t9:0.0397
+    below    t2:0.0005 t3:0.0005 t4:0.0009 t5:0.0011 t6:0.0021 t7:0.0030 t8:0.0043 t9:0.0094
+  hazard | event at t and relative gap bin (<.03, .03-.1, >.1):
+    new max gap 0.00-0.03 t2:0.0012 t3:0.0033 t4:0.0085 t5:0.0234 t6:0.0596 t7:0.1076 t8:0.1252 t9:0.2849  (share of event 0.02)
+    new max gap 0.03-0.10 t2:0.0011 t3:0.0021 t4:0.0029 t5:0.0046 t6:0.0066 t7:0.0077 t8:0.0129 t9:0.0455  (share of event 0.05)
+    new max gap 0.10-99.00 t2:0.0007 t3:0.0025 t4:0.0032 t5:0.0035 t6:0.0067 t7:0.0103 t8:0.0100 t9:0.0376  (share of event 0.92)
+    new 2nd gap 0.00-0.03 t2:0.0135 t3:0.0403 t4:0.0427 t5:0.0622 t6:0.0704 t7:0.1248 t8:0.1789 t9:0.1805  (share of event 0.06)
+    new 2nd gap 0.03-0.10 t2:0.0048 t3:0.0044 t4:0.0054 t5:0.0035 t6:0.0030 t7:0.0113 t8:0.0087 t9:0.0350  (share of event 0.13)
+    new 2nd gap 0.10-99.00 t2:0.0031 t3:0.0026 t4:0.0025 t5:0.0021 t6:0.0015 t7:0.0014 t8:0.0013 t9:0.0050  (share of event 0.80)
+  correct finals that passed through a wrong intermediate decode (steps 2..9): 0.427
+
+trained (completion c=min-0.5): error 0.0469; state-right fraction by step 0.60 0.65 0.76 0.83 0.89 0.92 0.94 0.95 0.95
+  S/R errors (0.0298): committed on arrival of the later value 0.63, later (state was right, then lost) 0.34, earlier 0.03; of the 'later' ones, steps after arrival: 1:0.36 2:0.25 3:0.15 4:0.08
+  M/S errors (0.0094): committed on arrival of the later value 0.58, later (state was right, then lost) 0.18, earlier 0.24; of the 'later' ones, steps after arrival: 1:0.40 2:0.21 3:0.15 4:0.10
+  hazard (final-error commit at step t | event at t), steps 2..9:
+    new max  t2:0.0003 t3:0.0018 t4:0.0030 t5:0.0038 t6:0.0079 t7:0.0127 t8:0.0144 t9:0.0504
+    new 2nd  t2:0.0031 t3:0.0043 t4:0.0057 t5:0.0078 t6:0.0082 t7:0.0157 t8:0.0252 t9:0.0397
+    below    t2:0.0011 t3:0.0003 t4:0.0010 t5:0.0010 t6:0.0022 t7:0.0033 t8:0.0050 t9:0.0109
+  hazard | event at t and relative gap bin (<.03, .03-.1, >.1):
+    new max gap 0.00-0.03 t2:0.0004 t3:0.0023 t4:0.0068 t5:0.0216 t6:0.0551 t7:0.1032 t8:0.1189 t9:0.2837  (share of event 0.02)
+    new max gap 0.03-0.10 t2:0.0003 t3:0.0027 t4:0.0034 t5:0.0047 t6:0.0061 t7:0.0070 t8:0.0133 t9:0.0448  (share of event 0.05)
+    new max gap 0.10-99.00 t2:0.0004 t3:0.0017 t4:0.0029 t5:0.0032 t6:0.0061 t7:0.0092 t8:0.0090 t9:0.0372  (share of event 0.92)
+    new 2nd gap 0.00-0.03 t2:0.0124 t3:0.0390 t4:0.0413 t5:0.0598 t6:0.0618 t7:0.1033 t8:0.1649 t9:0.1808  (share of event 0.06)
+    new 2nd gap 0.03-0.10 t2:0.0042 t3:0.0041 t4:0.0051 t5:0.0035 t6:0.0027 t7:0.0090 t8:0.0076 t9:0.0348  (share of event 0.13)
+    new 2nd gap 0.10-99.00 t2:0.0026 t3:0.0020 t4:0.0024 t5:0.0021 t6:0.0015 t7:0.0013 t8:0.0014 t9:0.0050  (share of event 0.80)
+  correct finals that passed through a wrong intermediate decode (steps 2..9): 0.441
+
+noisy0 (completion c=-1): error 0.1320; state-right fraction by step 0.10 0.21 0.36 0.55 0.68 0.77 0.82 0.86 0.87
+  S/R errors (0.0632): committed on arrival of the later value 0.56, later (state was right, then lost) 0.20, earlier 0.24; of the 'later' ones, steps after arrival: 1:0.28 2:0.22 3:0.11 4:0.08
+  M/S errors (0.0298): committed on arrival of the later value 0.62, later (state was right, then lost) 0.11, earlier 0.27; of the 'later' ones, steps after arrival: 1:0.17 2:0.17 3:0.21 4:0.33
+  hazard (final-error commit at step t | event at t), steps 2..9:
+    new max  t2:0.0041 t3:0.0117 t4:0.0117 t5:0.0407 t6:0.0245 t7:0.0427 t8:0.0400 t9:0.1070
+    new 2nd  t2:0.0025 t3:0.0036 t4:0.0009 t5:0.0018 t6:0.0046 t7:0.0069 t8:0.0139 t9:0.0517
+    below    t2:0.0023 t3:0.0047 t4:0.0068 t5:0.0071 t6:0.0078 t7:0.0104 t8:0.0124 t9:0.0131
+  hazard | event at t and relative gap bin (<.03, .03-.1, >.1):
+    new max gap 0.00-0.03 t2:0.0076 t3:0.0188 t4:0.0684 t5:0.2034 t6:0.2581 t7:0.3437 t8:0.3301 t9:0.5178  (share of event 0.02)
+    new max gap 0.03-0.10 t2:0.0029 t3:0.0035 t4:0.0093 t5:0.0680 t6:0.0660 t7:0.1510 t8:0.1330 t9:0.1987  (share of event 0.05)
+    new max gap 0.10-99.00 t2:0.0042 t3:0.0120 t4:0.0103 t5:0.0333 t6:0.0113 t7:0.0180 t8:0.0143 t9:0.0709  (share of event 0.92)
+    new 2nd gap 0.00-0.03 t2:0.0161 t3:0.0263 t4:0.0064 t5:0.0083 t6:0.0323 t7:0.0454 t8:0.0874 t9:0.2157  (share of event 0.06)
+    new 2nd gap 0.03-0.10 t2:0.0113 t3:0.0077 t4:0.0002 t5:0.0005 t6:0.0015 t7:0.0029 t8:0.0053 t9:0.0528  (share of event 0.13)
+    new 2nd gap 0.10-99.00 t2:0.0012 t3:0.0014 t4:0.0005 t5:0.0013 t6:0.0013 t7:0.0009 t8:0.0010 t9:0.0079  (share of event 0.80)
+  correct finals that passed through a wrong intermediate decode (steps 2..9): 0.862
+
+seed0 (completion c=-1): error 0.0896; state-right fraction by step 0.42 0.59 0.74 0.82 0.88 0.91 0.92 0.92 0.91
+  S/R errors (0.0523): committed on arrival of the later value 0.54, later (state was right, then lost) 0.41, earlier 0.05; of the 'later' ones, steps after arrival: 1:0.26 2:0.19 3:0.19 4:0.09
+  M/S errors (0.0317): committed on arrival of the later value 0.62, later (state was right, then lost) 0.16, earlier 0.23; of the 'later' ones, steps after arrival: 1:0.17 2:0.60 3:0.08 4:0.04
+  hazard (final-error commit at step t | event at t), steps 2..9:
+    new max  t2:0.0018 t3:0.0040 t4:0.0068 t5:0.0094 t6:0.0202 t7:0.0306 t8:0.0465 t9:0.1465
+    new 2nd  t2:0.0015 t3:0.0034 t4:0.0109 t5:0.0159 t6:0.0226 t7:0.0381 t8:0.0539 t9:0.0686
+    below    t2:0.0008 t3:0.0016 t4:0.0026 t5:0.0029 t6:0.0036 t7:0.0044 t8:0.0082 t9:0.0102
+  hazard | event at t and relative gap bin (<.03, .03-.1, >.1):
+    new max gap 0.00-0.03 t2:0.0388 t3:0.0597 t4:0.1050 t5:0.1158 t6:0.2098 t7:0.2669 t8:0.2387 t9:0.4509  (share of event 0.02)
+    new max gap 0.03-0.10 t2:0.0050 t3:0.0106 t4:0.0242 t5:0.0169 t6:0.0403 t7:0.0528 t8:0.0683 t9:0.2291  (share of event 0.05)
+    new max gap 0.10-99.00 t2:0.0011 t3:0.0026 t4:0.0030 t5:0.0052 t6:0.0108 t7:0.0176 t8:0.0340 t9:0.1180  (share of event 0.92)
+    new 2nd gap 0.00-0.03 t2:0.0253 t3:0.0450 t4:0.0924 t5:0.1169 t6:0.1541 t7:0.2163 t8:0.2705 t9:0.3028  (share of event 0.06)
+    new 2nd gap 0.03-0.10 t2:0.0037 t3:0.0036 t4:0.0225 t5:0.0241 t6:0.0256 t7:0.0437 t8:0.0596 t9:0.0737  (share of event 0.13)
+    new 2nd gap 0.10-99.00 t2:0.0004 t3:0.0005 t4:0.0005 t5:0.0003 t6:0.0004 t7:0.0009 t8:0.0016 t9:0.0041  (share of event 0.80)
+  correct finals that passed through a wrong intermediate decode (steps 2..9): 0.473
