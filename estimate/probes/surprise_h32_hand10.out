@@ -1,0 +1,34 @@
+
+h32 (zoo best seed, T=10): accuracy 0.9944, N_A = N_B = 2^22, 11 bits/param
+predictor    bits/input % of const  params param bits beats const at N >
+chance           3.3041    6602.2%       0          0                nan
+constant         0.0500     100.0%       1         11                nan
+gaps-logit       0.0254      50.9%       8         88           3.13e+03
+gaps-table       0.0254      50.8%     303       3333           1.35e+05
+pos-table        0.0266      53.1%    4440      48840           2.08e+06
+tie-layer        0.0224      44.8%     542       5962           2.16e+05
+tie+gaps         0.0219      43.8%     551       6061           2.15e+05
+
+h32 (zoo best seed, T=10)
+  S/R ties: per-pair trace in top 1/2/3 eigvecs (median over 90 pairs) 0.62/0.83/0.92, effective dim 3.0; pooled top-3 [0.2  0.39 0.55]; wall-gradient rms / alpha rms 0.04
+  M/S ties: per-pair trace in top 1/2/3 eigvecs (median over 90 pairs) 0.53/0.78/0.92, effective dim 3.5; pooled top-3 [0.26 0.43 0.58]; wall-gradient rms / alpha rms 0.02
+
+hand10 (h22, hand-built): accuracy 0.9903, N_A = N_B = 2^22, 11 bits/param
+predictor    bits/input % of const  params param bits beats const at N >
+chance           3.2912    4173.5%       0          0                nan
+constant         0.0789     100.0%       1         11                nan
+gaps-logit       0.0051       6.4%       8         88           1.04e+03
+gaps-table       0.0051       6.5%     303       3333           4.51e+04
+pos-table        0.0032       4.0%    4440      48840           6.45e+05
+tie-layer        0.0051       6.4%     443       4873           6.59e+04
+tie+gaps         0.0051       6.4%     452       4972           6.72e+04
+
+hand10 (h22, hand-built)
+Traceback (most recent call last):
+  File "<stdin>", line 10, in <module>
+  File "/Users/martin/code/alg-zoo/estimate/probes/active_subspace.py", line 59, in run
+    f"{top[0]:.2f}/{top[1]:.2f}/{top[2]:.2f}, effective dim {eff:.1f}; "
+                    ~~~^^^
+IndexError: index 1 is out of bounds for axis 0 with size 1
+hand10 S/R ties: argmax in pair 0.975, slope right sign 0.972, both 0.970; |m0|/alpha median 0.00e+00, frac of ties with vS<0 0.031
+hand10 M/S ties: argmax in pair 0.996, slope right sign 0.995, both 0.995; |m0|/alpha median 0.00e+00, frac of ties with vS<0 0.005

@@ -475,6 +475,26 @@ How many bits does the mechanism need, and is that intrinsic or a raw-basis arte
   the error set is carried by ~1-2 kbits of weight precision in the best coordinates
   and sampling is cheaper than any description that long.
 
+## The easier T = 10 models: h32 and hand10 under the same lenses (`probes/surprise_h32_hand10.out`)
+- h32 (zoo best seed, accuracy 0.9944): tie-layer explanation removes 55% of the
+  correctness bit's surprise (trained 43%), gap logit 49%; active subspace effective
+  dim 3.0 / 3.5 (trained 4.0 / 4.7); background-gradient / alpha ratio 0.04 / 0.02
+  (trained 0.14 / 0.08). A cleaner comparator on every metric, same shape of error
+  set: still 45% of the surprise left, still a boundary layer. Gap strata gave it 6.8x
+  in the ablation.
+- hand10 (h22, hand-built, 0.9903): the tie-layer explanation and even the 8-param gap
+  logit remove 94% of the surprise (6.4% of constant left; pos table 4.0%). At sampled
+  ties 97-99.5% have the argmax in the pair with the right slope and the median
+  |m0|/alpha is exactly 0: an exact comparator, boundary layer of width zero, so the
+  wall margin has no gradient (the active-subspace C is identically 0 — the probe's
+  empty spectrum on hand10 is that fact, now padded). Its errors are the vS < 0 event
+  (3.1% of S/R ties), which the gap features ('neg') already encode. Hence 163x from
+  gap strata and ~950x from its own event: the error set is one known event with no
+  tie strip at all.
+- So the axis from M(16,10) to hand10 is tie-strip width -> 0 with the error mass
+  moving into an event of known mass; h32 is partway along it (ratio 3-4x smaller than
+  trained, 12 more surprise points explained) but still a strip model.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".

@@ -42,7 +42,7 @@ def spectrum(hi, lo, gp):
             C = gp[s].T @ gp[s] / s.sum()
             lam = np.sort(np.linalg.eigvalsh(C))[::-1]; f = lam / lam.sum()
             f = f[f > 1e-12]
-            out.append((np.cumsum(f)[:3], np.exp(-(f * np.log(f)).sum())))
+            out.append((np.pad(np.cumsum(f), (0, 3))[:3], np.exp(-(f * np.log(f)).sum())))    # pad: a rank-deficient C has fewer than 3 modes
     top = np.median([o[0] for o in out], 0); eff = np.median([o[1] for o in out])
     return top, eff, len(out)
 
