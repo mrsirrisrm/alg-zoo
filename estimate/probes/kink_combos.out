@@ -1,0 +1,30 @@
+
+trained M(16,10): error 0.0468
+  S/R errors 0.0297: kink 8 patterns at the wall   4956; cover 50/90/99% with [37, 634, 3711]
+  S/R errors 0.0297: all 16 patterns at the wall  19457; cover 50/90/99% with [190, 7093, 18212]
+    wall->error segment: 1 piece 0.74, 2 0.16, >2 0.11
+    per ordered position pair: patterns for 90% median 24, max 180 (90 pairs)
+  M/S errors 0.0095: kink 8 patterns at the wall   2065; cover 50/90/99% with [38, 366, 1668]
+  M/S errors 0.0095: all 16 patterns at the wall   8607; cover 50/90/99% with [211, 4628, 8210]
+    wall->error segment: 1 piece 0.60, 2 0.18, >2 0.22
+    per ordered position pair: patterns for 90% median 12, max 55 (89 pairs)
+
+noisy0: error 0.1316
+  S/R errors 0.0629: kink 8 patterns at the wall   6215; cover 50/90/99% with [22, 421, 3578]
+  S/R errors 0.0629: all 16 patterns at the wall  23184; cover 50/90/99% with [105, 4265, 20547]
+    wall->error segment: 1 piece 0.71, 2 0.17, >2 0.12
+    per ordered position pair: patterns for 90% median 19, max 197 (88 pairs)
+  M/S errors 0.0298: kink 8 patterns at the wall   2324; cover 50/90/99% with [21, 216, 1204]
+  M/S errors 0.0298: all 16 patterns at the wall  11027; cover 50/90/99% with [123, 2479, 9776]
+    wall->error segment: 1 piece 0.51, 2 0.38, >2 0.11
+    per ordered position pair: patterns for 90% median 10, max 35 (69 pairs)
+
+seed0: error 0.0899
+  S/R errors 0.0523: kink 8 patterns at the wall   2245; cover 50/90/99% with [17, 158, 764]
+  S/R errors 0.0523: all 16 patterns at the wall   6654; cover 50/90/99% with [36, 560, 4460]
+    wall->error segment: 1 piece 0.73, 2 0.21, >2 0.06
+    per ordered position pair: patterns for 90% median 7, max 41 (90 pairs)
+  M/S errors 0.0321: kink 8 patterns at the wall    810; cover 50/90/99% with [12, 52, 181]
+  M/S errors 0.0321: all 16 patterns at the wall   2074; cover 50/90/99% with [27, 128, 874]
+    wall->error segment: 1 piece 0.66, 2 0.24, >2 0.10
+    per ordered position pair: patterns for 90% median 3, max 9 (90 pairs)

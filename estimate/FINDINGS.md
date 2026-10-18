@@ -326,6 +326,16 @@ Test of the atom-and-merge design (law of the normalised state z_t = h_t / max|x
   width. So the explanation's allocation is worth what a one-parameter task prior is
   worth; what it adds is that one parameter (the error level), without labels.
 
+- Kink combinations (`probes/kink_combos.py`): tie errors projected onto the true wall,
+  on/off pattern of the 8 kink neurons from the later tied step on. Trained: S/R errors
+  (0.030) need 37 / 634 / 3711 patterns for 50 / 90 / 99% of the mass, M/S (0.0095)
+  38 / 366 / 1668; all 16 neurons 190 / 7093 (S/R). Within one ordered position pair the
+  median is 24 (S/R) and 12 (M/S) patterns for 90%. The wall-to-error segment stays in
+  one linear piece for 74% (S/R) and 60% (M/S) of errors. Medium compactness: ~10^3
+  combinations for 90% against ~6e5 regions overall, a few dozen per position pair. The
+  kink set is the trained model's; for seed0 the neuron labels differ, so only its
+  all-16 counts (560 for 90% S/R) compare.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".
