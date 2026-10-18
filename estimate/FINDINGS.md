@@ -384,6 +384,16 @@ Test of the atom-and-merge design (law of the normalised state z_t = h_t / max|x
   4.6e-4 vs MC at the same cost (33,750 passes) 2.4e-6, so MC is ~200x better. The
   mean-background skeleton is an order-of-magnitude-correct deduction (within ~20%),
   not a competitive estimator.
+- Does the skeleton's accuracy track background sensitivity (`probes/bg_ratio.py`; ratio =
+  rms wall gradient / rms alpha at ties)? Split by kind: S/R deduced within 5% on 7 of 10
+  models, and |rel error| correlates with the ratio (Spearman +0.66, Pearson +0.71); the
+  three worst S/R estimates (seed1 -34%, seed4 -16%, noisy0 +11%) are three of the four
+  highest ratios (0.19-0.23 vs 0.15-0.18). M/S is the opposite (-0.53 / -0.65): errors of
+  -50% to +199% unrelated to background sensitivity (seed2, ratio 0.044, is +199%). So
+  the hypothesis holds for the S/R comparison, where the error IS a tie strip widened by
+  background inputs, and fails for M/S, whose errors include the far field (M >> S, no
+  tie) and whose skeleton has no node for R. The ratio is a weight-only diagnostic for
+  trusting the S/R part only. Ten models: suggestive, not settled.
 
 ## When is the error committed? Settling time of the comparator (`probes/hazard.py`, `probes/settling.py`)
 - W_out applied to h_t with the logit index rolled by 9-t decodes the RUNNING 2nd-argmax

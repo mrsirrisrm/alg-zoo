@@ -27,7 +27,7 @@ def tie_quantiles(k):
     return np.quantile(v.numpy(), VQ)
 
 
-def form(W, kind, perm, noise=True):
+def form(W, kind, perm, noise=True, raw=False):
     """Returns the per-pair relative-width matrix and the mean ABSOLUTE expected width
     E[|m0|]/alpha (capped at .25) over skeletons, which times 0.5 f_D(0) is the
     boundary-layer error estimate of boundary_layer.py. noise=False gives the plain
@@ -64,6 +64,7 @@ def form(W, kind, perm, noise=True):
     wa = np.where(good, np.minimum(ea / np.maximum(al, 1e-9), .25), 0)
     w = np.where(good, np.minimum(ew / np.maximum(al, 1e-9), .25), 0) / np.abs(np.array(xs)).max(-1)
     key = np.array(his) * 10 + np.array(los); M = np.zeros(100); np.add.at(M, key, w)
+    if raw: return key, w, wa                                  # per-skeleton (pair key, relative width, absolute width)
     return (M / np.maximum(np.bincount(key, minlength=100), 1)).reshape(10, 10), wa.mean()
 
 
