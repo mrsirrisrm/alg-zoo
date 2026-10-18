@@ -1,0 +1,21 @@
+
+trained M(16,10): accuracy 0.9530
+predictor                            bits/input % of const  params beats const at N >
+constant                                 0.2735     100.0%       1                nan
+tie-layer                                0.1566      57.3%     542           5.09e+04
+FORM-tie                                 0.1985      72.6%   76952           1.13e+07
+FORM-tie (200 pair means as params)      0.1985      72.6%     202           2.95e+04
+
+seed0: accuracy 0.9097
+predictor                            bits/input % of const  params beats const at N >
+constant                                 0.4374     100.0%       1                nan
+tie-layer                                0.3118      71.3%     542           4.74e+04
+FORM-tie                                 0.5001     114.3%   76952                nan
+FORM-tie (200 pair means as params)      0.5001     114.3%     202                nan
+
+noisy0: accuracy 0.8682
+predictor                            bits/input % of const  params beats const at N >
+constant                                 0.5624     100.0%       1                nan
+tie-layer                                0.4025      71.6%     533           3.66e+04
+FORM-tie                                 0.5075      90.2%   76952           1.54e+07
+FORM-tie (200 pair means as params)      0.5075      90.2%     202           4.02e+04

@@ -394,6 +394,12 @@ Test of the atom-and-merge design (law of the normalised state z_t = h_t / max|x
   background inputs, and fails for M/S, whose errors include the far field (M >> S, no
   tie) and whose skeleton has no node for R. The ratio is a weight-only diagnostic for
   trusting the S/R part only. Ten models: suggestive, not settled.
+- FORM widths as the explanation in surprise accounting (`probes/surprise_form.py`: p(err |
+  pair, gap) = fraction of the pair's skeleton widths above the gap, no tie sampling):
+  trained 72.6% of the constant predictor's bits (measured tie-layer 57.3%, fitted gap
+  logit 61.9%), noisy0 90.2%, seed0 114% — worse than constant, because the 15-node M/S
+  width CDF is a sharp step and cross-entropy punishes confident misses. The deduced
+  widths get the level but not the per-input calibration; the needle has not moved.
 
 ## When is the error committed? Settling time of the comparator (`probes/hazard.py`, `probes/settling.py`)
 - W_out applied to h_t with the logit index rolled by 9-t decodes the RUNNING 2nd-argmax
