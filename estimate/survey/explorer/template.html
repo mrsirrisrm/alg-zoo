@@ -1,0 +1,347 @@
+<title>2nd-Argmax Region Explorer</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+/* Layout: a leaded-glass window (the canvas) on the left, an instrument panel on the right; stacks on phones. */
+:root {
+  --paper: #f3f4f6; --panel: #ffffff; --ink: #17181d; --muted: #5b5f6b; --rule: #d9dbe2;
+  --cobalt: #2a44c9; --cobalt-soft: #e4e8fb; --wrong: #d0202a; --win: #1f7a4d; --lose: #b2361f;
+  --frame: #17181d;
+  --display: "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --body: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #111217; --panel: #1a1c23; --ink: #e9eaf0; --muted: #9a9eab; --rule: #2d303a;
+  --cobalt: #8ea0ff; --cobalt-soft: #232a4d; --wrong: #ff5a5f; --win: #5fd09a; --lose: #ff8a6b;
+  --frame: #000000; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --paper: #111217; --panel: #1a1c23; --ink: #e9eaf0; --muted: #9a9eab; --rule: #2d303a;
+  --cobalt: #8ea0ff; --cobalt-soft: #232a4d; --wrong: #ff5a5f; --win: #5fd09a; --lose: #ff8a6b;
+  --frame: #000000; color-scheme: dark }
+body { background: var(--paper); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 24px 40px; }
+.wrap { max-width: 1180px; margin: 0 auto; display: grid; gap: 20px; }
+header h1 { font-family: var(--display); font-stretch: 75%; font-weight: 800; font-size: clamp(28px, 4.4vw, 44px); line-height: 1.02;
+  letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+header p { margin: 8px 0 0; max-width: 68ch; color: var(--muted); }
+.main { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 24px; align-items: start; }
+@media (max-width: 900px) { .main { grid-template-columns: minmax(0, 1fr); } }
+.window { background: var(--frame); padding: 10px; border-radius: 4px; position: relative; }
+canvas#glass { display: block; width: 100%; aspect-ratio: 1; max-width: 100%; image-rendering: pixelated; touch-action: none; cursor: grab; background: var(--frame); }
+canvas#glass.dragging { cursor: grabbing; }
+.overlay { position: absolute; left: 18px; bottom: 18px; right: 18px; display: flex; justify-content: space-between; gap: 8px; pointer-events: none;
+  font-family: var(--mono); font-size: 12px; color: #fff; }
+.overlay span { background: rgba(0,0,0,.6); padding: 3px 7px; border-radius: 3px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-family: var(--mono); font-size: 12px; color: var(--muted); margin-top: 10px; }
+.legend i { display: inline-block; width: 18px; height: 10px; vertical-align: -1px; margin-right: 6px; border-radius: 1px; }
+.panel { display: grid; gap: 18px; min-width: 0; }
+.group { display: grid; gap: 8px; }
+.label { font-family: var(--display); font-stretch: 85%; font-weight: 700; font-size: 12px; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+.seg { display: flex; flex-wrap: wrap; gap: 4px; }
+.seg button, .btn { font-family: var(--mono); font-size: 13px; min-width: 38px; padding: 6px 9px; border: 1px solid var(--rule); background: var(--panel);
+  color: var(--ink); border-radius: 3px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--cobalt); border-color: var(--cobalt); color: var(--panel); }
+.seg button:disabled { opacity: .35; cursor: not-allowed; }
+.seg button:focus-visible, .btn:focus-visible, input:focus-visible { outline: 2px solid var(--cobalt); outline-offset: 2px; }
+.btn:hover, .seg button:hover:not(:disabled) { border-color: var(--cobalt); }
+.toggles { display: flex; flex-wrap: wrap; gap: 6px 16px; font-family: var(--mono); font-size: 13px; }
+.toggles label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; }
+.stats { background: var(--panel); border: 1px solid var(--rule); border-radius: 4px; padding: 14px 16px; display: grid; gap: 10px; }
+.row { display: flex; justify-content: space-between; gap: 12px; font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; }
+.row span:first-child { color: var(--muted); }
+.verdict { font-family: var(--display); font-stretch: 90%; font-weight: 700; font-size: 15px; padding: 6px 10px; border-radius: 3px; border: 1px solid currentColor; justify-self: start; }
+.verdict.win { color: var(--win); } .verdict.lose { color: var(--lose); } .verdict.none { color: var(--muted); }
+svg#growth { width: 100%; height: auto; display: block; }
+svg#growth text { font-family: var(--mono); font-size: 10px; fill: var(--muted); }
+.notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px 28px; }
+.notes h2 { font-family: var(--display); font-stretch: 80%; font-weight: 700; font-size: 18px; margin: 0 0 4px; text-wrap: balance; }
+.notes p { margin: 0; color: var(--ink); max-width: 60ch; font-size: 15px; }
+.notes p + p { margin-top: 6px; }
+.mono { font-family: var(--mono); font-size: .9em; }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Where the panes shatter: linear regions of a 2nd-argmax RNN</h1>
+    <p>Each colour is one linear region: on it the network is exactly linear. Black lines are where the true answer changes (two inputs are equal), and red is where the network answers wrong. Step through sequence length and watch the glass break up.</p>
+  </header>
+
+  <div class="main">
+    <div>
+      <div class="window">
+        <canvas id="glass" width="480" height="480" aria-label="Linear regions of the network on a 2-D slice of input space"></canvas>
+        <div class="overlay"><span id="viewinfo">–</span><span id="progress"></span></div>
+      </div>
+      <div class="legend">
+        <span><i style="background:linear-gradient(90deg,#8fb3e6,#e2c46a,#c98fd6)"></i>linear region</span>
+        <span><i style="background:#000"></i>true label boundary</span>
+        <span><i style="background:#d0202a"></i>network wrong</span>
+        <span id="draghint">drag to move the slice · wheel or ± to zoom</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="group">
+        <div class="label">Sequence length T</div>
+        <div class="seg" id="segT"></div>
+      </div>
+      <div class="group">
+        <div class="label">Hidden width h</div>
+        <div class="seg" id="segH"></div>
+        <div class="seg"><button id="hand" aria-pressed="false" title="Hand-built 2nd-argmax RNN, h = 22, T = 10">hand-built h22 T10</button></div>
+      </div>
+      <div class="group">
+        <div class="label">View</div>
+        <div class="seg" id="segView">
+          <button data-v="slice" aria-pressed="true">flat slice</button>
+          <button data-v="globe" aria-pressed="false">sphere</button>
+        </div>
+        <div class="seg">
+          <button class="btn" id="reslice">new slice</button>
+          <button class="btn" id="zin" aria-label="Zoom in">+</button>
+          <button class="btn" id="zout" aria-label="Zoom out">−</button>
+          <button class="btn" id="reset">reset</button>
+        </div>
+        <div class="toggles">
+          <label><input type="checkbox" id="tRegions" checked> regions</label>
+          <label><input type="checkbox" id="tWalls" checked> true boundaries</label>
+          <label><input type="checkbox" id="tWrong" checked> errors</label>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="label" id="modelname">–</div>
+        <div class="row"><span>regions in this view</span><span id="sRegView">–</span></div>
+        <div class="row"><span>wrong in this view</span><span id="sWrongView">–</span></div>
+        <div class="row"><span>accuracy, whole space</span><span id="sAcc">–</span></div>
+        <div class="row"><span>regions holding 99% of inputs</span><span id="sN99">–</span></div>
+        <div class="row"><span>region edges per right/wrong flip</span><span id="sKpf">–</span></div>
+        <div class="row"><span>parameters</span><span id="sParams">–</span></div>
+        <div class="verdict none" id="verdict">–</div>
+      </div>
+
+      <div class="group">
+        <div class="label">Regions holding 99% of inputs, whole space</div>
+        <svg id="growth" viewBox="0 0 360 170" role="img" aria-label="Region count against sequence length for the chosen width"></svg>
+      </div>
+    </div>
+  </div>
+
+  <section class="notes">
+    <div>
+      <h2>T = 2–3: a few big panes</h2>
+      <p>The true boundaries cut cleanly through large regions and there is almost no red. Enumerating the regions and integrating each one beats random sampling by a factor of 10,000 or more.</p>
+    </div>
+    <div>
+      <h2>T = 4–5: the crossover</h2>
+      <p>The panes fragment and thin red slivers appear along the black lines: inputs so close to a tie that the network's version of the boundary misses the true one. From here on, sampling beats the region-by-region method.</p>
+    </div>
+    <div>
+      <h2>T = 10: a mosaic</h2>
+      <p>The challenge model (h = 16, T = 10) has about 600,000 regions covering 99% of inputs. A flat slice only shows the cuts that cross it, so it looks merely busy. Most of the growth is in dimensions no picture can show; the chart tracks it.</p>
+    </div>
+    <div>
+      <h2>Width vs length</h2>
+      <p>Region counts grow roughly like (h·T)<sup>T</sup>. Width adds more cuts through the same space; each extra step adds a dimension in which the cuts multiply. Compare the hand-built model: just as many regions, but its errors sit in one simple, exactly known place.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+const MODELS = /*DATA*/null;
+const HS = [2, 3, 4, 5, 6, 8, 16, 32], TS = [2, 3, 4, 5, 6, 8, 10];
+const st = { h: 16, T: 4, hand: false, view: 'slice', seed: 7, pan: [0, 0], zoom: 1, rot: [[1,0,0],[0,1,0],[0,0,1]],
+  layers: { regions: true, walls: true, wrong: true } };
+const $ = id => document.getElementById(id);
+const cv = $('glass'), ctx = cv.getContext('2d'), N = cv.width;
+
+function model() { return st.hand ? MODELS.hand10 : MODELS[`zoo_${st.h}_${st.T}`]; }
+
+// seeded gaussians for the slice geometry
+function rng(seed) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ t >>> 15, t | 1);
+  t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function gauss(r) { const u = Math.max(r(), 1e-12), v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+const dot = (a, b) => a.reduce((s, v, i) => s + v * b[i], 0);
+function orth(v, basis) { for (const b of basis) { const d = dot(v, b) / dot(b, b); v = v.map((x, i) => x - d * b[i]); }
+  const n = Math.hypot(...v); return v.map(x => x / n); }
+function geometry(T) {
+  const r = rng(st.seed * 1009 + T);
+  const g = () => Array.from({ length: T }, () => gauss(r));
+  if (st.view === 'globe') {
+    if (T === 3) return { e: [[1,0,0],[0,1,0],[0,0,1]] };
+    const e1 = orth(g(), []), e2 = orth(g(), [e1]), e3 = orth(g(), [e1, e2]); return { e: [e1, e2, e3] };
+  }
+  if (T === 2) return { c: [0, 0], a: [1, 0], b: [0, 1], s: 2 };
+  const c = g(), a = orth(g(), [c]), b = orth(g(), [c, a]); return { c, a, b, s: Math.hypot(...c) };
+}
+
+let job = 0;
+function render(res) {
+  const my = ++job, m = model(), T = m.T, h = m.h, G = geometry(T);
+  const Wih = Float64Array.from(m.Wih), Whh = Float64Array.from(m.Whh), Wo = Float64Array.from(m.Wout);
+  const R = res, hashA = new Int32Array(R * R), hashB = new Int32Array(R * R), lab = new Int8Array(R * R), wrong = new Uint8Array(R * R), inside = new Uint8Array(R * R);
+  const x = new Float64Array(T), hp = new Float64Array(h), hn = new Float64Array(h);
+  const rot = st.rot;
+  let y = 0;
+  function rows() {
+    const t0 = performance.now();
+    for (; y < R; y++) {
+      if (performance.now() - t0 > 24) { if (my === job) { $('progress').textContent = `rendering ${Math.round(100 * y / R)}%`; setTimeout(rows, 0); } return; }
+      for (let xi = 0; xi < R; xi++) {
+        const p = y * R + xi, u = (2 * (xi + .5) / R - 1), v = (1 - 2 * (y + .5) / R);
+        if (st.view === 'globe') {
+          const rr = u * u + v * v; if (rr > 1) continue;
+          const w = Math.sqrt(1 - rr), q = [u, v, w];
+          const s = [0, 1, 2].map(i => rot[i][0] * q[0] + rot[i][1] * q[1] + rot[i][2] * q[2]);
+          for (let k = 0; k < T; k++) x[k] = s[0] * G.e[0][k] + s[1] * G.e[1][k] + s[2] * G.e[2][k];
+        } else {
+          const uu = (u / st.zoom + st.pan[0]) * G.s, vv = (v / st.zoom + st.pan[1]) * G.s;
+          for (let k = 0; k < T; k++) x[k] = G.c[k] + uu * G.a[k] + vv * G.b[k];
+        }
+        inside[p] = 1;
+        hp.fill(0);
+        let A = -2128831035, B = 0x5bd1e995;
+        for (let t = 0; t < T; t++) {
+          let word = 0; const xt = x[t];
+          for (let i = 0; i < h; i++) {
+            let s = Wih[i] * xt; const row = i * h;
+            for (let j = 0; j < h; j++) s += Whh[row + j] * hp[j];
+            if (s > 0) { hn[i] = s; word |= (1 << i); } else hn[i] = 0;
+          }
+          for (let i = 0; i < h; i++) hp[i] = hn[i];
+          A = Math.imul(A ^ word, 16777619) ^ t; B = Math.imul(B ^ word ^ (t << 27), 0x85ebca6b) + 0x27d4eb2d | 0;
+        }
+        let best = -Infinity, arg = 0;
+        for (let k = 0; k < T; k++) { let s = 0; const row = k * h; for (let j = 0; j < h; j++) s += Wo[row + j] * hp[j]; if (s > best) { best = s; arg = k; } }
+        let i1 = 0; for (let k = 1; k < T; k++) if (x[k] > x[i1]) i1 = k;
+        let i2 = i1 === 0 ? 1 : 0; for (let k = 0; k < T; k++) if (k !== i1 && x[k] > x[i2]) i2 = k;
+        hashA[p] = A; hashB[p] = B; lab[p] = i2; wrong[p] = arg !== i2 ? 1 : 0;
+      }
+    }
+    if (my === job) paint(R, hashA, hashB, lab, wrong, inside);
+  }
+  rows();
+}
+
+const colCache = new Map();
+function colour(B) {
+  let c = colCache.get(B); if (c) return c;
+  const hue = ((B >>> 0) % 360) / 360, sat = .38 + ((B >>> 9) % 32) / 100, lig = .56 + ((B >>> 17) % 26) / 100;
+  const q = lig < .5 ? lig * (1 + sat) : lig + sat - lig * sat, pp = 2 * lig - q;
+  const f = t => { t = (t + 1) % 1; return t < 1/6 ? pp + (q - pp) * 6 * t : t < .5 ? q : t < 2/3 ? pp + (q - pp) * (2/3 - t) * 6 : pp; };
+  c = [f(hue + 1/3) * 255, f(hue) * 255, f(hue - 1/3) * 255]; colCache.set(B, c); return c;
+}
+
+function paint(R, hashA, hashB, lab, wrong, inside) {
+  const img = ctx.createImageData(R, R), d = img.data, regs = new Set(); let nIn = 0, nWrong = 0;
+  for (let y = 0; y < R; y++) for (let x = 0; x < R; x++) {
+    const p = y * R + x, o = 4 * p;
+    if (!inside[p]) { d[o] = d[o + 1] = d[o + 2] = 0; d[o + 3] = 0; continue; }
+    nIn++; nWrong += wrong[p]; regs.add(hashA[p]);
+    let c = st.layers.regions ? colour(hashB[p]) : [236, 236, 240];
+    const nb = (q) => inside[q] && hashA[q] !== hashA[p];
+    const edge = (x > 0 && nb(p - 1)) || (y > 0 && nb(p - R));
+    let r = c[0], g = c[1], b = c[2];
+    if (edge && st.layers.regions) { r *= .55; g *= .55; b *= .55; }
+    let wall = false;
+    if (st.layers.walls) for (const [dx, dy] of [[1,0],[0,1],[-1,0],[0,-1]]) {
+      const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= R || yy >= R) continue;
+      const q = yy * R + xx; if (inside[q] && lab[q] !== lab[p]) { wall = true; break; } }
+    if (wall) { r = g = b = 0; }
+    if (wrong[p] && st.layers.wrong) { r = 208; g = 32; b = 42; }
+    d[o] = r; d[o + 1] = g; d[o + 2] = b; d[o + 3] = 255;
+  }
+  const tmp = document.createElement('canvas'); tmp.width = tmp.height = R; tmp.getContext('2d').putImageData(img, 0, 0);
+  ctx.imageSmoothingEnabled = false; ctx.clearRect(0, 0, N, N); ctx.drawImage(tmp, 0, 0, N, N);
+  $('progress').textContent = R < N ? 'preview' : '';
+  $('sRegView').textContent = regs.size.toLocaleString();
+  $('sWrongView').textContent = (100 * nWrong / Math.max(nIn, 1)).toFixed(2) + '%';
+}
+
+let idle;
+function draw() { clearTimeout(idle); render(Math.round(N / 3)); idle = setTimeout(() => render(N), 160); }
+
+function fmtAdv(a) { if (a == null) return null; return a >= 1 ? `Deduction beats sampling ${a >= 100 ? a.toExponential(0).replace('e+', '×10^') : a.toFixed(1) + '×'}` : `Sampling beats deduction ${(1 / a).toFixed(1 / a >= 10 ? 0 : 1)}×`; }
+function updateStats() {
+  const m = model();
+  $('modelname').textContent = st.hand ? 'hand-built · h 22 · T 10' : `trained zoo model · h ${m.h} · T ${m.T}`;
+  $('sAcc').textContent = (100 * m.acc).toFixed(2) + '%';
+  $('sN99').textContent = (m.unseen > .1 ? '≥ ' : '') + m.n99.toLocaleString();
+  $('sKpf').textContent = m.kpf.toFixed(1);
+  $('sParams').textContent = m.params.toLocaleString();
+  const v = $('verdict'), t = fmtAdv(m.adv);
+  v.className = 'verdict ' + (m.adv == null ? 'none' : m.adv >= 1 ? 'win' : 'lose');
+  v.textContent = t ? t.replace(/×10\^(\d+)/, (_, e) => '×10' + String(e).split('').map(c => '⁰¹²³⁴⁵⁶⁷⁸⁹'[c]).join('')) : (st.hand ? 'Not in the deduction grid: explained, ~950× by stratifying' : 'Not measured (too many regions to run)');
+  drawGrowth();
+}
+
+function drawGrowth() {
+  const svg = $('growth'), W = 360, H = 170, L = 40, Rr = 12, Tp = 10, Bt = 26;
+  const xs = t => L + (t - 2) / 8 * (W - L - Rr), ys = n => Tp + (1 - Math.log10(n) / 6) * (H - Tp - Bt);
+  const css = getComputedStyle(document.documentElement), ink = css.getPropertyValue('--ink').trim(), cob = css.getPropertyValue('--cobalt').trim(), rule = css.getPropertyValue('--rule').trim();
+  let s = '';
+  for (let e = 0; e <= 6; e += 2) s += `<line x1="${L}" x2="${W - Rr}" y1="${ys(10 ** e)}" y2="${ys(10 ** e)}" stroke="${rule}" stroke-width="1"/><text x="${L - 6}" y="${ys(10 ** e) + 3}" text-anchor="end">10${'⁰¹²³⁴⁵⁶'[e]}</text>`;
+  for (const t of TS) s += `<text x="${xs(t)}" y="${H - 8}" text-anchor="middle">${t}</text>`;
+  s += `<rect x="${xs(3.5)}" y="${Tp}" width="${xs(4.5) - xs(3.5)}" height="${H - Tp - Bt}" fill="${cob}" fill-opacity=".12"/>`;
+  s += `<text x="${xs(4)}" y="${Tp + 10}" text-anchor="middle">crossover</text>`;
+  const pts = TS.map(t => MODELS[`zoo_${st.h}_${t}`]).filter(Boolean);
+  s += `<polyline fill="none" stroke="${ink}" stroke-width="1.6" points="${pts.map(m => `${xs(m.T)},${ys(m.n99)}`).join(' ')}"/>`;
+  for (const m of pts) {
+    const cur = !st.hand && m.T === st.T;
+    s += `<circle cx="${xs(m.T)}" cy="${ys(m.n99)}" r="${cur ? 6 : 3}" fill="${cur ? cob : ink}"/>`;
+  }
+  if (st.hand) { const m = MODELS.hand10; s += `<rect x="${xs(10) - 5}" y="${ys(m.n99) - 5}" width="10" height="10" fill="${cob}" transform="rotate(45 ${xs(10)} ${ys(m.n99)})"/><text x="${xs(10) - 10}" y="${ys(m.n99) + 16}" text-anchor="end">hand-built</text>`; }
+  s += `<text x="${W - Rr}" y="${H - 8 + 0}" text-anchor="end" dy="-12">T →</text><text x="${L + 4}" y="${Tp + 22}">h = ${st.h}</text>`;
+  svg.innerHTML = s;
+}
+
+function buildSeg(el, vals, key) {
+  el.innerHTML = vals.map(v => `<button data-v="${v}">${v}</button>`).join('');
+  el.addEventListener('click', e => { const b = e.target.closest('button'); if (!b || b.disabled) return;
+    st[key] = +b.dataset.v; st.hand = false; refresh(); });
+}
+function refresh() {
+  if (st.hand) { st.T = 10; }
+  for (const b of $('segT').children) { b.setAttribute('aria-pressed', String(+b.dataset.v === st.T && !st.hand)); }
+  for (const b of $('segH').children) { b.setAttribute('aria-pressed', String(+b.dataset.v === st.h && !st.hand)); }
+  $('hand').setAttribute('aria-pressed', String(st.hand));
+  if (st.T === 2 && st.view === 'globe') st.view = 'slice';
+  for (const b of $('segView').children) { b.setAttribute('aria-pressed', String(b.dataset.v === st.view)); b.disabled = b.dataset.v === 'globe' && st.T === 2 && !st.hand; }
+  $('draghint').textContent = st.view === 'globe' ? (st.T === 3 && !st.hand ? 'drag to rotate · at T = 3 this sphere is the whole input space' : 'drag to rotate · a random 3-D cut through input space, as a sphere')
+    : 'drag to move the slice · wheel or ± to zoom';
+  const m = model();
+  $('viewinfo').textContent = st.view === 'globe' ? 'sphere view' : (m.T === 2 ? 'the whole plane' : `slice ${st.seed}`);
+  updateStats(); draw();
+}
+
+buildSeg($('segT'), TS, 'T'); buildSeg($('segH'), HS, 'h');
+$('hand').onclick = () => { st.hand = !st.hand; refresh(); };
+$('segView').addEventListener('click', e => { const b = e.target.closest('button'); if (!b || b.disabled) return; st.view = b.dataset.v; refresh(); });
+$('reslice').onclick = () => { st.seed = 1 + Math.floor(Math.random() * 9999); st.pan = [0, 0]; st.zoom = 1; refresh(); };
+$('zin').onclick = () => { st.zoom *= 1.6; draw(); };
+$('zout').onclick = () => { st.zoom /= 1.6; draw(); };
+$('reset').onclick = () => { st.pan = [0, 0]; st.zoom = 1; st.rot = [[1,0,0],[0,1,0],[0,0,1]]; draw(); };
+for (const [id, k] of [['tRegions', 'regions'], ['tWalls', 'walls'], ['tWrong', 'wrong']]) $(id).onchange = e => { st.layers[k] = e.target.checked; draw(); };
+
+function mul(A, B) { return A.map((r, i) => B[0].map((_, j) => r.reduce((s, _, k) => s + A[i][k] * B[k][j], 0))); }
+let drag = null;
+cv.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY }; cv.setPointerCapture(e.pointerId); cv.classList.add('dragging'); });
+cv.addEventListener('pointermove', e => {
+  if (!drag) return; const sz = cv.getBoundingClientRect().width, dx = (e.clientX - drag.x) / sz * 2, dy = (e.clientY - drag.y) / sz * 2;
+  drag = { x: e.clientX, y: e.clientY };
+  if (st.view === 'globe') {
+    const a = dx * 1.4, b = dy * 1.4, cy = Math.cos(a), sy = Math.sin(a), cx = Math.cos(b), sx = Math.sin(b);
+    const Ry = [[cy, 0, -sy], [0, 1, 0], [sy, 0, cy]], Rx = [[1, 0, 0], [0, cx, sx], [0, -sx, cx]];
+    st.rot = mul(st.rot, mul(Ry, Rx));
+  } else { st.pan[0] -= dx / st.zoom; st.pan[1] += dy / st.zoom; }
+  draw();
+});
+const end = () => { drag = null; cv.classList.remove('dragging'); };
+cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
+cv.addEventListener('wheel', e => { if (st.view !== 'slice') return; e.preventDefault(); st.zoom *= Math.exp(-e.deltaY * .0015); draw(); }, { passive: false });
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', drawGrowth);
+new MutationObserver(drawGrowth).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+refresh();
+</script>
