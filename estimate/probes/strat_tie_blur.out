@@ -1,0 +1,10 @@
+trained  | gaps: blur-predicted 2.70 | gaps+pos(M,S): blur-predicted 2.82
+noisy0   | gaps: blur-predicted 0.88 | gaps+pos(M,S): blur-predicted 1.64
+noisy1   | gaps: blur-predicted 1.70 | gaps+pos(M,S): blur-predicted 1.92
+noisy2   | gaps: blur-predicted 1.46 | gaps+pos(M,S): blur-predicted 1.88
+noisy3   | gaps: blur-predicted 1.12 | gaps+pos(M,S): blur-predicted 1.68
+seed0    | gaps: blur-predicted 1.50 | gaps+pos(M,S): blur-predicted 1.60
+seed1    | gaps: blur-predicted 0.82 | gaps+pos(M,S): blur-predicted 1.02
+seed2    | gaps: blur-predicted 2.13 | gaps+pos(M,S): blur-predicted 2.15
+seed3    | gaps: blur-predicted 2.09 | gaps+pos(M,S): blur-predicted 2.24
+seed4    | gaps: blur-predicted 1.13 | gaps+pos(M,S): blur-predicted 1.30

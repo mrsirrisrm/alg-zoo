@@ -1,0 +1,11 @@
+blur prior, delta calibrated per model to its true error (oracle calibration)
+trained  delta 0.0120 | gaps: 2.70 | gaps+pos(M,S): 2.80
+noisy0   delta 0.0352 | gaps: 1.26 | gaps+pos(M,S): 2.39
+noisy1   delta 0.0227 | gaps: 1.93 | gaps+pos(M,S): 2.26
+noisy2   delta 0.0219 | gaps: 1.69 | gaps+pos(M,S): 2.19
+noisy3   delta 0.0287 | gaps: 1.45 | gaps+pos(M,S): 2.17
+seed0    delta 0.0235 | gaps: 1.75 | gaps+pos(M,S): 1.89
+seed1    delta 0.0318 | gaps: 1.17 | gaps+pos(M,S): 1.46
+seed2    delta 0.0132 | gaps: 2.17 | gaps+pos(M,S): 2.20
+seed3    delta 0.0175 | gaps: 2.23 | gaps+pos(M,S): 2.42
+seed4    delta 0.0292 | gaps: 1.47 | gaps+pos(M,S): 1.69

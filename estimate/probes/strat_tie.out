@@ -1,0 +1,11 @@
+N = 2^23 per split; gains over MC at equal network samples, held-out (split B)
+trained  err 0.0469 | gaps: prop 1.43 pilot 3.05 oracle 3.11 tie@2^12 2.30 @2^15 2.27 @2^18 2.27 | gaps+pos(M,S): prop 1.60 pilot 4.52 oracle 4.83 tie@2^12 2.62 @2^15 2.67 @2^18 2.65
+noisy0   err 0.1318 | gaps: prop 1.22 pilot 1.45 oracle 1.45 tie@2^12 1.31 @2^15 1.31 @2^18 1.31 | gaps+pos(M,S): prop 2.32 pilot 4.81 oracle 5.01 tie@2^12 2.84 @2^15 2.85 @2^18 2.84
+noisy1   err 0.0870 | gaps: prop 1.37 pilot 2.26 oracle 2.28 tie@2^12 1.81 @2^15 1.80 @2^18 1.80 | gaps+pos(M,S): prop 1.78 pilot 3.59 oracle 3.71 tie@2^12 2.40 @2^15 2.42 @2^18 2.41
+noisy2   err 0.0841 | gaps: prop 1.33 pilot 1.92 oracle 1.93 tie@2^12 1.67 @2^15 1.66 @2^18 1.65 | gaps+pos(M,S): prop 1.72 pilot 3.55 oracle 3.70 tie@2^12 2.19 @2^15 2.21 @2^18 2.18
+noisy3   err 0.1087 | gaps: prop 1.27 pilot 1.62 oracle 1.63 tie@2^12 1.46 @2^15 1.46 @2^18 1.46 | gaps+pos(M,S): prop 1.93 pilot 3.85 oracle 3.98 tie@2^12 2.38 @2^15 2.38 @2^18 2.39
+seed0    err 0.0901 | gaps: prop 1.28 pilot 1.80 oracle 1.81 tie@2^12 1.63 @2^15 1.62 @2^18 1.62 | gaps+pos(M,S): prop 1.43 pilot 2.51 oracle 2.55 tie@2^12 1.79 @2^15 1.81 @2^18 1.80
+seed1    err 0.1199 | gaps: prop 1.18 pilot 1.32 oracle 1.33 tie@2^12 1.25 @2^15 1.25 @2^18 1.25 | gaps+pos(M,S): prop 1.44 pilot 2.34 oracle 2.38 tie@2^12 1.46 @2^15 1.51 @2^18 1.50
+seed2    err 0.0515 | gaps: prop 1.41 pilot 2.52 oracle 2.54 tie@2^12 1.95 @2^15 1.96 @2^18 1.96 | gaps+pos(M,S): prop 1.50 pilot 3.53 oracle 3.71 tie@2^12 1.94 @2^15 1.96 @2^18 1.96
+seed3    err 0.0680 | gaps: prop 1.40 pilot 2.32 oracle 2.34 tie@2^12 2.01 @2^15 2.00 @2^18 2.00 | gaps+pos(M,S): prop 1.58 pilot 3.44 oracle 3.56 tie@2^12 2.41 @2^15 2.40 @2^18 2.41
+seed4    err 0.1107 | gaps: prop 1.26 pilot 1.55 oracle 1.56 tie@2^12 1.46 @2^15 1.46 @2^18 1.46 | gaps+pos(M,S): prop 1.45 pilot 2.38 oracle 2.42 tie@2^12 1.71 @2^15 1.74 @2^18 1.74

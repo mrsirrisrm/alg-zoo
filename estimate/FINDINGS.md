@@ -316,6 +316,16 @@ Test of the atom-and-merge design (law of the normalised state z_t = h_t / max|x
   tie-layer predictor partly replays the network, so only explanation-vs-explanation
   comparisons are meaningful here.
 
+- Label-free Neyman from the tie layer (`probes/strat_tie.py`): stratum error rates
+  predicted by the tie-layer q(x), no pilot. Held-out gains: gaps 1.25-2.3x, gaps+pos(M,S)
+  1.5-2.85x (trained 2.65x; perturbed mean 2.14x), between proportional (1.2-2.3x) and a
+  2^23 pilot (2.3-4.8x). Flat in the number of ties from 2^12 up (cost ~5e4 passes, so it
+  beats MC above ~1e5 samples, ~0.5 GFLOP). Control (`strat_tie_blur.py`, `_cal.out`): a
+  network-free blurred comparator as the prior gives 2.07x (perturbed mean, gaps+pos) once
+  its one blur width is set to each model's error rate, 1.71x with the trained model's
+  width. So the explanation's allocation is worth what a one-parameter task prior is
+  worth; what it adds is that one parameter (the error level), without labels.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".

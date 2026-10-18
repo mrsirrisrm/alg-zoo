@@ -132,5 +132,8 @@ budget at ~5e-4 accuracy.
   surprise of the correctness bit on the trained model (29% seed0, 28% noisy0), more than
   any fitted task-level gap model, less than a 4440-cell position table. That is the one
   place the explanation, rather than the task, measurably pays.
-- Next lever: use the tie-layer q(x) as a label-free Neyman allocation (no pilot).
+- Tie-layer q(x) as a label-free Neyman allocation (`probes/strat_tie.py`): 2.1x mean on
+  the perturbed models (2.65x trained), no pilot, from ~5e4 network passes. A blurred
+  comparator whose single width is set to each model's error rate does as well (2.07x), so
+  the mechanism's contribution to variance reduction reduces to predicting the error level.
 
