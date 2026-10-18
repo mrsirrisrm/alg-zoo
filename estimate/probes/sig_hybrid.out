@@ -1,0 +1,24 @@
+
+trained: err 0.0470; error signatures distinct 139471 of 196049 errors (split A), singletons 0.62 of error mass; B errors in a signature unseen on A 0.62
+  in-sample coverage of A errors by top K: K=10: 0.01, K=100: 0.05, K=1000: 0.13, K=10000: 0.30, K=100000: 0.80
+  K=    10: held-out error mass outside K 0.986, oracle gain 1.01
+  K=   100: held-out error mass outside K 0.955, oracle gain 1.05
+  K=  1000: held-out error mass outside K 0.882, oracle gain 1.13
+  K= 10000: held-out error mass outside K 0.762, oracle gain 1.30
+  K=100000: held-out error mass outside K 0.656, oracle gain 1.50
+
+noisy0: err 0.1318; error signatures distinct 240067 of 550823 errors (split A), singletons 0.35 of error mass; B errors in a signature unseen on A 0.35
+  in-sample coverage of A errors by top K: K=10: 0.03, K=100: 0.10, K=1000: 0.25, K=10000: 0.47, K=100000: 0.75
+  K=    10: held-out error mass outside K 0.970, oracle gain 1.03
+  K=   100: held-out error mass outside K 0.896, oracle gain 1.10
+  K=  1000: held-out error mass outside K 0.747, oracle gain 1.29
+  K= 10000: held-out error mass outside K 0.550, oracle gain 1.70
+  K=100000: held-out error mass outside K 0.406, oracle gain 2.26
+
+seed0: err 0.0903; error signatures distinct 148442 of 377524 errors (split A), singletons 0.29 of error mass; B errors in a signature unseen on A 0.29
+  in-sample coverage of A errors by top K: K=10: 0.03, K=100: 0.11, K=1000: 0.27, K=10000: 0.52, K=100000: 0.87
+  K=    10: held-out error mass outside K 0.967, oracle gain 1.03
+  K=   100: held-out error mass outside K 0.893, oracle gain 1.11
+  K=  1000: held-out error mass outside K 0.734, oracle gain 1.33
+  K= 10000: held-out error mass outside K 0.505, oracle gain 1.89
+  K=100000: held-out error mass outside K 0.330, oracle gain 2.84

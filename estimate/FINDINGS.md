@@ -363,6 +363,12 @@ Test of the atom-and-merge design (law of the normalised state z_t = h_t / max|x
    (sign pattern, record set) the dominant pattern holds only 6% of mass.
    Activation patterns are not the right explanatory variable on Gaussian inputs
    (impulse-on-zero-background stability does not transfer).
+   Narrower follow-up (`probes/sig_hybrid.py`): the ERROR mass is no more concentrated.
+   Trained: 139k distinct signatures among 196k errors; 62% of held-out errors fall in a
+   signature never seen in 2^22 samples. A hybrid (exact cone integrals for the top K
+   error signatures + MC for the rest) has oracle gain, with the integrals free, of 1.13
+   at K=10^3 and 1.50 at K=10^5 (noisy0 2.26, seed0 2.84 at 10^5), below plain
+   gap stratification (~3x) at a cost of 10^5 polytope integrals.
 2. **Gaussian closure of h_t (E0, `moment_prop.py`).** Fails at step 1: h_0 lies on
    two rays (sign of x_0). A moment-matched Gaussian lets the ray parameter go
    negative; e.g. n9's next pre-activation is ≈ −80|x_0| (never positive) but the
