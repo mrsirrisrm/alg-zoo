@@ -34,13 +34,13 @@ MC baseline cost 5,760 FLOPs per sample; report gain as MC compute for equal rms
 
 ## B. Best unbiased estimator (the "as close as we can get" number)
 
-- [ ] B1. Adaptive Neyman, no separate pilot. Strata = gaps (6 bins) × sign vS ×
+- [x] B1. (32 reps: adaptive = oracle by 2^19-2^20; trained 5.5x, copies 3.4x, seeds 2.4x at 2^20; |z| <= 2.6) Adaptive Neyman, no separate pilot. Strata = gaps (6 bins) × sign vS ×
       pos(M,S) (and the pos(M,S,R) variant). Start proportional, re-allocate at each
       doubling from all samples so far, 10% proportional floor. Budgets 2^14 … 2^22.
       Score against truth over 64 reps; report gain vs MC at each budget and the gap to
       the 2^23-pilot ceiling (trained 4.5-4.8x, copies 3.6-6.3x, seeds 2.3-4.0x).
       → `probes/strat_adaptive.py`. Verify: unbiased (|z| < 2 across reps at every N).
-- [x] B2. (negative: a thinned Sobol stream inside strata is worse than iid, strat_adaptive.out) RQMC-OS inside strata. Scrambled Sobol in order-statistic coordinates per
+- [x] B2. (6-rep smoke said negative; at 32 reps the Sobol stream inside strata is >= iid on 8/10 models, geomean 4.1x vs 3.0x at 2^20; seed0 z up to +4.2, so promising not established; B5 uses iid) RQMC-OS inside strata. Scrambled Sobol in order-statistic coordinates per
       stratum (reuse `probes/rqmc.py` transform). Report whether the gains compose
       (expect sub-multiplicative: strata already carry part of the gap structure).
 - [x] B3. Exact last input. For each sampled x₀..₈, integrate x₉ exactly: h₉ is

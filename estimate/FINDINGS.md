@@ -681,6 +681,45 @@ of the .out is `ablation.py`'s cached summary, printed on import.)
   M(16,10) and its seeds; it says nothing about h32 or hand10 copies, where sampling
   (or a different deduction) would be needed.
 
+## Adaptive Neyman without a pilot (`probes/strat_adaptive.py`, `.out`, `.json`, `gap_cells.json`; PLAN B1, B2)
+Strata = gap cells of the top three (6x6 bins of (vM-vS)/|vM|, (vS-vR)/|vM|) x sign(vS) x
+positions (pM, pS); masses from the input law (2^28 draw, cached; / 90 ordered pairs by
+exchangeability). No pilot: start proportional at 2^14, then at each doubling allocate the
+new samples by Neyman weights from all samples so far (per-stratum variance shrunk to the
+coarse parent, then global; 10% proportional floor; >= 1 per stratum), refining coarse
+cells to position cells where N p >= 32. The final estimate is the stage-wise stratified
+estimates combined with the PLANNED stage sizes, which keeps it unbiased: the first version
+reused each stratum's own samples for its allocation and came out low (z ~ -4). 32 reps,
+pool 2^23 per rep, truth from the harness files; gain = MC MSE / ours at equal passes.
+
+Geometric-mean gain over MC (prop / adaptive / oracle Neyman / adaptive with a scrambled
+Sobol stream in order-statistic coordinates inside strata):
+
+| budget | trained | 4 copies (noisy0-3) | 5 seeds | all 10 |
+|---|---|---|---|---|
+| 2^17 | 1.2 / 2.6 / 3.0 / 2.4 | 1.3 / 2.8 / 2.6 / 2.9 | 1.2 / 1.6 / 2.4 / 2.4 | 1.3 / 2.1 / 2.5 / 2.6 |
+| 2^18 | 2.5 / 3.2 / 4.6 / 4.9 | 1.6 / 2.9 / 3.2 / 3.2 | 1.3 / 1.9 / 2.3 / 2.9 | 1.5 / 2.3 / 2.8 / 3.2 |
+| 2^19 | 1.6 / 4.3 / 4.9 / 4.7 | 1.9 / 3.1 / 4.3 / 3.5 | 1.4 / 2.3 / 2.8 / 2.9 | 1.6 / 2.8 / 3.5 / 3.3 |
+| 2^20 | 1.3 / 5.5 / 5.4 / 5.6 | 2.0 / 3.4 / 3.7 / 4.7 | 1.6 / 2.4 / 2.5 / 3.4 | 1.7 / 3.0 / 3.2 / 4.1 |
+
+- Adaptive reaches the oracle allocation by 2^19-2^20 on every model (trained 5.5x vs
+  5.4x; copies 3.4x vs 3.7x; seeds 2.4x vs 2.5x), i.e. the no-pilot estimator pays nothing
+  for learning its own allocation beyond the first 2^16 or so. Below 2^17 it is worth
+  1.4-1.8x. Per-model gains at 2^20 have about +-25% relative noise (32 reps).
+- Unbiased: |z| <= 2.6 on all 10 models x 7 budgets x 3 iid schemes, no sign pattern
+  surviving across models (trained and copies lean negative, seeds positive; the seed
+  truths are 2^26, sd 3.5e-5, which is the size of the estimators' se at 2^20, and a CPU
+  2^28 recheck moves seed0's truth by -4e-5).
+- B2 is NOT negative at 32 reps (the 6-rep smoke test said it was). The Sobol stream
+  inside strata is at least as good as iid on 8 of 10 models at 2^20 and better on
+  average (4.1x vs 3.0x all-model geometric mean; copies 4.7x vs 3.4x; seeds 3.4x vs
+  2.4x). Its z on seed0 is +2.7/+3.7/+4.2 at 2^18-2^20 (about +1 of that is the seed0
+  truth offset), elsewhere |z| <= 2.3; a thinned scrambled stream is unbiased in
+  expectation over scrambles, so this is noted, not explained. Treated as promising
+  rather than established; the stacked estimator of B5 uses iid samples.
+- The 2^23-pilot ceilings of `strat_gain.py` (trained 4.5-4.8x) are met and slightly
+  exceeded here at 2^20 because the position refinement adds strata the pilot did not have.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".
