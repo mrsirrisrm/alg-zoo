@@ -556,6 +556,23 @@ Consequence for deduction on copies: nothing new to explain; the tie-layer estim
 0.025 bias on copies is its width prediction failing as the strips widen (first-order BL),
 not an uncovered mechanism. The far field ('other', 2.2x) grows fastest.
 
+## Three negative integration probes, 17-18 Oct (`probes/circle_rqmc.py`, `probes/pieces_vs_size.py`, `survey/exact_dims.py`; PLAN E1)
+- Great circles with RQMC over the circle parameters (g1 in order-statistic coordinates,
+  g2 direct): structure adds x0.8-1.0 on the trained model and x1.5-2.5 on noisy copies,
+  but efficiency vs MC under exact tracing cost (pieces+1)*2 passes stays below 1 at every
+  arc length: best 0.76 (noisy1, arc 2pi/256), 0.08-0.12 for full circles.
+- Linear pieces per great circle across the zoo (h x T): 8 -> 465 (h32 T10) while decision
+  crossings and error flips stay at ~3-25, so pieces per flip reach 35 at h32 T10 (M(16,10):
+  213 pieces, 26 flips, 8 per flip). Exact circle tracing beats MC only at T = 3 (h8_T3 best
+  eff 40, h32_T3 2.3); every T >= 5 model is below 1 (0.3-0.9).
+- Gauss-Legendre product rule on the last gl lattice dimensions inside BnB (`survey/bnb.py`
+  gl, G args): best advantage over MC by gl, h6_T3 {0: 0.04, 1: 0.39, 2: 0.18} (crossover
+  grid 1.27); h16_T3 {0: 13.4, 1: 1.5, 2: 4.0} (10.5); h4_T4 {0: 0.22, 1: 0.17, 2: 0.09, 3:
+  0.31} (0.42); h8_T4 {0: 0.11, 1: 0.05, 2: 0.04, 3: 0.08} (0.09). GL helps only where
+  Sobol was poor on the sweep's small Q grid, hurts h16_T3, and never beats the crossover
+  grid's best. The h3_T5 run is incomplete (stops at gl 2, G 32, Q 16); several large-Q
+  configurations hit the node/time cap.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".
