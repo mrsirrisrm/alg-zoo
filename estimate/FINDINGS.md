@@ -495,6 +495,29 @@ How many bits does the mechanism need, and is that intrinsic or a raw-basis arte
   moving into an event of known mass; h32 is partway along it (ratio 3-4x smaller than
   trained, 12 more surprise points explained) but still a strip model.
 
+## The noisy copies are perturbation theory around the trained model (`probes/weight_perturbation.py`, `.out`)
+Can a copy's accuracy be predicted from its perturbation delta = W' - W and the TRAINED
+model alone, with no passes of the copy? Two predictors on the 32 sigma = 0.005 copies
+(truth 2^30 each); the constant predictor (mean loss) has rms 0.026, BL's rms bias is 0.025.
+- Q: loss ~ c * delta^T H delta with H the Gauss-Newton (softmax Fisher) Hessian of the
+  trained model in absolute weight coordinates (8192 inputs, advice) and c ONE scalar.
+  corr 0.947, leave-one-out rms 0.0090, per-copy cost 3.7e5 FLOPs (65 MC samples, where
+  MC's sd is 0.037). Crossover with MC ~6 MFLOP, against 0.4 (BL) and ~2 (FORM skeleton).
+  H has participation ratio 4.9, so which copies are bad is set by the projection of the
+  noise on ~5 stiff directions (the n2/n7/n8/n1/n6 recurrent weights of the precision
+  probe); predicted sd/mean of Q over copies 0.64, observed 0.47.
+- L: first-order logit shift logits + J delta on a fixed 65k-input pool, count flips.
+  corr 0.996, rms 0.0024 (pool noise ~0.001 of that), but the Jacobian-vector product
+  costs 5.7e8 FLOPs per copy where MC's sd is 0.0010, so it loses 2.4x. The copies'
+  extra errors are first-order logit shifts of the trained model's small-margin inputs.
+- Flips are NOT localised per input: 8.4% of inputs flip per copy (both directions); the
+  first-order criterion |m| < k|g.delta| captures 83% of flips in 15% of inputs (k=1) and
+  95% in 43% (k=3); the Cauchy-Schwarz bound covers everything. So an exact
+  advice-stratified estimator (evaluate the copy only on at-risk inputs) gains 2-3x at best.
+- Consequence for the protocol: at sigma = 0.005 anything that knows p0 and the trained
+  model's second-order sensitivity beats MC at low budget, so the copy harness measures
+  sensitivity, not estimation. The zoo seeds 0-4 are the honest test. Plan: `PLAN.md` A.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".
