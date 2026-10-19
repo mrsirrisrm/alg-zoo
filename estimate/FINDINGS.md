@@ -508,8 +508,9 @@ model alone, with no passes of the copy? Two predictors on the 32 sigma = 0.005 
   probe); predicted sd/mean of Q over copies 0.64, observed 0.47.
 - L: first-order logit shift logits + J delta on a fixed 65k-input pool, count flips.
   corr 0.996, rms 0.0024 (pool noise ~0.001 of that), but the Jacobian-vector product
-  costs 5.7e8 FLOPs per copy where MC's sd is 0.0010, so it loses 2.4x. The copies'
-  extra errors are first-order logit shifts of the trained model's small-margin inputs.
+  costs 5.7e8 FLOPs per copy where MC's sd is 0.0010, so it loses 2.4x. In aggregate the
+  copies' extra errors are first-order logit shifts; per input they are not (see the
+  copy-failures entry: most new errors sit at trained |margin| > 1).
 - Flips are NOT localised per input: 8.4% of inputs flip per copy (both directions); the
   first-order criterion |m| < k|g.delta| captures 83% of flips in 15% of inputs (k=1) and
   95% in 43% (k=3); the Cauchy-Schwarz bound covers everything. So an exact
@@ -537,6 +538,23 @@ Leaves are correlated by the prefix R2 rho_k (pick-freeze): trained 0.0005 (k=1)
 (noisy0), 1.28x (seed0); direct simulation at 2^16 leaves x 64 reps gives 1.56x / 1.16x / 1.59x
 (+-~20%). A real but small use of the recurrence; it conflicts with per-stratum allocation
 (siblings land in different strata), so it is not in the B5 stack.
+
+## The copies' new errors are the trained error set scaled up (`probes/copy_failures.py`, `.out`; PLAN C1)
+Same 2^22 inputs through the trained model and 8 copies. Mean copy error 0.090 = 0.033
+persistent (trained also wrong) + 0.057 new; 0.013 of trained errors are fixed.
+- By mechanism, the new errors are the trained mix: predicts-M 1.8x, A/B swap 1.05x,
+  within-side 1.0x, other 2.2x the trained rate in that mechanism. No new event.
+- By tie gap they sit where trained errors sit: 84% within 0.1 of a tie (trained 86%),
+  35% within 0.02 (trained 58%): the strips widen, they do not move.
+- By the TRAINED model's logit margin they are not near its boundary: 79% of new errors
+  have trained |margin| > 1 and 45% > 3, while only 4.7% of inputs have |margin| < 1.
+  A 0.5% weight perturbation moves the boundary by several logit units after 10 recurrent
+  steps, so the trained model's small-margin set does not predict which inputs flip (same
+  fact as the 43%-of-inputs flip set in the perturbation probe). The first-order logit
+  model is right in aggregate (flips in and out balance), wrong per input.
+Consequence for deduction on copies: nothing new to explain; the tie-layer estimator's
+0.025 bias on copies is its width prediction failing as the strips widen (first-order BL),
+not an uncovered mechanism. The far field ('other', 2.2x) grows fastest.
 
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
