@@ -10,13 +10,13 @@ probe files named in each paragraph; `FINDINGS.md` has the full entries.
 
 No deductive estimator of the accuracy beats Monte Carlo on M(16,10) above about 0.4
 MFLOP, and we can say why in measured terms. The best estimator we have is unbiased
-mechanism-guided sampling that needs no pilot and no fitted model; it gains 4-5x (geometric mean over the trained model, two copies and two seeds at 2^17-2^19; 2.5-8x per model) over
+mechanism-guided sampling that needs no pilot and no fitted model; it gains 4.4-4.9x (geometric mean over the trained model, two copies and three seeds at 2^17-2^19, 48 reps; 3-6x per model), and 5-7x with a scrambled-Sobol stream inside the strata (24 reps; trained 10-12x) over
 plain MC on the harness. That gain is task structure (gaps and positions of the top three
 inputs), not the network's mechanism, and a random-weight RNN gets it too.
 
 ## The best estimator (`probes/best_unbiased.py`, curve in `mse_curves.png`)
 
-Three unbiased parts stacked:
+Four unbiased parts stacked:
 
 1. Strata = gap cells of the top three of the first nine inputs (6x6 bins of the two
    relative gaps) x sign of the second x positions of the top two. Stratum masses come
@@ -28,10 +28,19 @@ Three unbiased parts stacked:
 3. Exact integration of the tenth input: the hidden state is piecewise linear in it with
    at most 16 breakpoints, so P(correct | first nine) is a sum of Gaussian masses over
    at most 19 intervals, at 1.15 passes (`probes/exact_last.py`; variance ratio 0.49-0.60).
+4. A scrambled-Sobol stream in order-statistic coordinates of the first nine inputs as the
+   pool each stratum draws from (rank permutation on the leading dimensions, spacings next).
+   Each scrambled point is marginally uniform, so every stratum mean stays unbiased.
 
-Gains (12 reps): trained 3.7-4.4x (stacked, no pilot, 2^18-2^19); seeds 3.2-6.7x (stacked, no pilot, seeds 0-1 at 2^18-2^19); copies 2.5-8x at 2^18-2^19. Prefix
-sharing (`probes/prefix_tree.py`) adds a further 1.2-1.4x but is not in the stack; a
-scrambled Sobol stream inside strata looks like another ~1.3x and is not yet established.
+Gains of parts 1-3 (48 reps, 16-84% intervals about +-20%) at 2^17-2^19: trained
+6.1-6.3x, copies 3.1-5.4x, seeds 3.2-6.1x, geometric mean 4.4-4.9x against an
+oracle-allocation ceiling of 5.1-5.2x. Part 4 (`probes/best_sobol.py`, 24 reps) is unbiased
+against 2^28-sample truths and multiplies this by 1.8-1.9x at 2^18-2^19 (geometric mean 6.7x;
+trained 12x, copies 5.5-8.4x, seeds 4-6x) and by 1.1-1.3x below, where strata hold too few
+points for the stream to matter. Prefix sharing (`probes/prefix_tree.py`) is 1.2-1.6x on its
+own and is not stacked: it needs tree-structured pools, which conflict with per-stratum
+allocation and with the Sobol stream. A third position in the strata adds nothing for the
+adaptive estimator and 1.3x to the oracle ceiling only (`probes/strat_pos3.py`).
 
 ## Why deduction loses here (EXPLAINER §16)
 
@@ -75,8 +84,8 @@ perturbation-theory baseline next to MC.
 | model | acc | best unbiased gain vs MC | FORM level (deduced / actual) | surprise left after tie layer | bg-gradient / tie slope |
 |---|---|---|---|---|---|
 | h8 (failed) | 0.427 | 2.7x | 0.22 / 0.48 (-54%) | 92% | 0.66, 1.02 |
-| h16 seeds 0-4 | 0.88-0.95 | 3.2-6.7x (stacked, no pilot, seeds 0-1 at 2^18-2^19) | rms 19% | 71% | 0.15-0.23 |
-| M(16,10) | 0.953 | 3.7-4.4x (stacked, no pilot, 2^18-2^19) | 0.0386 / 0.0392 (-2%) | 57% | 0.14, 0.08 |
+| h16 seeds 0-4 | 0.88-0.95 | 3.2-6.1x stacked (seeds 0-2, 48 reps); 3.7-5.9x with the Sobol stream | rms 19% | 71% | 0.15-0.23 |
+| M(16,10) | 0.953 | 6.1-6.3x stacked (48 reps); 10-12x with the Sobol stream | 0.0386 / 0.0392 (-2%) | 57% | 0.14, 0.08 |
 | h32 | 0.994 | 6.8x (gaps) | 0.0048 / 0.0053 (-8%) | 45% | 0.04, 0.02 |
 | hand10 | 0.990 | 163x (gaps), ~950x (its own event) | exact (one event) | 6% | 0.00 |
 

@@ -764,6 +764,27 @@ for comparison; oracle = true per-cell variances):
   forward map, not the mechanism. `probes/ablation.py` gets 5.5x on a random-weight RNN
   from gaps+pos strata alone. The number to report against MC on M(16,10) is 4-5x.
 
+**48-rep rerun (20 Oct; pools 2000-2047, the 12 original pools included; per-rep estimates
+saved, 16-84% bootstrap intervals; oracle variances computed once per model).** The 12-rep
+table above scatters by up to 2x per model (noisy0 7.8/6.5/8.2x there, 4.7/5.2/5.4x here;
+trained 2.9/3.7/4.4x there, 6.1/6.1/6.3x here); the geometric mean is the stable number.
+
+| adaptive/rb, gain vs MC | 2^17 | 2^18 | 2^19 | oracle/rb 2^19 |
+|---|---|---|---|---|
+| trained | 6.1 [4.7, 8.6] | 6.1 [4.8, 8.1] | 6.3 [5.3, 7.7] | 7.4 |
+| noisy0 | 4.7 | 5.2 | 5.4 | 5.5 |
+| noisy1 | 3.1 | 3.5 | 3.7 | 4.3 |
+| seed0 | 4.9 | 4.5 | 4.8 | 3.9 |
+| seed1 | 3.2 | 4.4 | 3.8 | 4.1 |
+| seed2 | 4.9 | 4.9 | 6.1 | 6.2 |
+| geometric mean | 4.4 | 4.7 | 4.9 | 5.1 |
+
+Intervals are about +-20% (trained shown). Unbiased: 180 cells (6 models x 6 budgets x 5
+combos), 13 with |z| > 2 against the harness truths and none beyond |z| 3.3; the largest read
+trained prop/rb at 2^16: +2.9 against the harness truth, +2.7 against the 2^28 one; trained oracle/rb at 2^16: +2.5 against the harness truth, +2.1 against the 2^28 one; trained prop/rb at 2^17: +2.8 against the harness truth, +2.5 against the 2^28 one; noisy0 prop/bin at 2^18: -2.5 against the harness truth, -2.5 against the 2^28 one; seed0 adaptive/rb at 2^19: +3.2 against the harness truth, +1.5 against the 2^28 one; seed0 oracle/rb at 2^19: +2.9 against the harness truth, +1.3 against the 2^28 one; seed1 adaptive/rb at 2^18: +2.4 against the harness truth, +2.3 against the 2^28 one; the largest |z| against the 2^28 truths over the five models that have one is 2.7.
+The headline is 4.4-4.9x geometric mean (3-6x per model) for the iid stack at 2^17-2^19, and
+5-7x with the Sobol stream inside the strata (F2 entry below; trained 10-12x there).
+
 ## Common random numbers on the copies: no gain (`probes/wp_crn.py`, `.out`, `.json`; PLAN A4)
 The copy-harness estimator that uses the trained model as advice: p(W') = p0 + E[y' - y0]
 exactly, with y0 the trained model's correctness on the same input, so only the
@@ -818,8 +839,8 @@ Paired ratios (MSE of the first / MSE of the second, same pools): pos(R) / L1 ad
   8 of these pools has rms 2.2e-4 / 1.6e-4 / 7.4e-5 at 2^17/18/19, at or above these gains,
   and its per-rep errors correlate only 0.5 with this probe's (the multinomial draw of
   member cells inside unrefined strata is a large part of the variance at low budget).
-  The 12-rep figure was a low draw. B5 is re-run at 48 reps below; gains now carry
-  bootstrap intervals.
+  The 12-rep figure was a low draw. B5 is re-run at 48 reps (addendum to the B5 entry);
+  gains now carry bootstrap intervals.
 
 ## The Sobol stream inside the B5 strata: unbiased, and 1.8x at 2^18-2^19 (`probes/best_sobol.py`, `.out`, `.json`; `probes/truth28.py`, `.out`, `.json`; PLAN F1, F2)
 Truths at 2^28 (sd 1.3-2.1e-5) against the harness values: trained -1.5e-5 (-1.1 sd), noisy0

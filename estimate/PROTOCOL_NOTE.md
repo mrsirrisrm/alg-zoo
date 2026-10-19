@@ -34,7 +34,7 @@ in the recurrent weights of five neurons.
   copy's own outcome; `probes/wp_crn.py`.)
 - The independently trained seeds (0–4, accuracy 0.88–0.95) are not perturbations of the
   trained model, and on them the picture is unchanged: the best unbiased mechanism-guided
-  sampling gains 2–4× over MC, the best deduction is 13–15% off.
+  sampling gains 3–6× over MC (4–6× with a Sobol stream inside the strata), the best deduction is 13–15% off.
 
 **Suggestion.** Report results on independently trained models as the primary test, and
 treat noisy copies as a sensitivity check. If noisy copies are kept, choose σ large enough

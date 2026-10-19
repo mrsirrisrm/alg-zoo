@@ -99,6 +99,12 @@ def simulate(val, order, starts, scheme, true_var=None, rng=None):
     return out
 
 
+def boot(err2, c, B=2000, seed=0):
+    """16-84% interval of gain = c / mean(err2) under rep resampling."""
+    rng = np.random.default_rng(seed); g = c / err2[rng.integers(0, len(err2), (B, len(err2)))].mean(1)
+    return np.percentile(g, [16, 84])
+
+
 def values(x, W):
     with th.no_grad():
         rb = 1 - cond_correct(x[:, :9], *W).numpy()
@@ -107,38 +113,39 @@ def values(x, W):
 
 
 def main():
-    reps = int(sys.argv[1]) if len(sys.argv) > 1 else 16
+    reps = int(sys.argv[1]) if len(sys.argv) > 1 else 48
     names = sys.argv[2:] or ['trained', 'noisy0', 'noisy1', 'seed0', 'seed1', 'seed2']
     ms = models_list(names); pool_log2 = 22
-    xo, fo, _, _ = make_pool(99993, 22)
+    xo, fo, _, _ = make_pool(99993, 22); cnt = np.bincount(fo, minlength=9800); tvs = {}
+    for name, W, _ in ms:                                     # oracle per-cell variances, once per model
+        vo = values(xo, W)
+        tvs[name] = {k: np.bincount(fo, vo[k] ** 2, minlength=9800) / np.maximum(cnt, 1) - (np.bincount(fo, vo[k], minlength=9800) / np.maximum(cnt, 1)) ** 2 for k in vo}
     combos = [('prop', 'bin'), ('adaptive', 'bin'), ('prop', 'rb'), ('adaptive', 'rb'), ('oracle', 'rb')]
     res = {n: {c: [[] for _ in BUDGETS] for c in combos} for n, _, _ in ms}
     t0 = time.time()
     for rep in range(reps):
         x, fid, order, starts = make_pool(2000 + rep, pool_log2); rng = np.random.default_rng(rep)
         for name, W, truth in ms:
-            vo = values(xo, W); v = values(x, W)
-            cnt = np.bincount(fo, minlength=9800)
-            tv = {k: np.bincount(fo, vo[k] ** 2, minlength=9800) / np.maximum(cnt, 1) - (np.bincount(fo, vo[k], minlength=9800) / np.maximum(cnt, 1)) ** 2 for k in vo}
+            v = values(x, W); tv = tvs[name]
             for scheme, kind in combos:
                 r = simulate(v[kind], order, starts, scheme, tv[kind], rng)
                 for b, q in enumerate(r):
                     res[name][(scheme, kind)][b].append(q)
         print(f"rep {rep} done {time.time() - t0:.0f}s", flush=True)
     print(f"\nreps {reps}; pool 2^{pool_log2}; K {K}; strata = gap cells of the first 9 inputs' top-3 (6x6) x sign x pos(M,S); rb = exact x_9 integral at cost 1.15")
-    print("gain = p(1-p) / (N cost) / MSE vs truth; z = mean bias / se")
+    print("gain = p(1-p) / (N cost) / MSE vs truth [16-84% bootstrap over reps]; z = mean bias / se")
     summary = {}
     for name, W, truth in ms:
         e_true = 1 - truth; print(f"\n{name}  err {e_true:.4f}")
-        print("budget   " + "  ".join(f"{s + '/' + k:>24s}" for s, k in combos)); summary[name] = {}
+        print("budget   " + "  ".join(f"{s + '/' + k:>36s}" for s, k in combos)); summary[name] = {}
         for b, N in enumerate(BUDGETS):
             row = [f"2^{int(np.log2(N)):2d}    "]; summary[name][N] = {}
             for c in combos:
                 a = np.array(res[name][c][b]); est, used = a[:, 0], a[:, 1]
                 mse = ((est - e_true) ** 2).mean(); z = (est.mean() - e_true) / (est.std(ddof=1) / np.sqrt(len(est)))
-                gain = e_true * (1 - e_true) / (used.mean() * COST[c[1]]) / mse
-                row.append(f"{gain:6.2f}x rms {np.sqrt(mse):.1e} z{z:+4.1f}  ")
-                summary[name][N]['/'.join(c)] = dict(gain=gain, rms=float(np.sqrt(mse)), z=float(z), used=float(used.mean()))
+                cst = e_true * (1 - e_true) / (used.mean() * COST[c[1]]); gain = cst / mse; lo, hi = boot((est - e_true) ** 2, cst)
+                row.append(f"{gain:6.2f}x [{lo:4.1f},{hi:4.1f}] rms {np.sqrt(mse):.1e} z{z:+4.1f}")
+                summary[name][N]['/'.join(c)] = dict(gain=gain, ci=[float(lo), float(hi)], rms=float(np.sqrt(mse)), z=float(z), used=float(used.mean()), est=est.tolist())
             print("  ".join(row))
     json.dump(summary, open('probes/best_unbiased.json', 'w'), indent=1)
 

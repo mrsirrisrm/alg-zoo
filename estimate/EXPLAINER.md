@@ -129,7 +129,7 @@ budget at ~5e-4 accuracy.
 - ARC's bar (a mechanistic estimate at least as good as sampling at every budget) is not
   met deductively; the unbiased designs that do beat MC (adaptive Neyman on gap and
   position strata, no pilot, 2.4-5.5x at 2^20; stacked with the exact last-input
-  integral 4-5x (geometric mean over the trained model, two copies and two seeds at 2^17-2^19; 2.5-8x per model)) are task knowledge: a network-free blurred comparator gains as much
+  integral 4.4-4.9x (geometric mean over the trained model, two copies and three seeds at 2^17-2^19, 48 reps; 3-6x per model), and 5-7x with a scrambled-Sobol stream inside the strata (24 reps; trained 10-12x)) are task knowledge: a network-free blurred comparator gains as much
   from gap strata, a random-weight RNN as much from position strata and RQMC
   (`probes/ablation.py`). The perturbed copies are a separate matter: their accuracy is
   predicted from the trained model's Hessian without evaluating them (§16, part 6).
@@ -240,12 +240,12 @@ no, and the reasons are now measured rather than argued.
    compute; H is 99.7% recurrent weights of five neurons), so any estimator with the
    trained accuracy as advice beats MC on copies up to ~3 MFLOP without understanding
    anything. The same sigma is already non-perturbative on h32 and hand10. On
-   independently trained seeds the best unbiased sampling gains 3.2-6.7x (stacked, no pilot, seeds 0-1 at 2^18-2^19) and the best
+   independently trained seeds the best unbiased sampling gains 3.2-6.1x (stacked, no pilot, seeds 0-2 at 2^17-2^19, 48 reps; 3.7-5.9x with the Sobol stream) and the best
    deduction is 13-15% off (`PROTOCOL_NOTE.md`).
 
 What we can do is sample better. The stacked unbiased estimator (adaptive Neyman on
 gap-and-position strata of the first nine inputs, exact integration of the tenth; §PLAN B5)
-gains 4-5x (geometric mean over the trained model, two copies and two seeds at 2^17-2^19; 2.5-8x per model) over MC on the harness with no pilot and no fitted model. That gain is
+gains 4.4-4.9x (geometric mean over the trained model, two copies and three seeds at 2^17-2^19, 48 reps; 3-6x per model), and 5-7x with a scrambled-Sobol stream inside the strata (24 reps; trained 10-12x) over MC on the harness with no pilot and no fitted model. That gain is
 task structure, and we say so.
 
 Across the family (`MAP.md` table) the axis is the background-gradient / tie-slope ratio:

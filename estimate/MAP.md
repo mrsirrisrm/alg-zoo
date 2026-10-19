@@ -67,8 +67,8 @@ and every attempt to make it do so cost more than sampling (§10, §11).
 | model | acc | best unbiased gain vs MC | FORM level (deduced / actual tie error) | surprise left after tie layer | bg-gradient / tie slope | active-subspace dim |
 |---|---|---|---|---|---|---|
 | h8, zoo best (failed) | 0.427 | 2.7x (gaps+pos, pilot) | 0.22 / 0.48 (-54%) | 92% | 0.66, 1.02 | 3.8, 5.2 |
-| h16 seeds 0-4 | 0.88-0.95 | 2.9-3.2x (gaps+pos, pilot); 3.2-6.7x (stacked, no pilot, seeds 0-1 at 2^18-2^19) (stacked, no pilot) | -34% to +44%, rms 19% over the harness | 71% (seed0) | 0.15-0.23 | ~4-5 |
-| M(16,10) | 0.953 | 3.4x (gaps+pos, pilot); 3.7-4.4x (stacked, no pilot, 2^18-2^19) (stacked, no pilot) | 0.0386 / 0.0392 (-2%) | 57% | 0.14, 0.08 | 4.0, 4.7 |
+| h16 seeds 0-4 | 0.88-0.95 | 2.9-3.2x (gaps+pos, pilot); 3.2-6.1x (stacked, no pilot, seeds 0-2 at 2^17-2^19, 48 reps; 3.7-5.9x with the Sobol stream) | -34% to +44%, rms 19% over the harness | 71% (seed0) | 0.15-0.23 | ~4-5 |
+| M(16,10) | 0.953 | 3.4x (gaps+pos, pilot); 6.1-6.3x (stacked, no pilot, 2^17-2^19, 48 reps; 10-12x with the Sobol stream) | 0.0386 / 0.0392 (-2%) | 57% | 0.14, 0.08 | 4.0, 4.7 |
 | h32, zoo best | 0.994 | 6.8x (gaps) | 0.0048 / 0.0053 (-8%) | 45% | 0.04, 0.02 | 3.0, 3.5 |
 | hand10 | 0.990 | 163x (gaps), ~950x (its own event) | 0 / 0.0012 (no strip; the error is the vS < 0 event) | 6% | 0.00 | strip width 0 |
 
@@ -91,7 +91,7 @@ Our mechanism-level tools behave the same way:
   order-statistic coordinates) gains 1.3–3×; adaptive Neyman allocation over gaps and
   the positions of the top three, with no pilot, 2.4–5.5× at 2^20
   (`probes/strat_adaptive.py`); stacked with the exact integral of the last input,
-  4-5x (geometric mean over the trained model, two copies and two seeds at 2^17-2^19; 2.5-8x per model) (`probes/best_unbiased.py`);
+  4.4-4.9x (geometric mean over the trained model, two copies and three seeds at 2^17-2^19, 48 reps; 3-6x per model), and 5-7x with a scrambled-Sobol stream inside the strata (24 reps; trained 10-12x) (`probes/best_unbiased.py`);
 - control variates or proportional strata on the top-3 order statistics are capped at
   ~2–4×. Predicting per-stratum error rates from the weights is untried; learning them
   on the way costs nothing measurable above 2^18 samples.

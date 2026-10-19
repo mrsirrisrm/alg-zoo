@@ -52,7 +52,7 @@ MC baseline cost 5,760 FLOPs per sample; report gain as MC compute for equal rms
 - [x] B4. Prefix sharing. Tree-structured inputs sharing the first k ∈ {3, 5} steps
       across m ∈ {4, 8, 16} leaves. Measure design effect 1 + (m−1)·R²(prefix) and
       FLOP saving; pick the best (k, m). Expect ~1.3x. → `probes/prefix_tree.py`.
-- [x] B5. (4-5x geomean at 2^17-2^19, 2.5-8x per model, unbiased; B4 not stacked) Stack B1-B4 into one estimator, `probes/best_unbiased.py`, and produce the
+- [x] B5. (48 reps: 4.4-4.9x geomean at 2^17-2^19, 3-6x per model, intervals +-20%, unbiased; B4 not stacked) Stack B1-B4 into one estimator, `probes/best_unbiased.py`, and produce the
       MSE-vs-compute curve on all three harness sets (add to `mse_curves.png`).
       Target 5-10x MC. State plainly that it is task-level knowledge (ablation:
       random-weight RNN gets 5.5x from gaps+pos).
@@ -119,7 +119,7 @@ level error (`probes/form_abs_all.py`), (iii) surprise explained by the tie laye
       the trained model, where adaptive sits at 4.4x against a 7.2x oracle. Expect <= 1.1x;
       the oracle gap is allocation learning, not strata resolution, so also report whether
       a stronger shrinkage prior closes any of it. -> `probes/strat_pos3.py`.
-- [ ] F4. Prefix sharing stays a note unless F2 and F3 land: it needs tree-structured pools
+- [x] F4. (left as a note: F3 did not land, and tree pools conflict with the Sobol stream as well as with per-stratum allocation; 1.2-1.6x standalone, ~1.1x composite) Prefix sharing stays a note unless F2 and F3 land: it needs tree-structured pools
       and conflicts with per-stratum allocation (realistic composite 1.1-1.2x).
 
 ## Order
