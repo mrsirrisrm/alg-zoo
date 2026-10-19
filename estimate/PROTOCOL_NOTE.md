@@ -13,10 +13,10 @@ independent test of a mechanistic estimator.
 | predictor of the copy's accuracy loss | corr with truth | rms error | cost per copy |
 |---|---|---|---|
 | constant (mean loss over copies) | – | 0.026 | 0 |
-| c · δᵀHδ, H = Gauss-Newton Fisher of the trained model, c one scalar (fitted leave-one-out) | 0.95 | 0.009 | 3.7e5 FLOPs (65 MC samples) |
+| c · δᵀHδ, H = Gauss-Newton Fisher of the trained model, c one scalar fitted on 16 fresh copies (leave-one-out within the harness: 0.009) | 0.95 | 0.013 | 3.7e5 FLOPs (65 MC samples) |
 | first-order logit shift J·δ on a fixed 65k pool, count flips | 0.996 | 0.0024 | 5.7e8 FLOPs |
 
-Monte Carlo needs ~1,100 samples (6 MFLOP) to reach the quadratic form's 0.009, and the
+Monte Carlo needs ~560 samples (3 MFLOP) to reach the quadratic form's 0.013, and the
 quadratic form costs the equivalent of 65 samples. H has participation ratio 4.9: which
 copies are bad is set by how much of the noise lands on about five stiff directions, all
 in the recurrent weights of five neurons.

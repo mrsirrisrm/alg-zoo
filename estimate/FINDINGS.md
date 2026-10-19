@@ -475,6 +475,37 @@ How many bits does the mechanism need, and is that intrinsic or a raw-basis arte
   the error set is carried by ~1-2 kbits of weight precision in the best coordinates
   and sampling is cheaper than any description that long.
 
+## What the stiff weights do (`probes/stiff_loops.py`, `probes/n7_comparator.py`, `.out`)
+Is the stiffness recurrence as such, and does it set the tie walls?
+- Where it sits (diag of the relative-coordinate GN Hessian): 63% in the 25 W_hh weights
+  among {n1, n2, n6, n7, n8}, of which self-loops 19%; other W_hh 13%, W_ih 15%, W_out 9%.
+  Top eigenvector: n2->n7 (0.24 of its energy), n7->n8, n2 self, n7->n1, in->n7, n6->n1.
+  Self-loops carry 15/46/23% of the top three directions; the rest is fan-out from n2,
+  not a cycle back into it (inputs to n2 from the other four <= 0.16).
+- The circuit: n2 is a near-unit store (self 0.969, block eigenvalue 0.959) holding
+  ~17.6x the running max (median ratio, IQR 14.6-18.2; R² 0.81 on max and 2nd at t=9).
+  n7 compares the fresh input to it: 0.674 n2 - 13.17 x_t carries 88% of n7's
+  pre-activation variance and its sign 94% of the time; n7 is off once x_t exceeds
+  ~0.90x the running max. n7 is the largest input to n8 and n1. The 5x5 block also has
+  a complex pair 0.69 ± 0.63i (|0.93|, ~42°/step), linear-regime only.
+- Single-weight relative error eps = ±1%, walls re-measured on 2^16 ties per kind, accuracy
+  on 2^21 common inputs. rms wall shift / eps (M/S, S/R) and accuracy change:
+    n2->n7     1.9, 2.2   -2.1 to -2.5 pts      in->n7          1.7-2.3, 1.6   -1.2 to -1.4
+    n2 self    2.8, 2.1   -1.9 to -2.4          n7->n1, n6->n1  1.0-1.1, 1.3-1.7  -0.8 to -1.4
+    n7->n8     1.4, 1.8   -1.3 to -2.3          soft controls   0.2-0.6   ~0
+  Typical wall offsets are 0.014 (M/S) and 0.020 (S/R), so a 1% error in one stiff weight
+  widens the strips by ~15-150% (soft controls ~0). Both signs of eps cost accuracy (an optimum). Loss scales
+  as eps², so 1e-3 needs ~0.2% on each stiff weight, ~9 bits: the same as the isotropic
+  10.5 bits/weight above.
+- Reading: the walls sit where n7's input-vs-stored-max comparison flips, so their
+  position is a ratio of a few recurrent and input weights, amplified ~2x, against strips
+  1-2% of the max wide. That is where the 1e-3 state precision (dimension tests) and the
+  stiff directions behind Q (`weight_perturbation.py`) come from. Stiffness (memory n2 and
+  its readout) and the comparison-step kink set (n0, n4, n7, n9, n11, n6) overlap only in
+  n7 and n6.
+- Caveat: signed wall shifts cancel by construction (the two orientations of an exact tie
+  give opposite offsets), so this measures scatter, not whether the walls slide uniformly.
+
 ## The easier T = 10 models: h32 and hand10 under the same lenses (`probes/surprise_h32_hand10.out`)
 - h32 (zoo best seed, accuracy 0.9944): tie-layer explanation removes 55% of the
   correctness bit's surprise (trained 43%), gap logit 49%; active subspace effective
@@ -596,6 +627,28 @@ Same lenses as the harness models (ablation gains already in `probes/ablation.ou
   0.14 (M(16,10)) -> 0.04 (h32) -> 0 (hand10), with the deducible fraction of the error and
   the explained surprise rising along it. M(16,10) sits where the level is deducible to
   ~20% and the per-input structure is not.
+
+## Out-of-sample c and the picture of H (`probes/wp_calibrate.py`, `.out`; PLAN A2, A3)
+Fresh copies W + sigma rms(W) N(0,1), 16 per sigma at sigma in {0.0025, 0.005, 0.01}
+(rng 2024, independent of the harness), truth 2^26 each; c fitted through the origin on
+each set and scored on the 32 harness copies.
+- Quadratic regime holds to sigma = 0.005 and breaks by 0.01: mean loss 0.0155 / 0.0678 /
+  0.1875 (x4.4 then x2.8 per doubling against x4 for a pure quadratic); fitted c 0.130 /
+  0.118 / 0.067; corr(Q, loss) 0.95 / 0.96 / 0.89; in-sample rms 0.0022 / 0.0099 / 0.059.
+- Out of sample on the harness (constant predictor rms 0.0261): c from sigma 0.005 gives
+  rms 0.0126 (bias -0.008; the fresh set's mean loss 0.068 is 1.2 sd above the harness's
+  0.057), c from 0.0025 gives 0.0186, c from 0.01 gives 0.0235. So the honest Q number is
+  0.0126, not the leave-one-out 0.0090: it beats the constant by 2.1x and crosses MC at
+  ~3 MFLOP (560 samples) rather than 6. The A1 conclusion stands; the ARC-facing numbers
+  in `PROTOCOL_NOTE.md` use 0.0126.
+- H (trace 7e4) is 99.7% recurrent weights: W_ih 0.000, W_hh 0.997, W_out 0.002. Top
+  1/5/20 eigenvalues carry 0.39/0.79/0.96 of the trace, participation ratio 4.9. By
+  neuron (incoming row) n7 0.32, n2 0.17, n8 0.13, n6 0.13, n1 0.09, then < 0.03 each:
+  the same five neurons as `precision_blocks.out`. Eigvec 0 (share 0.39) is row 7 of W_hh
+  (hh[7,2], hh[7,7], hh[7,6], hh[7,14]); eigvec 1 (0.18) is row 2 (hh[2,2], hh[2,10],
+  hh[2,7]); eigvec 2 (0.12) is row 6; eigvecs 3-5 mix rows 7, 1, 8, 6 through columns 10-12.
+  Which copies are bad is set by how much of the noise lands on the n7 comparator's and the
+  n2 memory's recurrent inputs; the input and output weights do not matter at this sigma.
 
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).

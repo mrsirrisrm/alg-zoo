@@ -1,0 +1,66 @@
+H trace 7e+04; top 1/5/20 share 0.39/0.79/0.96; participation ratio 4.9
+trace share by matrix: W_ih 0.000, W_hh 0.997, W_out 0.002
+per-neuron share of trace (incoming weights: W_ih + W_hh row): n7 0.323, n2 0.172, n8 0.129, n6 0.125, n1 0.089, n4 0.029, n10 0.027, n12 0.021
+per-neuron share of trace (outgoing: W_hh column + W_out column): n2 0.170, n7 0.146, n10 0.116, n6 0.098, n8 0.091, n1 0.084, n14 0.082, n11 0.059
+eigvec 0 (lambda share 0.387): weights of top-6 entries hh[7,2] 0.14, hh[7,7] 0.10, hh[7,6] 0.08, hh[7,14] 0.06, hh[7,1] 0.06, hh[7,8] 0.05; W_hh share 1.00
+eigvec 1 (lambda share 0.179): weights of top-6 entries hh[2,2] 0.15, hh[2,10] 0.12, hh[2,7] 0.11, hh[2,11] 0.06, hh[2,6] 0.05, hh[2,1] 0.05; W_hh share 1.00
+eigvec 2 (lambda share 0.119): weights of top-6 entries hh[6,7] 0.07, hh[6,6] 0.06, hh[6,2] 0.05, hh[6,8] 0.05, hh[7,10] 0.05, hh[6,1] 0.05; W_hh share 1.00
+eigvec 3 (lambda share 0.065): weights of top-6 entries hh[7,10] 0.13, hh[1,10] 0.07, hh[8,12] 0.06, hh[7,11] 0.06, hh[7,14] 0.05, hh[6,11] 0.05; W_hh share 1.00
+eigvec 4 (lambda share 0.037): weights of top-6 entries hh[6,10] 0.12, hh[7,12] 0.07, hh[1,12] 0.07, hh[8,10] 0.05, hh[6,2] 0.04, hh[6,11] 0.04; W_hh share 1.00
+eigvec 5 (lambda share 0.033): weights of top-6 entries hh[7,7] 0.06, hh[1,2] 0.04, hh[12,2] 0.04, hh[12,10] 0.03, hh[7,10] 0.03, hh[6,7] 0.03; W_hh share 1.00
+  sigma 0.0025 copy 0: loss 0.0220
+  sigma 0.0025 copy 1: loss 0.0113
+  sigma 0.0025 copy 2: loss 0.0140
+  sigma 0.0025 copy 3: loss 0.0163
+  sigma 0.0025 copy 4: loss 0.0344
+  sigma 0.0025 copy 5: loss 0.0052
+  sigma 0.0025 copy 6: loss 0.0141
+  sigma 0.0025 copy 7: loss 0.0173
+  sigma 0.0025 copy 8: loss 0.0272
+  sigma 0.0025 copy 9: loss 0.0145
+  sigma 0.0025 copy 10: loss 0.0110
+  sigma 0.0025 copy 11: loss 0.0149
+  sigma 0.0025 copy 12: loss 0.0069
+  sigma 0.0025 copy 13: loss 0.0139
+  sigma 0.0025 copy 14: loss 0.0138
+  sigma 0.0025 copy 15: loss 0.0110
+sigma 0.0025: mean loss 0.0155, sd 0.0070, corr(Q, loss) 0.951, c 0.13, rms residual 0.0022
+  sigma 0.005 copy 0: loss 0.0344
+  sigma 0.005 copy 1: loss 0.0280
+  sigma 0.005 copy 2: loss 0.0684
+  sigma 0.005 copy 3: loss 0.0757
+  sigma 0.005 copy 4: loss 0.0311
+  sigma 0.005 copy 5: loss 0.1089
+  sigma 0.005 copy 6: loss 0.0562
+  sigma 0.005 copy 7: loss 0.0800
+  sigma 0.005 copy 8: loss 0.0402
+  sigma 0.005 copy 9: loss 0.0386
+  sigma 0.005 copy 10: loss 0.1225
+  sigma 0.005 copy 11: loss 0.0443
+  sigma 0.005 copy 12: loss 0.1458
+  sigma 0.005 copy 13: loss 0.0600
+  sigma 0.005 copy 14: loss 0.0516
+  sigma 0.005 copy 15: loss 0.0998
+sigma 0.005: mean loss 0.0678, sd 0.0342, corr(Q, loss) 0.959, c 0.1182, rms residual 0.0099
+  sigma 0.01 copy 0: loss 0.1939
+  sigma 0.01 copy 1: loss 0.2259
+  sigma 0.01 copy 2: loss 0.3288
+  sigma 0.01 copy 3: loss 0.2551
+  sigma 0.01 copy 4: loss 0.1145
+  sigma 0.01 copy 5: loss 0.1351
+  sigma 0.01 copy 6: loss 0.1312
+  sigma 0.01 copy 7: loss 0.1594
+  sigma 0.01 copy 8: loss 0.1470
+  sigma 0.01 copy 9: loss 0.0899
+  sigma 0.01 copy 10: loss 0.1021
+  sigma 0.01 copy 11: loss 0.2391
+  sigma 0.01 copy 12: loss 0.3092
+  sigma 0.01 copy 13: loss 0.2673
+  sigma 0.01 copy 14: loss 0.1199
+  sigma 0.01 copy 15: loss 0.1818
+sigma 0.01: mean loss 0.1875, sd 0.0729, corr(Q, loss) 0.890, c 0.06675, rms residual 0.0590
+
+harness (32 copies at sigma 0.005), constant-predictor rms 0.0261
+  c from sigma 0.0025: rms 0.0186, mean bias -0.0141
+  c from sigma 0.005: rms 0.0126, mean bias -0.0076
+  c from sigma 0.01: rms 0.0235, mean bias +0.0206

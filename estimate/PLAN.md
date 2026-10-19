@@ -15,12 +15,12 @@ MC baseline cost 5,760 FLOPs per sample; report gain as MC compute for equal rms
       3.7e5 FLOPs/copy, crossover ~6 MFLOP; L (first-order logit shift, 65k pool)
       corr 0.996, rms 0.0024, 5.7e8 FLOPs/copy, loses to MC 2.4x there; flips 8.4% of
       inputs per copy, first-order criterion captures 83% in 15% of inputs, 95% in 43%.
-- [ ] A2. Fit c out of sample. Regenerate copies at σ ∈ {0.0025, 0.005, 0.01}
+- [x] A2. (out-of-sample c from fresh sigma 0.005 copies: harness rms 0.0126, not within 10% of LOO 0.0090; quadratic regime holds to 0.005, breaks by 0.01) Fit c out of sample. Regenerate copies at σ ∈ {0.0025, 0.005, 0.01}
       (reuse `noisy_models.py` with a different rng seed, 2^26 truth each is enough),
       fit c on those, score on the 32 harness copies. Check whether one c serves all
       three σ (quadratic regime) or drifts (cubic terms). → `probes/wp_calibrate.py`.
       Verify: harness rms with out-of-sample c within ~10% of the LOO 0.0090.
-- [ ] A3. Picture of H. Top 6 eigenvectors as weight maps; fraction of trace per neuron
+- [x] A3. (H is 99.7% W_hh; n7 0.32, n2 0.17, n8 0.13, n6 0.13, n1 0.09; top-5 eigvecs 0.79 of trace) Picture of H. Top 6 eigenvectors as weight maps; fraction of trace per neuron
       and per matrix; compare with `precision_blocks.out` (expect n2, n7, n8, n1, n6).
       Write-up line: "which copies are bad is set by the projection of the noise on
       ~5 stiff recurrent directions".
