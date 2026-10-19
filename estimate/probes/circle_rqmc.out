@@ -1,0 +1,9 @@
+trained arc=2π/1   iid-circle gain   40.6  rqmc-circle gain   37.5 (x0.9 from structure)  efficiency vs MC: iid 0.09  rqmc 0.08
+trained arc=2π/16  iid-circle gain    3.7  rqmc-circle gain    3.6 (x1.0 from structure)  efficiency vs MC: iid 0.12  rqmc 0.12
+trained arc=2π/256 iid-circle gain    2.5  rqmc-circle gain    1.9 (x0.8 from structure)  efficiency vs MC: iid 0.67  rqmc 0.51
+noisy0 arc=2π/1   iid-circle gain   20.5  rqmc-circle gain   33.4 (x1.6 from structure)  efficiency vs MC: iid 0.04  rqmc 0.07
+noisy0 arc=2π/16  iid-circle gain    2.0  rqmc-circle gain    4.6 (x2.4 from structure)  efficiency vs MC: iid 0.06  rqmc 0.15
+noisy0 arc=2π/256 iid-circle gain    1.1  rqmc-circle gain    2.0 (x1.9 from structure)  efficiency vs MC: iid 0.28  rqmc 0.53
+noisy1 arc=2π/1   iid-circle gain   19.8  rqmc-circle gain   48.6 (x2.5 from structure)  efficiency vs MC: iid 0.04  rqmc 0.10
+noisy1 arc=2π/16  iid-circle gain    2.5  rqmc-circle gain    3.6 (x1.5 from structure)  efficiency vs MC: iid 0.08  rqmc 0.12
+noisy1 arc=2π/256 iid-circle gain    1.3  rqmc-circle gain    2.9 (x2.3 from structure)  efficiency vs MC: iid 0.33  rqmc 0.76

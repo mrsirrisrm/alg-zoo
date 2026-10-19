@@ -22,11 +22,19 @@ DT = th.float64
 
 
 class BnB:
-    def __init__(self, W, T, Q=256, eps=1e-6, chunk=4096, seed=3, max_nodes=200000, max_sec=300):
+    def __init__(self, W, T, Q=256, eps=1e-6, chunk=4096, seed=3, max_nodes=200000, max_sec=300, gl=0, G=16):
+        """gl: the last gl lattice dimensions use a G-point Gauss-Legendre product rule (in the
+        separation-of-variables u-space) instead of Sobol; Q Sobol points cover the rest."""
         self.W_ih, self.W_hh, self.W_out = [th.as_tensor(a, dtype=DT) for a in W]
-        self.h, self.T, self.Q, self.eps, self.chunk = self.W_hh.shape[0], T, Q, eps, chunk
-        d = max(T - 1, 1)
-        self.w = th.quasirandom.SobolEngine(d, scramble=True, seed=seed).draw(Q, dtype=DT).clamp(1e-12, 1 - 1e-12)
+        self.h, self.T, self.eps, self.chunk = self.W_hh.shape[0], T, eps, chunk
+        d = max(T - 1, 1); gl = min(gl, d)
+        w = th.quasirandom.SobolEngine(d - gl, scramble=True, seed=seed).draw(Q, dtype=DT) if gl < d else th.zeros(1, 0, dtype=DT)
+        pw = th.full((w.shape[0],), 1.0 / w.shape[0], dtype=DT)
+        u, v = np.polynomial.legendre.leggauss(G); u, v = th.tensor((u + 1) / 2), th.tensor(v / 2)
+        for _ in range(gl):
+            w = th.cat([w.repeat_interleave(G, 0), u.repeat(w.shape[0])[:, None]], 1)
+            pw = (pw[:, None] * v[None]).reshape(-1)
+        self.w, self.pw, self.Q = w.clamp(1e-12, 1 - 1e-12), pw, w.shape[0]
         self.flops = 0.0; self.max_nodes, self.max_sec = max_nodes, max_sec
 
     def _sov(self, rows, final=None):
@@ -53,7 +61,7 @@ class BnB:
                 x[..., j] = Phi_inv((Plo + self.w[:, j] * m).clamp(1e-300, 1 - 1e-16)).clamp(-12, 12)
             else:
                 lo_T, hi_T, m_T = lo, hi, m
-        mass = (wgt * m_T).mean(1) * (~dead)
+        mass = (wgt * m_T) @ self.pw * (~dead)
         if final is None:
             return mass, None
         # correctness exact in z = x_{T-1} on [lo_T, hi_T]
@@ -72,7 +80,7 @@ class BnB:
         pm = (Phi(z[..., 1:]) - Phi(z[..., :-1])).clamp_min(0)
         P = mid.shape[-1]
         self.flops += N * Q * P * (2 * K + 3 * T + 60) + N * Q * K * K * 3
-        corr = (wgt * (pm * ok).sum(-1)).mean(1) * (~dead)
+        corr = (wgt * (pm * ok).sum(-1)) @ self.pw * (~dead)
         return mass, corr
 
     def run(self, verbose=False):
