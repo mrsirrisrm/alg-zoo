@@ -1,0 +1,30 @@
+
+trained: rho_k (prefix R2) and gain over MC = 5760 / (cost(k,m) (1 + (m-1) rho_k))
+  k=1 rho 0.0005 | m=2: 1.05x  m=4: 1.07x  m=8: 1.09x  m=16: 1.09x  m=32: 1.08x
+  k=2 rho 0.0027 | m=2: 1.10x  m=4: 1.16x  m=8: 1.18x  m=16: 1.17x  m=32: 1.13x
+  k=3 rho 0.0088 | m=2: 1.15x  m=4: 1.24x  m=8: 1.25x  m=16: 1.20x  m=32: 1.08x
+  k=4 rho 0.0198 | m=2: 1.21x  m=4: 1.32x  m=8: 1.31x  m=16: 1.19x  m=32: 0.98x
+  k=5 rho 0.0431 | m=2: 1.26x  m=4: 1.37x  m=8: 1.31x  m=16: 1.09x  m=32: 0.79x
+  k=6 rho 0.0820 | m=2: 1.29x  m=4: 1.40x  m=8: 1.26x  m=16: 0.96x  m=32: 0.63x
+  k=7 rho 0.1494 | m=2: 1.30x  m=4: 1.37x  m=8: 1.16x  m=16: 0.81x  m=32: 0.49x
+  best k=6 m=4: predicted 1.40x; simulated variance ratio MC/tree at equal leaves 0.90 (predicted 0.80), FLOP ratio 1.74 -> measured gain 1.56x
+
+noisy0: rho_k (prefix R2) and gain over MC = 5760 / (cost(k,m) (1 + (m-1) rho_k))
+  k=1 rho 0.0028 | m=2: 1.05x  m=4: 1.07x  m=8: 1.07x  m=16: 1.05x  m=32: 1.01x
+  k=2 rho 0.0102 | m=2: 1.09x  m=4: 1.13x  m=8: 1.12x  m=16: 1.05x  m=32: 0.93x
+  k=3 rho 0.0271 | m=2: 1.13x  m=4: 1.17x  m=8: 1.12x  m=16: 0.97x  m=32: 0.75x
+  k=4 rho 0.0456 | m=2: 1.18x  m=4: 1.23x  m=8: 1.13x  m=16: 0.92x  m=32: 0.65x
+  k=5 rho 0.0808 | m=2: 1.21x  m=4: 1.25x  m=8: 1.09x  m=16: 0.81x  m=32: 0.53x
+  k=6 rho 0.1490 | m=2: 1.21x  m=4: 1.20x  m=8: 0.97x  m=16: 0.66x  m=32: 0.39x
+  k=7 rho 0.2370 | m=2: 1.21x  m=4: 1.16x  m=8: 0.89x  m=16: 0.58x  m=32: 0.33x
+  best k=5 m=4: predicted 1.25x; simulated variance ratio MC/tree at equal leaves 0.75 (predicted 0.80), FLOP ratio 1.55 -> measured gain 1.16x
+
+seed0: rho_k (prefix R2) and gain over MC = 5760 / (cost(k,m) (1 + (m-1) rho_k))
+  k=1 rho 0.0006 | m=2: 1.05x  m=4: 1.07x  m=8: 1.09x  m=16: 1.09x  m=32: 1.08x
+  k=2 rho 0.0027 | m=2: 1.10x  m=4: 1.16x  m=8: 1.18x  m=16: 1.17x  m=32: 1.13x
+  k=3 rho 0.0141 | m=2: 1.15x  m=4: 1.22x  m=8: 1.21x  m=16: 1.12x  m=32: 0.96x
+  k=4 rho 0.0332 | m=2: 1.19x  m=4: 1.27x  m=8: 1.21x  m=16: 1.03x  m=32: 0.78x
+  k=5 rho 0.0685 | m=2: 1.23x  m=4: 1.28x  m=8: 1.15x  m=16: 0.89x  m=32: 0.59x
+  k=6 rho 0.1180 | m=2: 1.25x  m=4: 1.28x  m=8: 1.09x  m=16: 0.77x  m=32: 0.48x
+  k=7 rho 0.1944 | m=2: 1.25x  m=4: 1.25x  m=8: 1.00x  m=16: 0.67x  m=32: 0.40x
+  best k=6 m=4: predicted 1.28x; simulated variance ratio MC/tree at equal leaves 0.91 (predicted 0.74), FLOP ratio 1.74 -> measured gain 1.59x

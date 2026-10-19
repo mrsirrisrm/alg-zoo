@@ -529,6 +529,15 @@ Cost ~1.15 pass-equivalents (9-step forward + incremental logit updates per piec
   1.8x (trained), 1.5x (noisy), 1.6x (seeds). Composes with stratification only if the
   strata are functions of x_<9 (B5).
 
+## Prefix sharing (`probes/prefix_tree.py`, `.out`; PLAN B4)
+m leaves share the first k inputs, so those k recurrence steps are computed once per group.
+Leaves are correlated by the prefix R2 rho_k (pick-freeze): trained 0.0005 (k=1), 0.009 (3),
+0.043 (5), 0.082 (6), 0.149 (7); noisy0 roughly 2x these; seed0 in between. Gain over MC =
+5760 / (cost(k,m) (1 + (m-1) rho_k)) peaks at k = 5-6, m = 4: predicted 1.40x (trained), 1.25x
+(noisy0), 1.28x (seed0); direct simulation at 2^16 leaves x 64 reps gives 1.56x / 1.16x / 1.59x
+(+-~20%). A real but small use of the recurrence; it conflicts with per-stratum allocation
+(siblings land in different strata), so it is not in the B5 stack.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".
