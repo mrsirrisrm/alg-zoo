@@ -518,6 +518,17 @@ model alone, with no passes of the copy? Two predictors on the 32 sigma = 0.005 
   model's second-order sensitivity beats MC at low budget, so the copy harness measures
   sensitivity, not estimation. The zoo seeds 0-4 are the honest test. Plan: `PLAN.md` A.
 
+## Exact integration of the last input (`probes/exact_last.py`, `.out`; PLAN B3)
+Given x_0..x_8, h_9 = relu(a + b x_9) is piecewise linear in the scalar x_9 (<= 16 neuron
+breakpoints) and the label changes at the prefix's top two values, so on each of <= 19
+pieces correctness is an interval of x_9 and P(correct | x_<9) is a sum of Phi-masses.
+Cost ~1.15 pass-equivalents (9-step forward + incremental logit updates per piece).
+- Unbiased: z vs truth within +-1.3 on trained, noisy0-1, seed0-1 at 2^22.
+- Variance ratio Var(E[y|x_<9]) / Var(y) = 0.49 (trained), 0.57-0.60 (noisy), 0.53 (seeds),
+  matching the prefix R2 of the conditioning-ceiling table. Net gain at equal FLOPs
+  1.8x (trained), 1.5x (noisy), 1.6x (seeds). Composes with stratification only if the
+  strata are functions of x_<9 (B5).
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".

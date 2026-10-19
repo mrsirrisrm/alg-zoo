@@ -1,0 +1,5 @@
+trained  truth 0.95312 | MC 0.95318 (se 1.0e-04) | exact-last 0.95312 (se 7.2e-05, z vs truth +0.0) | var ratio 0.486 | gain at cost 1.15 passes: 1.79x | frac of P(correct|x<9) in (0,1): 0.999
+noisy0   truth 0.86834 | MC 0.86822 (se 1.7e-04) | exact-last 0.86818 (se 1.3e-04, z vs truth -1.3) | var ratio 0.596 | gain at cost 1.15 passes: 1.46x | frac of P(correct|x<9) in (0,1): 0.999
+noisy1   truth 0.91298 | MC 0.91311 (se 1.4e-04) | exact-last 0.91308 (se 1.0e-04, z vs truth +1.0) | var ratio 0.566 | gain at cost 1.15 passes: 1.54x | frac of P(correct|x<9) in (0,1): 0.999
+seed0    truth 0.91002 | MC 0.91015 (se 1.4e-04) | exact-last 0.91013 (se 1.0e-04, z vs truth +1.0) | var ratio 0.535 | gain at cost 1.15 passes: 1.63x | frac of P(correct|x<9) in (0,1): 1.000
+seed1    truth 0.88023 | MC 0.88038 (se 1.6e-04) | exact-last 0.88032 (se 1.2e-04, z vs truth +0.8) | var ratio 0.531 | gain at cost 1.15 passes: 1.64x | frac of P(correct|x<9) in (0,1): 0.999
