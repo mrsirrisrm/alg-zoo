@@ -764,6 +764,31 @@ for comparison; oracle = true per-cell variances):
   forward map, not the mechanism. `probes/ablation.py` gets 5.5x on a random-weight RNN
   from gaps+pos strata alone. The number to report against MC on M(16,10) is 4-5x.
 
+## Common random numbers on the copies: no gain (`probes/wp_crn.py`, `.out`, `.json`; PLAN A4)
+The copy-harness estimator that uses the trained model as advice: p(W') = p0 + E[y' - y0]
+exactly, with y0 the trained model's correctness on the same input, so only the
+difference d = y' - y0 in {-1, 0, +1} is sampled. (The quadratic form of A1 is not needed
+once p0 is in; "Q + residual" collapses to this.) Strata = trained |margin| bins
+(0, 0.1, 0.3, 1, 3, inf; masses 0.005 / 0.009 / 0.033 / 0.109 / 0.844 from a pool
+evaluated once for all copies), proportional or adaptive Neyman as in B1. 32 copies,
+16 reps, pool 2^20 per rep, budgets 2^14-2^18.
+- CRN alone gains 1.03-1.28x at one copy pass per sample (0.5-0.6x if the trained pass
+  is charged): the copies' flips are mostly new errors in one direction, so var(d) =
+  flip rate (4-12% per copy) is nearly var(y') = p'(1-p'). There is no cancellation to
+  exploit.
+- Margin strata with adaptive allocation: 1.27-1.63x at one pass (0.6-0.8x at two).
+  The flip rate by |margin| bin is 0.50 / 0.45 / 0.34 / 0.14 / 0.009, and the big bin
+  (|m| >= 3, mass 0.84) still carries a fifth of the flips, so the Neyman ceiling with
+  these strata is ~1.85x; the plan's 2-3x assumed flips localised near the trained
+  boundary, which C1 had already shown they are not.
+- The copy-averaged bias z's of -3 to -4 at 2^17-2^18 are the shared per-pool term
+  -(mean y0 - p0): over these 16 pools the trained pool means sit +1.2e-4 above p0
+  (z +2.3), full-pool MC on the copies is at z +0.9, full-pool CRN at z -2.5. Unbiased
+  in expectation, but the error is dominated by the trained-side term that CRN was
+  meant to cancel; MSE-wise it is the 1.0-1.3x above.
+- So on the copies the advice route is the quadratic form below ~3 MFLOP and plain or
+  stacked sampling above; nothing in between.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".

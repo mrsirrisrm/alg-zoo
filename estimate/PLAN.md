@@ -24,7 +24,7 @@ MC baseline cost 5,760 FLOPs per sample; report gain as MC compute for equal rms
       and per matrix; compare with `precision_blocks.out` (expect n2, n7, n8, n1, n6).
       Write-up line: "which copies are bad is set by the projection of the noise on
       ~5 stiff recurrent directions".
-- [ ] A4. Q + residual by common random numbers. Estimate p(W') = p₀ − c·Q + E[y' − y]
+- [x] A4. (negative: CRN 1.0-1.3x, with margin strata 1.3-1.6x at one pass per sample; flips are one-directional so var(d) ~ var(y')) Q + residual by common random numbers. Estimate p(W') = p₀ − c·Q + E[y' − y]
       with the same inputs through both nets, and the optional trained-margin
       Neyman weighting (soft, floor 10%). Expect 1.2x from CRN alone, 2-3x with the
       weighting. Report its MSE-vs-compute curve next to MC. → `probes/wp_crn.py`.

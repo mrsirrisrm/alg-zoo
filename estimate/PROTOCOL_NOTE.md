@@ -29,6 +29,9 @@ in the recurrent weights of five neurons.
 - It does say that any estimator allowed to use the trained model as advice can beat
   sampling on the copies at low budget without understanding the mechanism, so the copy
   harness cannot separate mechanistic from advice-based estimators.
+  (Common random numbers against the trained model add nothing above that budget: the
+  copies' flips are one-directional, so the paired difference is as variable as the
+  copy's own outcome; `probes/wp_crn.py`.)
 - The independently trained seeds (0–4, accuracy 0.88–0.95) are not perturbations of the
   trained model, and on them the picture is unchanged: the best unbiased mechanism-guided
   sampling gains 2–4× over MC, the best deduction is 13–15% off.

@@ -1,0 +1,25 @@
+rep 0: flip rate of the last copy 0.0408; |m0| bin masses 0.005 0.009 0.033 0.109 0.844; flip rate by bin 0.496 0.451 0.342 0.143 0.009
+rep 1: flip rate of the last copy 0.0406; |m0| bin masses 0.005 0.009 0.033 0.109 0.844; flip rate by bin 0.485 0.446 0.340 0.140 0.009
+rep 2: flip rate of the last copy 0.0406; |m0| bin masses 0.005 0.009 0.033 0.108 0.845; flip rate by bin 0.476 0.450 0.339 0.143 0.009
+rep 3: flip rate of the last copy 0.0407; |m0| bin masses 0.005 0.009 0.033 0.109 0.844; flip rate by bin 0.487 0.442 0.341 0.142 0.009
+rep 4: flip rate of the last copy 0.0410; |m0| bin masses 0.005 0.009 0.033 0.109 0.844; flip rate by bin 0.497 0.450 0.343 0.142 0.009
+rep 5: flip rate of the last copy 0.0407; |m0| bin masses 0.005 0.009 0.033 0.109 0.844; flip rate by bin 0.488 0.446 0.339 0.142 0.009
+rep 6: flip rate of the last copy 0.0408; |m0| bin masses 0.005 0.009 0.033 0.108 0.845; flip rate by bin 0.495 0.448 0.340 0.144 0.009
+rep 7: flip rate of the last copy 0.0409; |m0| bin masses 0.005 0.009 0.033 0.109 0.844; flip rate by bin 0.494 0.448 0.345 0.144 0.009
+rep 8: flip rate of the last copy 0.0412; |m0| bin masses 0.005 0.009 0.033 0.110 0.843; flip rate by bin 0.482 0.450 0.347 0.144 0.009
+rep 9: flip rate of the last copy 0.0406; |m0| bin masses 0.005 0.009 0.033 0.108 0.844; flip rate by bin 0.489 0.448 0.341 0.142 0.009
+rep 10: flip rate of the last copy 0.0407; |m0| bin masses 0.005 0.009 0.033 0.108 0.844; flip rate by bin 0.482 0.455 0.342 0.141 0.009
+rep 11: flip rate of the last copy 0.0406; |m0| bin masses 0.005 0.009 0.033 0.109 0.844; flip rate by bin 0.485 0.445 0.344 0.141 0.009
+rep 12: flip rate of the last copy 0.0407; |m0| bin masses 0.005 0.009 0.033 0.108 0.844; flip rate by bin 0.481 0.444 0.342 0.143 0.009
+rep 13: flip rate of the last copy 0.0408; |m0| bin masses 0.005 0.009 0.033 0.108 0.844; flip rate by bin 0.487 0.445 0.346 0.142 0.009
+rep 14: flip rate of the last copy 0.0406; |m0| bin masses 0.005 0.009 0.033 0.109 0.844; flip rate by bin 0.489 0.446 0.342 0.141 0.009
+rep 15: flip rate of the last copy 0.0408; |m0| bin masses 0.005 0.009 0.033 0.109 0.844; flip rate by bin 0.480 0.451 0.344 0.141 0.009
+
+gain = MC MSE / ours at equal copy passes (1 pass/sample; 2-pass cost in brackets), geometric mean over 32 copies;
+rms = root mean square error over copies x reps; z = bias of the copy-averaged estimate over reps (copies share each rep's pool, so they are not independent)
+budget    MC rms         prop                               adaptive
+2^14    2.3e-03    1.27x (0.64x) rms 2.1e-03 z-0.5    1.27x (0.64x) rms 2.1e-03 z-0.5
+2^15    1.7e-03    1.21x (0.61x) rms 1.6e-03 z-0.6    1.37x (0.69x) rms 1.5e-03 z-1.1
+2^16    1.2e-03    1.14x (0.57x) rms 1.2e-03 z-1.9    1.59x (0.79x) rms 1.0e-03 z-2.0
+2^17    8.2e-04    1.07x (0.53x) rms 8.0e-04 z-3.8    1.39x (0.70x) rms 7.1e-04 z-3.4
+2^18    5.6e-04    1.06x (0.53x) rms 5.4e-04 z-3.9    1.27x (0.63x) rms 5.1e-04 z-2.7
