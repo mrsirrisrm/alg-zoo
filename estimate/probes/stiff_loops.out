@@ -1,0 +1,61 @@
+stiff set [1, 2, 6, 7, 8]
+
+eigvec 0 (0.344 of trace): self-loop energy 0.15, within-stiff-set W_hh 0.88, all W_hh 0.91
+   n2->n7             energy 0.242  weight +0.674
+   n7->n8             energy 0.172  weight -1.094
+   n2->n2 (self)      energy 0.099  weight +0.969
+   n7->n1             energy 0.092  weight -1.048
+   in->n7             energy 0.066  weight -13.169
+   n6->n1             energy 0.059  weight +0.995
+
+eigvec 1 (0.186 of trace): self-loop energy 0.46, within-stiff-set W_hh 0.86, all W_hh 0.92
+   n2->n2 (self)      energy 0.444  weight +0.969
+   n2->n7             energy 0.153  weight +0.674
+   n7->n1             energy 0.074  weight -1.048
+   n6->n1             energy 0.044  weight +0.995
+   n7->n8             energy 0.043  weight -1.094
+   in->n4             energy 0.041  weight +10.157
+
+eigvec 2 (0.134 of trace): self-loop energy 0.23, within-stiff-set W_hh 0.74, all W_hh 0.85
+   n7->n8             energy 0.205  weight -1.094
+   n2->n2 (self)      energy 0.158  weight +0.969
+   n7->n1             energy 0.087  weight -1.048
+   n6->n1             energy 0.067  weight +0.995
+   n2->n6             energy 0.050  weight +0.535
+   in->n8             energy 0.041  weight -12.312
+
+eigvec 3 (0.083 of trace): self-loop energy 0.13, within-stiff-set W_hh 0.36, all W_hh 0.40
+   in->n7             energy 0.456  weight -13.169
+   n2->n7             energy 0.156  weight +0.674
+   n2->n2 (self)      energy 0.120  weight +0.969
+   in->n1             energy 0.076  weight -10.565
+   in->n6             energy 0.044  weight -10.996
+   n7->n1             energy 0.019  weight -1.048
+
+eigvec 4 (0.039 of trace): self-loop energy 0.04, within-stiff-set W_hh 0.36, all W_hh 0.55
+   n2->n6             energy 0.191  weight +0.535
+   in->n6             energy 0.124  weight -10.996
+   in->n4             energy 0.123  weight +10.157
+   in->n8             energy 0.107  weight -12.312
+   n7->n1             energy 0.064  weight -1.048
+   n4->n7             energy 0.046  weight +1.317
+
+eigvec 5 (0.026 of trace): self-loop energy 0.01, within-stiff-set W_hh 0.06, all W_hh 0.49
+   in->n8             energy 0.256  weight -12.312
+   in->n6             energy 0.097  weight -10.996
+   n6->n0             energy 0.092  weight +1.133
+   n7->n0             energy 0.057  weight -0.776
+   n8->n0             energy 0.038  weight -0.793
+   in->n4             energy 0.035  weight +10.157
+
+diag(H) share: self-loops 0.194, within-stiff-set W_hh 0.634 (of which self 0.189), other W_hh 0.127, W_ih 0.151, W_out 0.087
+
+W_hh restricted to stiff set (row = receiving, col = sending):
+      n1      n2      n6      n7      n8     
+n1    +0.409  +0.504  +0.995  -1.048  -0.120 
+n2    -0.102  +0.969  -0.103  +0.023  +0.155 
+n6    -0.135  +0.535  +0.361  -0.126  -0.082 
+n7    -0.100  +0.674  -0.182  +0.078  +0.167 
+n8    +0.634  +0.625  -0.000  -1.094  +0.615 
+eigenvalues of that 5x5 block: [0.692+0.625j 0.692-0.625j 0.959+0.j    0.005+0.j    0.084+0.j   ]
+self weights all neurons: {0: 0.161, 1: 0.409, 2: 0.969, 3: -0.359, 4: -0.986, 5: -0.421, 6: 0.361, 7: 0.078, 8: 0.615, 9: -0.553, 10: -0.001, 11: 0.199, 12: 0.612, 13: -0.605, 14: 0.355, 15: 0.229}
