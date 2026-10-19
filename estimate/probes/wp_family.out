@@ -1,0 +1,64 @@
+gain over plain MC at equal samples; strata N = 2^22 per split; RQMC N = 2^15 x 64 reps
+model                err   gaps  gaps+pos  rqmc-os
+trained           0.0470  3.04x     3.38x    1.13x
+seed0             0.0903  1.80x     2.85x    2.17x
+seed1             0.1200  1.32x     2.92x    1.41x
+seed2             0.0515  2.51x     2.99x    1.37x
+seed3             0.0680  2.32x     3.20x    2.18x
+seed4             0.1108  1.55x     3.05x    1.23x
+h8                0.5733  1.04x     2.69x    2.56x
+h32               0.0056  6.82x     0.86x    1.61x
+hand10            0.0097 163.47x     9.47x    2.18x
+blur(d=0.0120)    0.0470  3.21x     2.00x    1.36x
+random            0.9151  1.00x     5.49x    2.76x
+  seed0 copy 0: loss 0.2265
+  seed0 copy 1: loss 0.2302
+  seed0 copy 2: loss 0.1840
+  seed0 copy 3: loss 0.1476
+  seed0 copy 4: loss 0.1141
+  seed0 copy 5: loss 0.1122
+  seed0 copy 6: loss 0.1453
+  seed0 copy 7: loss 0.1017
+  seed0 copy 8: loss 0.1817
+  seed0 copy 9: loss 0.1449
+  seed0 copy 10: loss 0.1413
+  seed0 copy 11: loss 0.0910
+  seed0 copy 12: loss 0.1422
+  seed0 copy 13: loss 0.0870
+  seed0 copy 14: loss 0.0959
+  seed0 copy 15: loss 0.1546
+seed0: params 432, base acc 0.9100, mean loss 0.1438, sd 0.0429; H participation ratio 7.4; corr(Q, loss) 0.934; LOO rms 0.0284 vs constant 0.0429
+  h32 copy 0: loss 0.1657
+  h32 copy 1: loss 0.0917
+  h32 copy 2: loss 0.0955
+  h32 copy 3: loss 0.0591
+  h32 copy 4: loss 0.0789
+  h32 copy 5: loss 0.0639
+  h32 copy 6: loss 0.0661
+  h32 copy 7: loss 0.0892
+  h32 copy 8: loss 0.1194
+  h32 copy 9: loss 0.0898
+  h32 copy 10: loss 0.0961
+  h32 copy 11: loss 0.1392
+  h32 copy 12: loss 0.0634
+  h32 copy 13: loss 0.1115
+  h32 copy 14: loss 0.0588
+  h32 copy 15: loss 0.1166
+h32: params 1376, base acc 0.9944, mean loss 0.0941, sd 0.0296; H participation ratio 2.6; corr(Q, loss) 0.188; LOO rms 0.1037 vs constant 0.0296
+  hand10 copy 0: loss 0.1251
+  hand10 copy 1: loss 0.1449
+  hand10 copy 2: loss 0.1431
+  hand10 copy 3: loss 0.0926
+  hand10 copy 4: loss 0.1214
+  hand10 copy 5: loss 0.1078
+  hand10 copy 6: loss 0.0883
+  hand10 copy 7: loss 0.1037
+  hand10 copy 8: loss 0.1319
+  hand10 copy 9: loss 0.0971
+  hand10 copy 10: loss 0.0802
+  hand10 copy 11: loss 0.0705
+  hand10 copy 12: loss 0.0817
+  hand10 copy 13: loss 0.1230
+  hand10 copy 14: loss 0.1045
+  hand10 copy 15: loss 0.1442
+hand10: params 726, base acc 0.9903, mean loss 0.1100, sd 0.0234; H participation ratio 4.1; corr(Q, loss) 0.871; LOO rms 0.0361 vs constant 0.0234

@@ -650,6 +650,37 @@ each set and scored on the 32 harness copies.
   Which copies are bad is set by how much of the noise lands on the n7 comparator's and the
   n2 memory's recurrent inputs; the input and output weights do not matter at this sigma.
 
+## Does the quadratic form hold off M(16,10)? (`probes/wp_family.py`, `.out`; PLAN D2)
+16 copies at sigma = 0.005 of each base model's own weights, truth 2^26, H the base
+model's Gauss-Newton Hessian, c through the origin, leave-one-out. (The table at the top
+of the .out is `ablation.py`'s cached summary, printed on import.)
+
+| base | params | base acc | mean loss | sd | H part. ratio | corr(Q, loss) | LOO rms | constant |
+|---|---|---|---|---|---|---|---|---|
+| M(16,10) trained | 432 | 0.953 | 0.057 | 0.026 | 4.9 | 0.95 | 0.009 (0.013 out of sample) | 0.026 |
+| seed0 h16 | 432 | 0.910 | 0.144 | 0.043 | 7.4 | 0.93 | 0.028 | 0.043 |
+| zoo h32 | 1376 | 0.994 | 0.094 | 0.030 | 2.6 | 0.19 | 0.104 | 0.030 |
+| hand10 | 726 | 0.990 | 0.110 | 0.023 | 4.1 | 0.87 | 0.036 | 0.023 |
+
+- seed0: Q holds (corr 0.93, rms 0.66 of the constant's against 0.35 on the trained
+  model). The stiff subspace is wider (participation 7.4), the loss at the same relative
+  noise is 2.5x larger, and the copies sit at 0.77 mean accuracy.
+- h32: Q fails outright (corr 0.19, LOO worse than the constant). A 0.5% weight noise
+  takes it from 0.994 to 0.900, and that loss is not a quadratic form of delta; H's
+  participation ratio 2.6 says the curvature is concentrated on 2-3 directions, but the
+  copies' loss is not explained by their projection onto them.
+- hand10: corr 0.87 but a line through the origin is worse than the constant (0.036 vs
+  0.023); an affine fit would leave ~0.012 in sample. The loss has an offset: 0.5% noise
+  on the exact handcrafted weights costs 11% accuracy before any quadratic dependence on
+  the particular delta, so hand10 at sigma = 0.005 is already outside the quadratic
+  regime.
+- For the protocol: sigma relative to rms(W) is not a common regime across the family.
+  The same sigma is perturbative for the h16 models (loss 0.06-0.14, quadratic in delta)
+  and non-perturbative for the two near-perfect models (loss 0.09-0.11 from 0.99,
+  not quadratic). The perturbation-theory shortcut of the A entries is specific to
+  M(16,10) and its seeds; it says nothing about h32 or hand10 copies, where sampling
+  (or a different deduction) would be needed.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".

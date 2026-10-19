@@ -88,7 +88,7 @@ level error (`probes/form_abs_all.py`), (iii) surprise explained by the tie laye
 
 - [ ] D1. Missing cells: FORM and surprise on h8; FORM on h32; bg ratio on h8.
       Run with existing scripts; save `probes/family_*.out`.
-- [ ] D2. Q on h32 and hand10 copies (σ = 0.005 of their own weights, 16 copies each):
+- [x] D2. (seed0 yes, corr 0.93; h32 no, corr 0.19; hand10 no, loss has an offset: sigma 0.005 is non-perturbative for the near-perfect models) Q on h32 and hand10 copies (σ = 0.005 of their own weights, 16 copies each):
       does the quadratic-form prediction hold off M(16,10)? Also seed0 copies.
 - [ ] D3. `MAP.md` table: one row per model, columns = the four lenses + accuracy +
       n99 (where known). Narrative: strip width → 0 and error mass moving into an
