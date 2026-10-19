@@ -102,8 +102,11 @@ budget at ~5e-4 accuracy.
 - The top-3 order statistics explain 53-76% of the error variance, so control variates
   and proportional stratification on them gain at most ~2-4×. Neyman allocation is not
   bound by that: strata on gaps plus the positions of the top three give 3-6× held-out
-  (`probes/strat_pos.py`), but only with a pilot that costs more than it saves. The
-  forward hidden state explains almost nothing until the last step.
+  (`probes/strat_pos.py`). The pilot is not needed: allocating each doubling from the
+  samples so far, with planned stage weights, reaches the oracle allocation by 2^19-2^20
+  (trained 5.5×, copies 3.4×, seeds 2.4× at 2^20, unbiased; `probes/strat_adaptive.py`).
+  The forward hidden state explains almost nothing until the last step, and the last
+  step can be integrated exactly (`probes/exact_last.py`, variance ratio 0.49-0.60).
 - RQMC in order-statistic coordinates (Sobol, positions given the leading dimensions)
   is unbiased and gains ~2× (seeds, trained) to ~3× (noisy) over MC at 2^20 samples.
   The gain grows with N up to ~2^18 and then levels off.
@@ -124,9 +127,12 @@ budget at ~5e-4 accuracy.
 
 ## 13. Against the original ask
 - ARC's bar (a mechanistic estimate at least as good as sampling at every budget) is not
-  met deductively; the unbiased designs that do beat MC (1.3-3x) are task knowledge: a
-  network-free blurred comparator gains as much from gap strata, a random-weight RNN as
-  much from position strata and RQMC (`probes/ablation.py`).
+  met deductively; the unbiased designs that do beat MC (adaptive Neyman on gap and
+  position strata, no pilot, 2.4-5.5x at 2^20; stacked with the exact last-input
+  integral 4-5x (geometric mean over the trained model, two copies and two seeds at 2^17-2^19; 2.5-8x per model)) are task knowledge: a network-free blurred comparator gains as much
+  from gap strata, a random-weight RNN as much from position strata and RQMC
+  (`probes/ablation.py`). The perturbed copies are a separate matter: their accuracy is
+  predicted from the trained model's Hessian without evaluating them (§16, part 6).
 - Surprise accounting (`probes/surprise.py`): the tie-layer explanation, with widths from
   the network's margins at ties and nothing fitted to correctness, removes 43% of the
   surprise of the correctness bit on the trained model (29% seed0, 28% noisy0), more than
@@ -199,3 +205,50 @@ needs 1-2 kbits of fine cancellation. That gap is the honest statement of the pr
 the error set is carried by precision that has no short description in any linear
 coordinates we can name, and sampling is cheaper than any description that long.
 `probes/precision.py`, `precision_blocks.out`, `precision_alloc.out`.
+
+## 16. Why sampling wins on M(16,10), in six measured parts (PLAN C3)
+The question was whether a mechanistic estimate of p can match random sampling at every
+compute budget, averaged over perturbed copies of the weights. For M(16,10) the answer is
+no, and the reasons are now measured rather than argued.
+1. **The sampler is absurdly cheap.** One sample costs 5,760 FLOPs; at 1 GFLOP MC has an
+   rms error of 5e-4. Any deduction competes with that per-sample price, and the network
+   has nothing cheaper inside it: a 16-neuron step is already the unit of work, so
+   multilevel and surrogate tricks have no cost ratio to exploit.
+2. **Generic deduction is six steps past its crossover.** Linear regions grow like (hT)^T;
+   the branch-and-bound integrator beats MC at T = 2-3 and loses ~1e3 per extra step at
+   h = 16 (§12). Certified pruning has nothing to prune before the last step, because the
+   label depends on inputs not yet read. More exact quadrature inside regions
+   (Gauss-Legendre dims) does not move this.
+3. **The forward state carries no usable information until the end.** The hidden state
+   after 5 inputs explains 5% of the correctness variance, after 9 inputs 50%. Propagating
+   a law of the state cannot produce variance reduction; what is predictable sits in the
+   inputs' order statistics (top-3: 53-76%), and that is task knowledge: a random-weight
+   RNN gets the same 5.5x from gaps-plus-positions strata (§13).
+4. **The level is mean-field, the structure is not.** Mean-background skeletons deduce
+   the tie-error level to ~20% rms over the harness with no sampling, and 8 numbers carry
+   39 of the 43 surprise points of the correctness bit. What remains (per-pair widths,
+   far-field errors, 'other' errors) needs 4-5 directions per position pair and ~1e3 kink
+   patterns, at 1% relative precision on a 5% error. The deductive rms error stalls at
+   0.011-0.014 on perturbed models, where MC is at 0.0017 for the same compute.
+5. **The function is long to describe.** Holding the accuracy to 1e-3 needs 1.3-1.9 kbits
+   of weight precision in the best linear basis (§15), against ~100 bits for the
+   algorithm. Sampling is cheaper than any description that long, and the precision sits
+   in five neurons' recurrent weights where it cancels finely.
+6. **The copies are perturbation theory, the seeds are the test.** At sigma = 0.005 the
+   per-copy accuracy loss is c * delta^T H delta with H the trained model's Gauss-Newton
+   Hessian (corr 0.95, rms 0.013 with c fitted on fresh copies, 65 samples' worth of
+   compute; H is 99.7% recurrent weights of five neurons), so any estimator with the
+   trained accuracy as advice beats MC on copies up to ~3 MFLOP without understanding
+   anything. The same sigma is already non-perturbative on h32 and hand10. On
+   independently trained seeds the best unbiased sampling gains 3.2-6.7x (stacked, no pilot, seeds 0-1 at 2^18-2^19) and the best
+   deduction is 13-15% off (`PROTOCOL_NOTE.md`).
+
+What we can do is sample better. The stacked unbiased estimator (adaptive Neyman on
+gap-and-position strata of the first nine inputs, exact integration of the tenth; §PLAN B5)
+gains 4-5x (geometric mean over the trained model, two copies and two seeds at 2^17-2^19; 2.5-8x per model) over MC on the harness with no pilot and no fitted model. That gain is
+task structure, and we say so.
+
+Across the family (`MAP.md` table) the axis is the background-gradient / tie-slope ratio:
+1.0 for the failed h8 model, 0.14 for M(16,10), 0.04 for h32, 0 for hand10. The deducible
+fraction of the error and the explained surprise rise along it; M(16,10) sits where the
+level is deducible and the per-input structure is not.

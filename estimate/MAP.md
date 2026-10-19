@@ -62,6 +62,23 @@ we found (EXPLAINER §8) puts the error in tie layers whose widths depend on mul
 kinks at ~1% relative precision. That error set does not group into events of known mass,
 and every attempt to make it do so cost more than sampling (§10, §11).
 
+## The T = 10 family under the same lenses
+
+| model | acc | best unbiased gain vs MC | FORM level (deduced / actual tie error) | surprise left after tie layer | bg-gradient / tie slope | active-subspace dim |
+|---|---|---|---|---|---|---|
+| h8, zoo best (failed) | 0.427 | 2.7x (gaps+pos, pilot) | 0.22 / 0.48 (-54%) | 92% | 0.66, 1.02 | 3.8, 5.2 |
+| h16 seeds 0-4 | 0.88-0.95 | 2.9-3.2x (gaps+pos, pilot); 3.2-6.7x (stacked, no pilot, seeds 0-1 at 2^18-2^19) (stacked, no pilot) | -34% to +44%, rms 19% over the harness | 71% (seed0) | 0.15-0.23 | ~4-5 |
+| M(16,10) | 0.953 | 3.4x (gaps+pos, pilot); 3.7-4.4x (stacked, no pilot, 2^18-2^19) (stacked, no pilot) | 0.0386 / 0.0392 (-2%) | 57% | 0.14, 0.08 | 4.0, 4.7 |
+| h32, zoo best | 0.994 | 6.8x (gaps) | 0.0048 / 0.0053 (-8%) | 45% | 0.04, 0.02 | 3.0, 3.5 |
+| hand10 | 0.990 | 163x (gaps), ~950x (its own event) | 0 / 0.0012 (no strip; the error is the vS < 0 event) | 6% | 0.00 | strip width 0 |
+
+Columns: gain from `probes/ablation.out` and `probes/best_unbiased.out`; FORM level from
+`probes/form_abs_all.out` and `probes/family.out`; surprise and active subspace from
+`probes/surprise*.out`, `probes/family.out`. The ordering column is the background-gradient
+to tie-slope ratio: how much the inputs other than the tied pair move the decision. At 1.0
+the comparator is incoherent and nothing deduces; at 0 the strip has no width and the error
+is one event of known mass.
+
 ## What the challenge model is, on this map
 
 M(16,10) sits six sequence steps past the generic crossover, with ~6×10^5 regions
@@ -71,11 +88,13 @@ Our mechanism-level tools behave the same way:
 
 - deductive or biased estimators lose to MC above ~0.4 MFLOP on the perturbed models;
 - unbiased sampling designed from the mechanism (stratification on tie gaps, RQMC in
-  order-statistic coordinates) gains 1.3–3×;
+  order-statistic coordinates) gains 1.3–3×; adaptive Neyman allocation over gaps and
+  the positions of the top three, with no pilot, 2.4–5.5× at 2^20
+  (`probes/strat_adaptive.py`); stacked with the exact integral of the last input,
+  4-5x (geometric mean over the trained model, two copies and two seeds at 2^17-2^19; 2.5-8x per model) (`probes/best_unbiased.py`);
 - control variates or proportional strata on the top-3 order statistics are capped at
-  ~2–4×. Neyman allocation over gaps and the positions of the top three reaches 3–6×
-  held-out (`probes/strat_pos.py`). But it needs per-stratum error rates, learned here
-  from a pilot that costs more than it saves. Predicting them from the weights is untried.
+  ~2–4×. Predicting per-stratum error rates from the weights is untried; learning them
+  on the way costs nothing measurable above 2^18 samples.
 
 The challenge asks for deduction at the point in model space where both generic and
 mechanism-guided deduction are weakest. Nearby points either have short sequences
