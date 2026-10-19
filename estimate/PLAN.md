@@ -106,6 +106,22 @@ level error (`probes/form_abs_all.py`), (iii) surprise explained by the tie laye
 - [x] E3. (`ARC_REPORT.md`) Final doc for ARC (reuse MAP.md + EXPLAINER): claim, best estimator curve,
       why deduction loses, family table, protocol note from A5.
 
+## F. The tricks left after B5 (from 2026-10-20; expectations tempered: ~1.3x each at best)
+
+- [ ] F1. Settle the Sobol z. 2^28 truths for trained, noisy0-1, seed0-1 (`probes/truth28.py`,
+      `.json`; the 2^26 seed truths have sd 3.5e-5, which is 1.5 z at 2^20). Then the
+      scrambled-Sobol stream in 9-input order-statistic coordinates inside the B5 strata,
+      24+ reps, prop and adaptive, z against both truths. Decide bias vs noise.
+- [ ] F2. Stack Sobol into B5 if F1 is clean: `probes/best_sobol.py` = best_unbiased with a
+      Sobol pool (positions on the leading dims, spacings next, x_9 unused since it is
+      integrated). Report gain vs iid adaptive/rb on the same reps; add to mse_curves.png.
+- [x] F3. (pos(R) nothing for adaptive at any budget, oracle ceiling +1.3x at 2^18-2^19; prior 16 is 1.2-1.4x at 2^19-2^20; B5 trained is 6-8.6x at 48 reps, the 12-rep 3.7-4.4x was a low draw) Three-position strata (pos(M,S,R) as a third refinement level under pos(M,S)) on
+      the trained model, where adaptive sits at 4.4x against a 7.2x oracle. Expect <= 1.1x;
+      the oracle gap is allocation learning, not strata resolution, so also report whether
+      a stronger shrinkage prior closes any of it. -> `probes/strat_pos3.py`.
+- [ ] F4. Prefix sharing stays a note unless F2 and F3 land: it needs tree-structured pools
+      and conflicts with per-stratum allocation (realistic composite 1.1-1.2x).
+
 ## Order
 
 A1 → B1 → A2/A3 (parallel, cheap) → B3/B4 → B2 → B5 → C1 → C2 → D1/D2 → D3 → C3 → E.

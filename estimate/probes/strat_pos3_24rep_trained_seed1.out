@@ -1,0 +1,47 @@
+rep 0 done 65s
+rep 1 done 149s
+rep 2 done 284s
+rep 3 done 373s
+rep 4 done 473s
+rep 5 done 611s
+rep 6 done 720s
+rep 7 done 806s
+rep 8 done 909s
+rep 9 done 1036s
+rep 10 done 1120s
+rep 11 done 1198s
+rep 12 done 1279s
+rep 13 done 1350s
+rep 14 done 1407s
+rep 15 done 1470s
+rep 16 done 1552s
+rep 17 done 1629s
+rep 18 done 1690s
+rep 19 done 1770s
+rep 20 done 1858s
+rep 21 done 1923s
+rep 22 done 1990s
+rep 23 done 2073s
+
+reps 24; pool 2^22; K 32; levels 2 = B5 strata (gap cell x sign x pos(M,S)), 3 = + pos(R); prior = shrinkage weight; rb values
+gain = p(1-p) / (N 1.15) / MSE vs truth; z = mean bias / se; cells = L2 strata in use
+
+trained  err 0.0469
+budget              adaptive/L2/p4              adaptive/L2/p16             adaptive/L3/p4              adaptive/L3/p16               oracle/L2/p4                oracle/L3/p4 
+2^14        4.01x rms 7.7e-04 z+0.1 c    0    1.98x rms 1.1e-03 z+0.6 c    0    5.14x rms 6.8e-04 z-0.2 c    0    1.66x rms 1.2e-03 z+0.7 c    0    8.93x rms 5.1e-04 z-0.7 c    0    4.64x rms 7.1e-04 z+0.8 c    0
+2^15        3.32x rms 6.0e-04 z-0.1 c    0    2.93x rms 6.3e-04 z-0.1 c    0    5.19x rms 4.8e-04 z-0.3 c    0    3.11x rms 6.2e-04 z-0.2 c    0    5.63x rms 4.6e-04 z-0.6 c    0    4.53x rms 5.1e-04 z-0.6 c    0
+2^16        5.28x rms 3.3e-04 z+0.3 c    0    3.86x rms 3.9e-04 z-0.7 c    0    4.85x rms 3.5e-04 z+1.0 c    0    3.21x rms 4.3e-04 z+0.3 c    0    9.58x rms 2.5e-04 z-0.8 c    0    5.20x rms 3.4e-04 z-0.3 c    0
+2^17       10.09x rms 1.7e-04 z-0.9 c    0    5.74x rms 2.3e-04 z-0.9 c    0    9.20x rms 1.8e-04 z+0.1 c 1008    5.84x rms 2.2e-04 z+0.7 c 1008    6.23x rms 2.2e-04 z-0.6 c    0    7.49x rms 2.0e-04 z+0.4 c 1008
+2^18        9.05x rms 1.3e-04 z-0.3 c    0    6.72x rms 1.5e-04 z-0.3 c    0    7.24x rms 1.4e-04 z-0.3 c 2520    7.40x rms 1.4e-04 z-0.2 c 2520    8.16x rms 1.3e-04 z-0.5 c    0   11.56x rms 1.1e-04 z-0.2 c 2520
+2^19        5.40x rms 1.2e-04 z+0.2 c    0   11.21x rms 8.1e-05 z-1.8 c    0    7.01x rms 1.0e-04 z+0.6 c 5544    7.96x rms 9.6e-05 z-0.1 c 5544    7.92x rms 9.6e-05 z-0.7 c    0   10.44x rms 8.4e-05 z-0.4 c 5544
+2^20        8.02x rms 7.1e-05 z+0.2 c    0   12.94x rms 5.5e-05 z-0.7 c    0   11.56x rms 5.9e-05 z+0.2 c 8064   11.57x rms 5.8e-05 z-0.8 c 8064    9.88x rms 6.2e-05 z-0.0 c    0   13.27x rms 5.4e-05 z-0.2 c 8064
+
+seed1  err 0.1198
+budget              adaptive/L2/p4              adaptive/L2/p16             adaptive/L3/p4              adaptive/L3/p16               oracle/L2/p4                oracle/L3/p4 
+2^14        2.04x rms 1.7e-03 z-0.1 c    0    1.98x rms 1.7e-03 z+0.9 c    0    2.24x rms 1.6e-03 z-0.2 c    0    1.63x rms 1.9e-03 z-0.9 c    0    1.61x rms 1.9e-03 z+0.3 c    0    3.26x rms 1.3e-03 z-0.4 c    0
+2^15        2.76x rms 1.0e-03 z-0.7 c    0    2.07x rms 1.2e-03 z+0.7 c    0    2.58x rms 1.0e-03 z-0.1 c    0    1.94x rms 1.2e-03 z-0.3 c    0    1.88x rms 1.2e-03 z+0.3 c    0    2.13x rms 1.1e-03 z+0.4 c    0
+2^16        3.88x rms 6.0e-04 z-0.9 c    0    1.97x rms 8.4e-04 z+0.5 c    0    2.76x rms 7.1e-04 z+0.1 c    0    2.06x rms 8.2e-04 z-0.4 c    0    3.23x rms 6.5e-04 z+0.8 c    0    2.83x rms 7.0e-04 z-0.3 c    0
+2^17        3.43x rms 4.5e-04 z+0.2 c    0    2.93x rms 4.9e-04 z+1.2 c    0    3.76x rms 4.3e-04 z-0.1 c 1008    2.52x rms 5.2e-04 z+0.3 c 1008    3.67x rms 4.3e-04 z-0.1 c    0    5.17x rms 3.7e-04 z-0.3 c 1008
+2^18        3.60x rms 3.1e-04 z-0.4 c    0    3.60x rms 3.1e-04 z+1.0 c    0    2.80x rms 3.5e-04 z-0.4 c 2520    2.91x rms 3.4e-04 z-0.4 c 2520    3.98x rms 3.0e-04 z+0.0 c    0    3.77x rms 3.0e-04 z-0.3 c 2520
+2^19        3.08x rms 2.4e-04 z+0.2 c    0    3.00x rms 2.4e-04 z-0.1 c    0    3.06x rms 2.4e-04 z-0.5 c 5544    2.51x rms 2.6e-04 z-0.3 c 5544    3.52x rms 2.2e-04 z+0.6 c    0    4.65x rms 1.9e-04 z-0.2 c 5544
+2^20        4.34x rms 1.4e-04 z+0.1 c    0    4.71x rms 1.4e-04 z-0.9 c    0    4.14x rms 1.4e-04 z-0.8 c 8064    4.41x rms 1.4e-04 z-0.7 c 8064    4.96x rms 1.3e-04 z+0.1 c    0    5.16x rms 1.3e-04 z-0.1 c 8064

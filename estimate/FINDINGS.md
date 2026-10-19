@@ -789,6 +789,38 @@ evaluated once for all copies), proportional or adaptive Neyman as in B1. 32 cop
 - So on the copies the advice route is the quadratic form below ~3 MFLOP and plain or
   stacked sampling above; nothing in between.
 
+## A third position under the B5 strata, and the shrinkage prior (`probes/strat_pos3.py`, `.out`, `.json`, `strat_pos3_24rep_trained_seed1.out`; PLAN F3)
+Hierarchy L0 = gap cell x sign (98) -> L1 = x pos(M,S) (/72, the B5 strata) -> L2 = x pos(R)
+(/504); a cell is a stratum at the finest level with N p >= K = 32, so L2 cells appear from
+2^17 (1008 of 49,392) and number 8,064 at 2^20. Values = exact x_9 integral, allocation as B5,
+variance shrunk L2 -> L1 -> L0 -> global with prior weight 4 (B5) or 16. Trained 48 reps
+(pools 4000-4047), seed1 24 reps. Gains carry 16-84% bootstrap intervals over reps.
+
+| trained, gain vs MC | 2^17 | 2^18 | 2^19 | 2^20 |
+|---|---|---|---|---|
+| adaptive, L1 strata, prior 4 (= B5) | 8.6 [7.2, 10.7] | 6.4 [5.2, 8.2] | 6.3 [5.3, 7.8] | 6.0 [4.9, 7.6] |
+| adaptive, + pos(R), prior 4 | 7.3 | 6.5 | 6.7 | 6.5 |
+| adaptive, L1, prior 16 | 7.0 | 7.7 | 8.6 | 6.9 |
+| oracle, L1 | 8.2 | 7.3 | 8.2 | 9.7 |
+| oracle, + pos(R) | 8.6 | 9.2 | 11.2 | 9.8 |
+
+Paired ratios (MSE of the first / MSE of the second, same pools): pos(R) / L1 adaptive 0.85
+[0.68, 1.05], 1.03, 1.06, 1.07 [0.95, 1.21] at 2^17-2^20; prior 16 / 4: 0.81, 1.21, 1.37
+[1.13, 1.65], 1.18 [1.02, 1.39], and 0.62 at 2^14; oracle pos(R) / L1: 1.05, 1.27, 1.37, 0.99.
+- The third position does nothing for the adaptive estimator at any budget. It lifts the
+  oracle ceiling 1.3x at 2^18-2^19, so pos(R) carries structure, but 49k cell variances
+  cannot be learned by 2^20. On seed1 (24 reps) no variant differs from the B5 estimator
+  (3.1-4.3x at 2^17-2^20, oracle 3.5-5.2x).
+- Prior 16 is a 1.2-1.4x at 2^19-2^20 on trained and a 0.6x at 2^14: a tuning, not a trick.
+- Correction to B5's trained row. The 12-rep B5 run gave 2.9/3.7/4.4x at 2^17-2^19 for this
+  estimator; 48 reps give 8.6/6.4/6.3x with +-20% intervals, and the per-rep errors are
+  near-Gaussian (the worst 4 of 48 reps carry 30-45% of the MSE). The committed B5 code on
+  8 of these pools has rms 2.2e-4 / 1.6e-4 / 7.4e-5 at 2^17/18/19, at or above these gains,
+  and its per-rep errors correlate only 0.5 with this probe's (the multinomial draw of
+  member cells inside unrefined strata is a large part of the variance at low budget).
+  The 12-rep figure was a low draw. B5 is re-run at 48 reps below; gains now carry
+  bootstrap intervals.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".
