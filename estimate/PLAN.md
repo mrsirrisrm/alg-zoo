@@ -10,7 +10,7 @@ MC baseline cost 5,760 FLOPs per sample; report gain as MC compute for equal rms
 
 ## A. Finish the perturbation result (copy harness) — started, uncommitted
 
-- [ ] A1. Commit `probes/weight_perturbation.py` + `.out` with a FINDINGS entry.
+- [x] A1. Commit `probes/weight_perturbation.py` + `.out` with a FINDINGS entry.
       Numbers to record: Q (GN-Fisher quadratic form) corr 0.947, LOO rms 0.0090,
       3.7e5 FLOPs/copy, crossover ~6 MFLOP; L (first-order logit shift, 65k pool)
       corr 0.996, rms 0.0024, 5.7e8 FLOPs/copy, loses to MC 2.4x there; flips 8.4% of
@@ -40,16 +40,16 @@ MC baseline cost 5,760 FLOPs per sample; report gain as MC compute for equal rms
       Score against truth over 64 reps; report gain vs MC at each budget and the gap to
       the 2^23-pilot ceiling (trained 4.5-4.8x, copies 3.6-6.3x, seeds 2.3-4.0x).
       → `probes/strat_adaptive.py`. Verify: unbiased (|z| < 2 across reps at every N).
-- [ ] B2. RQMC-OS inside strata. Scrambled Sobol in order-statistic coordinates per
+- [x] B2. (negative: a thinned Sobol stream inside strata is worse than iid, strat_adaptive.out) RQMC-OS inside strata. Scrambled Sobol in order-statistic coordinates per
       stratum (reuse `probes/rqmc.py` transform). Report whether the gains compose
       (expect sub-multiplicative: strata already carry part of the gap structure).
-- [ ] B3. Exact last input. For each sampled x₀..₈, integrate x₉ exactly: h₉ is
+- [x] B3. Exact last input. For each sampled x₀..₈, integrate x₉ exactly: h₉ is
       piecewise linear in the scalar x₉ (≤ 16 ReLU breakpoints), logits piecewise
       linear, argmax changes at their crossings; sum Φ-mass of correct intervals.
       Cost ~1.5 pass-equivalents. Expected variance factor R²(x<9) ≈ 0.5-0.6, net
       ~1.3x. Verify against MC on the trained model (unbiased, |z| < 2).
       → `probes/exact_last.py`.
-- [ ] B4. Prefix sharing. Tree-structured inputs sharing the first k ∈ {3, 5} steps
+- [x] B4. Prefix sharing. Tree-structured inputs sharing the first k ∈ {3, 5} steps
       across m ∈ {4, 8, 16} leaves. Measure design effect 1 + (m−1)·R²(prefix) and
       FLOP saving; pick the best (k, m). Expect ~1.3x. → `probes/prefix_tree.py`.
 - [ ] B5. Stack B1-B4 into one estimator, `probes/best_unbiased.py`, and produce the
@@ -59,7 +59,7 @@ MC baseline cost 5,760 FLOPs per sample; report gain as MC compute for equal rms
 
 ## C. Close the deductive route with a measured reason
 
-- [ ] C1. Copies' new failure modes. Census by mechanism (A/B swap, within-side pick,
+- [x] C1. Copies' new failure modes. Census by mechanism (A/B swap, within-side pick,
       predicts M, "4th or lower", vS < 0) on 8 copies vs trained, as in
       `probes/ab_candidates.py`. Then classify the flips from A1's pool: which
       mechanism each first-order flip belongs to. Question: is the extra error one
@@ -97,7 +97,7 @@ level error (`probes/form_abs_all.py`), (iii) surprise explained by the tie laye
 
 ## E. Write-up and hygiene
 
-- [ ] E1. FINDINGS entries for the three uncommitted probes from 17-18 Oct
+- [x] E1. FINDINGS entries for the three uncommitted probes from 17-18 Oct
       (circle_rqmc, pieces_vs_size, exact_dims; committed in 8a1f3b4 without notes).
       Re-run the incomplete h3_T5 exact_dims sweep or mark it as not run.
 - [ ] E2. EXPLAINER §13 "against the original ask" refresh: headline numbers from B5,

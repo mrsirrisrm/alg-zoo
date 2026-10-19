@@ -573,6 +573,30 @@ not an uncovered mechanism. The far field ('other', 2.2x) grows fastest.
   grid's best. The h3_T5 run is incomplete (stops at gl 2, G 32, Q 16); several large-Q
   configurations hit the node/time cap.
 
+## Family table cells: h8, h32, hand10 under the FORM, surprise and active-subspace lenses (`probes/family.py`, `.out`; PLAN D1)
+Same lenses as the harness models (ablation gains already in `probes/ablation.out`).
+
+| model | acc | FORM 15x7 vs S/R+M/S | tie-layer surprise left | pos-table left | bg-grad / alpha (S/R, M/S) | eff dim |
+|---|---|---|---|---|---|---|
+| h8 (zoo best, failed) | 0.427 | 0.220 vs 0.482 (-54%) | 92% | 58% | 0.66, 1.02 | 3.8, 5.2 |
+| M(16,10) | 0.953 | 0.0386 vs 0.0392 (-2%; harness rms 19%) | 57% | 51% | 0.14, 0.08 | 4.0, 4.7 |
+| h32 (zoo best) | 0.994 | 0.0048 vs 0.0053 (-8%) | 45% | 53% | 0.04, 0.02 | 3.0, 3.5 |
+| hand10 | 0.990 | 0.0000 vs 0.0012 | 6% | 4% | 0.00 | strip width 0 |
+
+- h8 is not a strip model: the background gradient equals the tie slope, the mean-background
+  skeleton misses half the tie error, and the tie layer explains almost nothing of the
+  correctness bit (the position table does: 42%). Its errors are an incoherent comparator,
+  not a boundary layer.
+- h32 is the cleaner strip model already recorded: level deduced to 8%, ratio 3-4x below
+  M(16,10), 12 more surprise points explained.
+- hand10 has no strip: FORM deduces exactly zero tie error (correct: its S/R and M/S
+  errors, 0.0012, are the vS < 0 event at ties, not a strip), and the gap features explain
+  94% of its surprise.
+- The axis across the family is the background-gradient / alpha ratio: 1.0 (failed) ->
+  0.14 (M(16,10)) -> 0.04 (h32) -> 0 (hand10), with the deducible fraction of the error and
+  the explained surprise rising along it. M(16,10) sits where the level is deducible to
+  ~20% and the per-input structure is not.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".

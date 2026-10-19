@@ -1,0 +1,68 @@
+gain over plain MC at equal samples; strata N = 2^22 per split; RQMC N = 2^15 x 64 reps
+model                err   gaps  gaps+pos  rqmc-os
+trained           0.0470  3.04x     3.38x    1.13x
+seed0             0.0903  1.80x     2.85x    2.17x
+seed1             0.1200  1.32x     2.92x    1.41x
+seed2             0.0515  2.51x     2.99x    1.37x
+seed3             0.0680  2.32x     3.20x    2.18x
+seed4             0.1108  1.55x     3.05x    1.23x
+h8                0.5733  1.04x     2.69x    2.56x
+h32               0.0056  6.82x     0.86x    1.61x
+hand10            0.0097 163.47x     9.47x    2.18x
+blur(d=0.0120)    0.0470  3.21x     2.00x    1.36x
+random            0.9151  1.00x     5.49x    2.76x
+
+==== h8: h 8, total error 0.5730, S/R+M/S 0.4817, predicts R 0.1671, predicts M 0.3145
+FORM mean-background skeleton: deduced 5x3 0.2229, 15x7 0.2195; rel err vs S/R+M/S -54.4%, vs total -61.7%; MC sd at 5x3 cost 0.0027
+
+h8: accuracy 0.4267, N_A = N_B = 2^22, 11 bits/param
+predictor    bits/input % of const  params param bits beats const at N >
+chance           1.5045     152.8%       0          0                nan
+constant         0.9844     100.0%       1         11                nan
+gaps-logit       0.9627      97.8%       8         88           3.54e+03
+gaps-table       0.9562      97.1%     303       3333           1.18e+05
+pos-table        0.5738      58.3%    4440      48840           1.19e+05
+tie-layer        0.9028      91.7%     488       5368           6.56e+04
+tie+gaps         0.8063      81.9%     497       5467           3.06e+04
+
+h8
+  S/R ties: per-pair trace in top 1/2/3 eigvecs (median over 54 pairs) 0.62/0.74/0.83, effective dim 3.8; pooled top-3 [0.17 0.32 0.44]; wall-gradient rms / alpha rms 0.66
+  M/S ties: per-pair trace in top 1/2/3 eigvecs (median over 90 pairs) 0.38/0.61/0.77, effective dim 5.2; pooled top-3 [0.21 0.41 0.58]; wall-gradient rms / alpha rms 1.02
+
+==== h32: h 32, total error 0.0056, S/R+M/S 0.0053, predicts R 0.0038, predicts M 0.0015
+FORM mean-background skeleton: deduced 5x3 0.0042, 15x7 0.0048; rel err vs S/R+M/S -7.9%, vs total -12.6%; MC sd at 5x3 cost 0.0004
+
+h32: accuracy 0.9944, N_A = N_B = 2^22, 11 bits/param
+predictor    bits/input % of const  params param bits beats const at N >
+chance           3.3041    6602.2%       0          0                nan
+constant         0.0500     100.0%       1         11                nan
+gaps-logit       0.0254      50.9%       8         88           3.13e+03
+gaps-table       0.0254      50.8%     303       3333           1.35e+05
+pos-table        0.0266      53.1%    4440      48840           2.08e+06
+tie-layer        0.0224      44.8%     542       5962           2.16e+05
+tie+gaps         0.0219      43.8%     551       6061           2.15e+05
+
+h32
+  S/R ties: per-pair trace in top 1/2/3 eigvecs (median over 90 pairs) 0.62/0.83/0.92, effective dim 3.0; pooled top-3 [0.2  0.39 0.55]; wall-gradient rms / alpha rms 0.04
+  M/S ties: per-pair trace in top 1/2/3 eigvecs (median over 90 pairs) 0.53/0.78/0.92, effective dim 3.5; pooled top-3 [0.26 0.43 0.58]; wall-gradient rms / alpha rms 0.02
+
+==== hand10: h 22, total error 0.0096, S/R+M/S 0.0012, predicts R 0.0011, predicts M 0.0001
+FORM mean-background skeleton: deduced 5x3 0.0000, 15x7 0.0000; rel err vs S/R+M/S -100.0%, vs total -100.0%; MC sd at 5x3 cost 0.0005
+
+hand10: accuracy 0.9903, N_A = N_B = 2^22, 11 bits/param
+predictor    bits/input % of const  params param bits beats const at N >
+chance           3.2912    4173.5%       0          0                nan
+constant         0.0789     100.0%       1         11                nan
+gaps-logit       0.0051       6.4%       8         88           1.04e+03
+gaps-table       0.0051       6.5%     303       3333           4.51e+04
+pos-table        0.0032       4.0%    4440      48840           6.45e+05
+tie-layer        0.0051       6.4%     443       4873           6.59e+04
+tie+gaps         0.0051       6.4%     452       4972           6.72e+04
+
+hand10
+  S/R ties: per-pair trace in top 1/2/3 eigvecs (median over 90 pairs) 1.00/0.00/0.00, effective dim 1.0; pooled top-3 [0.11 0.23 0.34]; wall-gradient rms / alpha rms 0.00
+/Users/martin/miniconda3/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:3860: RuntimeWarning: Mean of empty slice.
+  return _methods._mean(a, axis=axis, dtype=dtype,
+/Users/martin/miniconda3/lib/python3.12/site-packages/numpy/_core/_methods.py:145: RuntimeWarning: invalid value encountered in scalar divide
+  ret = ret.dtype.type(ret / rcount)
+active subspace failed: IndexError('invalid index to scalar variable.')
