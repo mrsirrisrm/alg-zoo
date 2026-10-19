@@ -720,6 +720,50 @@ Sobol stream in order-statistic coordinates inside strata):
 - The 2^23-pilot ceilings of `strat_gain.py` (trained 4.5-4.8x) are met and slightly
   exceeded here at 2^20 because the position refinement adds strata the pilot did not have.
 
+## The stacked unbiased estimator (`probes/best_unbiased.py`, `.out`, `.json`, `gap_cells9.json`; PLAN B5)
+B1 + B3 in one estimator: strata = gap cells of the top three of the FIRST NINE inputs
+(6x6) x sign(vS) x positions (pM, pS), masses from the input law (2^28 draw / 72 ordered
+pairs); the value of a sample is P(wrong | x_<9) from the exact x_9 integral (cost 1.15
+passes) instead of the binary outcome; adaptive Neyman allocation with per-stage
+estimates and planned weights, variances shrunk to the coarse parent. The strata have to
+be functions of x_<9 so that the x_9 integral is exact inside each; that is why the
+tenth input is not in the strata (B1 used all ten). Pool 2^22 per rep, 12 reps, truth
+from the harness files; gain = MC compute for equal rms / ours. Prefix sharing (B4) is
+not stacked; it would need tree-structured pools.
+
+Gain over MC, adaptive allocation with the x_9 integral (prop/bin, adaptive/bin, prop/rb
+for comparison; oracle = true per-cell variances):
+
+| model | 2^17 | 2^18 | 2^19 | oracle 2^18-2^19 | prop/bin 2^19 | adaptive/bin 2^19 | prop/rb 2^19 |
+|---|---|---|---|---|---|---|---|
+| trained | 2.9x | 3.7x | 4.4x | 6.6-7.2x | 1.2x | 2.8x | 3.7x |
+| noisy0 | 7.8x | 6.5x | 8.2x | 6.3-7.1x | 3.1x | 1.9x | 10.6x |
+| noisy1 | 3.3x | 3.3x | 2.5x | 2.2-2.7x | 1.6x | 1.8x | 1.8x |
+| seed0 | 3.6x | 3.2x | 4.3x | 3.9-4.4x | 1.4x | 1.6x | 2.2x |
+| seed1 | 3.8x | 5.5x | 6.7x | 4.0-5.6x | 4.8x | 4.9x | 3.4x |
+| geometric mean | 4.0x | 4.2x | 4.8x | | | | |
+
+- Headline: 4-5x over MC at 2^17-2^19 samples (1e9-4e9 FLOPs) with no pilot, no fitted
+  model and no advice, 2.5-8x per model; per-cell numbers carry about +-40% (12 reps).
+  The x_9 integral and the adaptive allocation compose roughly multiplicatively (1.5-3x
+  and 1.5-2.5x); on noisy0 proportional allocation with the integral is already 10x,
+  so there the integral does most of the work.
+- Unbiased. |z| <= 2.6 over 5 models x 6 budgets x 5 schemes at 12 reps. A first run
+  showed z -3 to -5 on noisy0 under every scheme; traced to the pool: when a chosen
+  position cell had no pool entries left, the sample was dropped (expected effect
+  -7e-5, but the fix is to redraw the shortfall among sibling cells, now in the code),
+  and the rest was the 12 shared pools. A 200-pool check of prop/bin on noisy0 and the
+  trained model gives |z| <= 1.5 at every budget (mean bias within 2e-4 at 2^14,
+  within 2e-5 from 2^16 up). The seeds' truths are 2^26 (sd 3.5e-5), which is the
+  estimators' se at 2^19, so seed z's of +-2 are expected.
+- Curve: `mse_curves.png` now overlays the measured points (circles) and the oracle
+  (crosses) on the MC / strat-prop / Neyman-ceiling / BL lines; on the trained model the
+  stacked estimator sits below the old strat-Neyman ceiling because the ceiling was
+  computed with binary outcomes and coarser strata.
+- It is task knowledge: the strata and the integral use the input law and the network's
+  forward map, not the mechanism. `probes/ablation.py` gets 5.5x on a random-weight RNN
+  from gaps+pos strata alone. The number to report against MC on M(16,10) is 4-5x.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".

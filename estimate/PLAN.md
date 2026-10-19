@@ -28,7 +28,7 @@ MC baseline cost 5,760 FLOPs per sample; report gain as MC compute for equal rms
       with the same inputs through both nets, and the optional trained-margin
       Neyman weighting (soft, floor 10%). Expect 1.2x from CRN alone, 2-3x with the
       weighting. Report its MSE-vs-compute curve next to MC. → `probes/wp_crn.py`.
-- [ ] A5. Protocol note for ARC/Jacob: at σ = 0.005 the copies are perturbation theory
+- [x] A5. (`PROTOCOL_NOTE.md`, numbers updated after A2) Protocol note for ARC/Jacob: at σ = 0.005 the copies are perturbation theory
       around the trained model; anything with p₀ and second-order sensitivity wins at
       low budget. The seeds harness is the only honest test. Draft for Martin to send.
 
@@ -52,7 +52,7 @@ MC baseline cost 5,760 FLOPs per sample; report gain as MC compute for equal rms
 - [x] B4. Prefix sharing. Tree-structured inputs sharing the first k ∈ {3, 5} steps
       across m ∈ {4, 8, 16} leaves. Measure design effect 1 + (m−1)·R²(prefix) and
       FLOP saving; pick the best (k, m). Expect ~1.3x. → `probes/prefix_tree.py`.
-- [ ] B5. Stack B1-B4 into one estimator, `probes/best_unbiased.py`, and produce the
+- [x] B5. (4-5x geomean at 2^17-2^19, 2.5-8x per model, unbiased; B4 not stacked) Stack B1-B4 into one estimator, `probes/best_unbiased.py`, and produce the
       MSE-vs-compute curve on all three harness sets (add to `mse_curves.png`).
       Target 5-10x MC. State plainly that it is task-level knowledge (ablation:
       random-weight RNN gets 5.5x from gaps+pos).
@@ -65,13 +65,13 @@ MC baseline cost 5,760 FLOPs per sample; report gain as MC compute for equal rms
       mechanism each first-order flip belongs to. Question: is the extra error one
       event? If yes, extend the tie-layer deduction and re-score its rms bias on
       copies (now 0.025; hoping ~0.01). → `probes/copy_failures.py`.
-- [ ] C2. Active-subspace quadrature. Per ordered pair, Gauss-Hermite on the top-3
+- [x] C2. (SKIPPED per the Order note: B5/C1/D1/D2 already support the closure; the level is deduced to ~20% by mean-background FORM and the per-input structure is shown to need 4-5 directions per pair) Active-subspace quadrature. Per ordered pair, Gauss-Hermite on the top-3
       margin directions (7³ nodes) × tie-value nodes × other-top nodes, S/R and M/S.
       ~1e7 passes. Compare level error with the mean-background FORM (rms 19% over 10
       models). Decision rule: if still > 10%, the deductive route is closed and the
       reason is the 20% of margin variance outside the subspace plus the far field.
       → `probes/as_quadrature.py`.
-- [ ] C3. Record the closure in EXPLAINER §16: the six-part argument (MC cost per
+- [x] C3. Record the closure in EXPLAINER §16: the six-part argument (MC cost per
       sample; (hT)^T regions and no certified pruning before the last step; hidden
       state explains nothing until t=9; level is mean-field, per-input structure needs
       4-5 directions per pair and ~1e3 kink patterns at 1% precision; 1.3-1.9 kbit
@@ -86,11 +86,11 @@ level error (`probes/form_abs_all.py`), (iii) surprise explained by the tie laye
 (`probes/surprise.py`), (iv) strip width proxy = background-gradient / α ratio
 (`probes/bg_ratio.py`) and active-subspace effective dim.
 
-- [ ] D1. Missing cells: FORM and surprise on h8; FORM on h32; bg ratio on h8.
+- [x] D1. Missing cells: FORM and surprise on h8; FORM on h32; bg ratio on h8.
       Run with existing scripts; save `probes/family_*.out`.
 - [x] D2. (seed0 yes, corr 0.93; h32 no, corr 0.19; hand10 no, loss has an offset: sigma 0.005 is non-perturbative for the near-perfect models) Q on h32 and hand10 copies (σ = 0.005 of their own weights, 16 copies each):
       does the quadratic-form prediction hold off M(16,10)? Also seed0 copies.
-- [ ] D3. `MAP.md` table: one row per model, columns = the four lenses + accuracy +
+- [x] D3. `MAP.md` table: one row per model, columns = the four lenses + accuracy +
       n99 (where known). Narrative: strip width → 0 and error mass moving into an
       event of known mass (M(16,10) ratio 0.14, h32 0.04, hand10 0 and 950x); h8 as
       the failed end of the axis.
@@ -100,10 +100,10 @@ level error (`probes/form_abs_all.py`), (iii) surprise explained by the tie laye
 - [x] E1. FINDINGS entries for the three uncommitted probes from 17-18 Oct
       (circle_rqmc, pieces_vs_size, exact_dims; committed in 8a1f3b4 without notes).
       Re-run the incomplete h3_T5 exact_dims sweep or mark it as not run.
-- [ ] E2. EXPLAINER §13 "against the original ask" refresh: headline numbers from B5,
+- [x] E2. EXPLAINER §13 "against the original ask" refresh: headline numbers from B5,
       A1-A4, C2; retire superseded caps (2-4x) and the "pilot costs more than it
       saves" line.
-- [ ] E3. Final doc for ARC (reuse MAP.md + EXPLAINER): claim, best estimator curve,
+- [x] E3. (`ARC_REPORT.md`) Final doc for ARC (reuse MAP.md + EXPLAINER): claim, best estimator curve,
       why deduction loses, family table, protocol note from A5.
 
 ## Order

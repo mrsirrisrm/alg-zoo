@@ -94,5 +94,15 @@ for ax, name in zip(axs, sets):
         ax.errorbar([1e12], [np.sqrt(3e-4 * 1e-3)], yerr=[[np.sqrt(3e-4 * 1e-3) - 3e-4], [1e-3 - np.sqrt(3e-4 * 1e-3)]],
                     fmt='ks', label='polyhedral (S/R term only)')
     ax.set_xlim(1e5, 1e13); ax.set_title(name); ax.set_xlabel('FLOPs'); ax.grid(True, which='both', alpha=.3)
-axs[0].set_ylabel('rms error of accuracy estimate'); axs[0].legend(fontsize=8)
+import os
+if os.path.exists('probes/best_unbiased.json'):  # PLAN B5: measured stacked estimator (adaptive Neyman x exact last input), 12 reps
+    bu = json.load(open('probes/best_unbiased.json'))
+    groups = {'trained': ['trained'], 'noisy sigma=0.005 (32)': ['noisy0', 'noisy1'], 'zoo seeds 0-4': ['seed0', 'seed1']}
+    for ax, name in zip(axs, sets):
+        for key, mk, lab in (('adaptive/rb', 'o', 'adaptive Neyman x exact x9 (measured)'), ('oracle/rb', 'x', 'same, oracle allocation (ceiling)')):
+            budgets = sorted(bu[groups[name][0]], key=int)
+            xf = [np.mean([bu[m][b][key]['used'] for m in groups[name]]) * 1.15 * F for b in budgets]
+            yr = [np.sqrt(np.mean([bu[m][b][key]['rms'] ** 2 for m in groups[name]])) for b in budgets]
+            ax.loglog(xf, yr, mk, color='k', mfc='none' if mk == 'o' else None, label=lab + ('' if len(groups[name]) == 1 else f' ({len(groups[name])} models)'))
+axs[0].set_ylabel('rms error of accuracy estimate'); axs[0].legend(fontsize=8, loc='upper right')
 plt.tight_layout(); plt.savefig('mse_curves.png', dpi=120)
