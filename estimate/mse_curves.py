@@ -104,5 +104,12 @@ if os.path.exists('probes/best_unbiased.json'):  # PLAN B5: measured stacked est
             xf = [np.mean([bu[m][b][key]['used'] for m in groups[name]]) * 1.15 * F for b in budgets]
             yr = [np.sqrt(np.mean([bu[m][b][key]['rms'] ** 2 for m in groups[name]])) for b in budgets]
             ax.loglog(xf, yr, mk, color='k', mfc='none' if mk == 'o' else None, label=lab + ('' if len(groups[name]) == 1 else f' ({len(groups[name])} models)'))
+if os.path.exists('probes/best_sobol.json'):  # PLAN F2: the same stack on a scrambled-Sobol pool in order-statistic coordinates, 24 reps
+    bs = json.load(open('probes/best_sobol.json'))
+    for ax, name in zip(axs, sets):
+        budgets = sorted(bs[groups[name][0]], key=int)
+        xf = [np.mean([bs[m][b]['sobol/adaptive']['used'] for m in groups[name]]) * 1.15 * F for b in budgets]
+        yr = [np.sqrt(np.mean([bs[m][b]['sobol/adaptive']['rms'] ** 2 for m in groups[name]])) for b in budgets]
+        ax.loglog(xf, yr, 's', color='k', mfc='none', label='same + Sobol stream in strata (measured)' + ('' if len(groups[name]) == 1 else f' ({len(groups[name])} models)'))
 axs[0].set_ylabel('rms error of accuracy estimate'); axs[0].legend(fontsize=8, loc='upper right')
 plt.tight_layout(); plt.savefig('mse_curves.png', dpi=120)

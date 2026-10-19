@@ -1,0 +1,5 @@
+trained: 2^28 acc 0.953104 (sd 1.3e-05); harness 0.953119; delta -1.5e-05 (-1.1 sd of the 2^28 truth)  234s
+noisy0: 2^28 acc 0.868341 (sd 2.1e-05); harness 0.868341; delta +1.0e-07 (+0.0 sd of the 2^28 truth)  443s
+noisy1: 2^28 acc 0.912971 (sd 1.7e-05); harness 0.912980; delta -9.4e-06 (-0.5 sd of the 2^28 truth)  702s
+seed0: 2^28 acc 0.909983 (sd 1.7e-05); harness 0.910023; delta -3.9e-05 (-2.2 sd of the 2^28 truth)  1089s
+seed1: 2^28 acc 0.880222 (sd 2.0e-05); harness 0.880227; delta -5.6e-06 (-0.3 sd of the 2^28 truth)  1444s

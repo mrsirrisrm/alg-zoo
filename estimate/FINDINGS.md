@@ -821,6 +821,34 @@ Paired ratios (MSE of the first / MSE of the second, same pools): pos(R) / L1 ad
   The 12-rep figure was a low draw. B5 is re-run at 48 reps below; gains now carry
   bootstrap intervals.
 
+## The Sobol stream inside the B5 strata: unbiased, and 1.8x at 2^18-2^19 (`probes/best_sobol.py`, `.out`, `.json`; `probes/truth28.py`, `.out`, `.json`; PLAN F1, F2)
+Truths at 2^28 (sd 1.3-2.1e-5) against the harness values: trained -1.5e-5 (-1.1 sd), noisy0
++1e-7, noisy1 -9e-6, seed1 -6e-6, seed0 -3.9e-5 (-2.2 sd; an independent 2^28 draw last
+session gave -4.2e-5). The 2^26 seed0 truth is high by ~4e-5, which is +1 z at 2^19-2^20 for
+an estimator with gain 3-6x over 24-32 reps.
+The B5 estimator (first-nine strata, adaptive Neyman, exact x_9) on a scrambled-Sobol pool in
+9-input order-statistic coordinates: positions on dims 0-7, Renyi spacings on 8-17, x_9 on 18
+(unused). The map runs in float64: float32 rounds the top uniform to 1.0 about once per 2^22
+points and its inverse CDF is infinite. 24 reps, pools 3000-3023; iid adaptive on the same
+reps for the paired ratio; gains carry 16-84% bootstrap intervals.
+- Unbiased. Against the 2^28 truths the 30 (model, budget) cells x 3 Sobol schemes have
+  |z| <= 2.1 except trained at 2^14 (-2.6 adaptive, -2.9 prop) and noisy0 prop at 2^15
+  (-2.8): mixed signs, no trend with budget. seed0 at 2^19 is +0.3. B2's +4.2 at 2^20 was the
+  truth error plus a 32-rep fluctuation; the iid estimator on seed0 here reads +1.8/+1.1/+1.0
+  at 2^17-2^19 against the 2^28 truth and +2.3/+1.7/+1.8 against the harness one.
+- Gain, geometric mean over the five models at 2^14..2^19: iid adaptive 2.6/3.1/3.5/3.9/3.6/
+  3.6x, Sobol 2.9/3.8/4.2/5.1/6.7/6.6x, ratio 1.12/1.20/1.21/1.31/1.90/1.84. Per model at
+  2^18/2^19: trained 11.6/12.4x, noisy0 7.6/7.5x, noisy1 8.4/5.5x, seed0 5.0/5.9x, seed1
+  3.7/4.0x; paired Sobol/iid ratios 1.4-2.7 with intervals excluding 1 in 8 of 10 cells.
+- It composes with the strata better than the 1.3x guessed: the stream's gain grows with the
+  points per stratum, so it is 1.1-1.2x at 2^14-2^16 and 1.8-1.9x once strata hold hundreds.
+- With proportional allocation the stream alone reaches 9.9x (noisy0) and 11.2x (noisy1) at
+  2^19 against 7.5x/5.5x adaptive and 8.2x/5.1x oracle: per-cell intervals are +-30% and
+  the adaptive allocation's learning noise is of that order on the copies.
+- iid adaptive at 24 reps restates B5's 12-rep per-model numbers by up to 2x either way
+  (noisy0 3.1-3.4x here vs 6.5-8.2x there, trained 6.1-8.1x vs 2.9-4.4x); the geomean is
+  stable (3.6-3.9x vs 4.0-4.8x). Per-model gains need >= 48 reps.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".
