@@ -153,8 +153,26 @@ gain of the relevant estimator as the only number that counts.
 - [ ] G4. (not attempted: G1 found a survivor on accuracy but no estimator got cheaper on it, so the premise is gone) Boundary-layer-aligned loss (errors only where the BL margin rule puts them):
       only if G1 fails to find a survivor, since it needs its own design.
 
+## H. Activation patterns vs error, aligned to the tie step (from 2026-10-21; a description of the error set, not an estimator)
+
+Are some ReLU patterns associated with error, and with the strip? The error is committed
+early for many inputs (hazard entry: 60-66% at the arrival of the later confused value),
+so a fixed-step table smears. Align to the event: b0 = the later position of the closer
+tied pair, known from the input alone. Score every feature by held-out log loss of error
+("explained" = fraction of the constant predictor's loss removed).
+
+- [x] H1. (aligned d=0 explains 0.161 given o vs <= 0.08 at any fixed step; relay n4/n7/n8 -> n5/n9 -> n0 over d=0..2, n2 a state carrier; core 8 hold all of it; gap 0.26, gap x o x core d=0..2 0.42; inside the strip 0.16: the pattern is not the error) `probes/pattern_error.py`: 2^20 inputs on the trained model, h16 seed0, h8 best,
+  h32 best. Explained by the full pattern at absolute t and at aligned d = t - b0; the
+  orientation o (which of the pair arrived later) as a conditioning key; per-neuron bits
+  and margins at the aligned steps; gap cell vs pattern vs both; the top patterns' error
+  share; strip membership (gap < .03) from the margin vs the pattern.
+- [x] H2. (entry written; h8 fails orientations not comparisons, o alone 0.18, gap 0.02; h32 peaks at t9 in absolute time and has an aligned ridge with n9 error-linked at every event step, capacity-limited at 29k patterns) FINDINGS entry and the reading: which neurons and which event steps carry the
+  decision on M(16,10), whether the pattern adds anything beyond the gap, and the family
+  contrast (h32 should peak at the last step, h8 nowhere).
+
 ## Order
 
 A1 → B1 → A2/A3 (parallel, cheap) → B3/B4 → B2 → B5 → C1 → C2 → D1/D2 → D3 → C3 → E.
 Skip C2 if B5 and C1 leave no budget; it only sharpens a conclusion already supported.
 G0 -> G1 -> G2 (-> G3 as control; G4 only if G1 fails).
+H1 -> H2.

@@ -972,6 +972,61 @@ model class.
   below where continued training puts it. G4 (boundary-layer-aligned loss) not attempted:
   G1 found a survivor on accuracy (group 0.07) but no estimator that got cheaper on it.
 
+## Activation patterns vs error, aligned to the tie step (`probes/pattern_error.py`, `.out`; PLAN H)
+- Question: are some ReLU patterns associated with error, or with the strip, and how to see
+  it when the error is committed early? Setup: 2^20 iid inputs; the relevant tie is the
+  closer of M/S and S/R (relative gap as the B5 cells); b0 = the later position of that
+  pair, from the input alone; o = (kind, whether x_b0 is the larger of the pair), also
+  from the input. A feature is scored by the held-out log loss of error given its value
+  (per-value rates fitted on one half, scored on the other, shrunk to the base rate with
+  two pseudo-counts), as the fraction of the constant predictor's loss it removes
+  ("explained"). The pattern alone cannot tell went-the-wrong-way from went-the-right-way,
+  so "given o" = explained(o x pattern) - explained(o). Models: trained, h16 seed0, h8 best,
+  h32 best.
+- Alignment is the answer to the early-commit problem. Trained, given o: the 16-bit pattern
+  explains at most 0.08 at any fixed step (t9) and 0.03-0.06 at t4-t8, but 0.161 at the
+  event step d = t - b0 = 0, 0.126 at d = +1, 0.084 at d = +2, 0.036 at d = +3. The error
+  is decided over the arrival step and the two after it, as the settling-time entry said.
+- Which neurons: per-neuron bit given o (x1000). d = 0: n4 33, n7 27, n8 23, n2 16, n1 9.
+  d = +1: n5 47, n9 39, n2 30, n6 14. d = +2: n0 39, n2 13, n15 13. The comparison is a
+  relay through the core set across three event steps, and n2 (not in the switching core)
+  carries 8-30 at every event step from d = -1 to +3: a state carrier. The eight core
+  neurons hold all of the pattern's information: o x pattern over d = 0..2 jointly explains
+  0.227 from the core vs 0.236 from all 16.
+- The pattern is not the error. Gap cell alone 0.264; o x pattern at b0 0.178; gap x o x
+  pattern at b0 0.371; gap x o x core pattern over d = 0..2 0.424. Inside the strip (gap <
+  .03, error 0.216) the three-step core pattern given o explains 0.162 and gap x o x pattern
+  0.218. So even where the error lives, four fifths of its entropy is not in which region
+  the input is in but where it sits inside the region, against the readout hyperplane.
+  Error-dense patterns exist only weakly: the top (o, pattern) at b0 has 2.8x the M/S base
+  rate (0.073 vs 0.026) on 2% of the mass; the top 16 M/S patterns hold 38% of the errors on
+  25% of the mass; S/R 41% on 38%, no concentration.
+- Strip membership (gap < .03, mass 0.148): the pattern at b0 explains 0.210, the min core
+  margin |pre_j(b0)| in 32 bins 0.102, both 0.316; min-margin AUC 0.714 (best single neuron
+  n4, n7 0.66). Medians of the min margin: strip 0.31, off-strip 1.11, error inputs 0.57.
+  So the pattern sees the strip through the configuration it encodes, and the margin
+  through closeness to the kink; neither alone, and the error inputs are not the smallest
+  margins. For error itself the min margin is weak (AUC 0.60; gap 0.82).
+- Family. h16 seed0: the same picture, weaker and later: d = 0 0.090 given o, d = +2 0.068
+  with one neuron, n8 at 57, doing the comparison two steps after arrival; absolute steps
+  <= 0.042. h8 best (error 0.573): the orientation alone explains 0.184 and the gap cell
+  0.017; patterns given o add 0.05 at d = 0 and nothing after; the top M/S (o, pattern) has
+  error rate 0.905 vs 0.549. h8 fails configurations (which side arrived later), not close
+  comparisons, so it is not a strip model at all. h32 best (error 0.0057): the only model
+  with a fixed-step peak, t9 0.110 vs <= 0.027 before, and an aligned ridge that decays
+  slowly (0.144, 0.134, 0.105, 0.069 at d = 0..3); one neuron, n9, is error-linked at every
+  event step including before the arrival (34, 55, 92, 129, 107, 90 at d = -2..+3). Caveat
+  on h32: 29k distinct patterns at d = 0 from 2^20 inputs with a 0.6% error rate, so the
+  per-pattern rates are capacity-limited (gap x o x pattern 0.155 < gap 0.216 is an
+  estimation artefact, not evidence that patterns carry nothing there).
+- Reading, against the question asked: yes, patterns at the tie step are associated with
+  error, three times more strongly than at any fixed step, through a named relay of core
+  neurons; but the association is partial (0.16 of the error entropy inside the strip,
+  0.42 with the gap overall), because the error set is a sliver inside regions, not a set
+  of regions. For estimation this adds nothing: the pattern is the forward pass up to
+  b0+2 and its per-pattern mass is unknown, so it cannot stratify, and post-stratifying on
+  a variable with unknown masses gives no variance reduction.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".
