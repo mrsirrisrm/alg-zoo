@@ -870,6 +870,31 @@ reps for the paired ratio; gains carry 16-84% bootstrap intervals.
   (noisy0 3.1-3.4x here vs 6.5-8.2x there, trained 6.1-8.1x vs 2.9-4.4x); the geomean is
   stable (3.6-3.9x vs 4.0-4.8x). Per-model gains need >= 48 reps.
 
+## Kinks at the decision step vs error, across hidden size and training (`probes/decision_kinks.py`, `.out`; CRITIQUE conjecture)
+- Setup: 256 great circles of 4096 points, T = 10. Per circle: linear pieces, activation kinks
+  at the last step only, error flips, and the share of error flips with a last-step kink
+  within +-4 points (+-0.35 deg), against the share expected if kinks and flips were
+  independent (enrichment = local / chance).
+- Axis 1, fully trained, seeds 0-4. Last-step kinks per circle: h4 2-7, h8 3-10, h16 5-19,
+  h32 57-74. Error flips: h4 9-12, h8 13-16, h16 27, h32 13-18. So the decision-step kink
+  density tracks hidden size (x10 from h16 to h32) while the error shrinks (5% to 1%), as the
+  conjecture asked. Share of error flips at a last-step kink: h4 and h8 1-3% (enrichment
+  1.2-3), h16 4-22% (3.0-5.4), h32 55-77% (4.6-5.1).
+- Axis 2, best seed, n_seqs 0 to 2^30. h16: last-step kinks 4-5 per circle at 2^20-2^22,
+  12 at 2^24, 19-21 from 2^26; the share of flips at them 1% -> 6% -> 13% -> 19-20%, enrichment
+  1.0 -> 5.1. h8 never builds them: 1-6 last-step kinks, share 0-2%, enrichment 0.3-1.8 at
+  every budget. The untrained nets have many kinks (h16 32 at the last step) and few flips,
+  enrichment 1.3-2.0.
+- Reading: training builds kinks at the decision step and moves the error flips onto them,
+  and the co-location grows with capacity. At h32 the error set is the decision-step kink
+  set, so there the conjecture holds as stated. At M(16,10) four fifths of the error flips
+  are not within +-4 points of a last-step kink (5x chance for the fifth that are), so its
+  error is committed before the readout, in line with the settling-time entry: the h16
+  comparator is coarse at the comparison step, not at the decision step. h8 fails without
+  any decision-step structure at all. The "explanation is not a cheaper estimate" gap is
+  therefore a property of the model class in the sense that the error set sits on kinks in
+  every trained model, but which step's kinks depends on capacity.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".
