@@ -1,0 +1,62 @@
+rep 0 done 153s
+rep 1 done 293s
+rep 2 done 434s
+rep 3 done 597s
+rep 4 done 785s
+rep 5 done 937s
+rep 6 done 1155s
+rep 7 done 1324s
+rep 8 done 1541s
+rep 9 done 1696s
+rep 10 done 1843s
+rep 11 done 2331s
+rep 12 done 2480s
+rep 13 done 2637s
+rep 14 done 2767s
+rep 15 done 2874s
+rep 16 done 2978s
+rep 17 done 3083s
+rep 18 done 3192s
+rep 19 done 3309s
+rep 20 done 3430s
+rep 21 done 3553s
+rep 22 done 3651s
+rep 23 done 3741s
+
+reps 24; pool 2^22; K 32; B5 strata and estimator; sobol = scrambled Sobol pool in 9-input order-statistic coordinates
+gain = p(1-p) / (N 1.15) / MSE vs harness truth [16-84% bootstrap over reps]; z = mean bias / se vs harness truth, z28 vs the 2^28 truth
+
+ft:probes/finetune/group_lam0.npz  err 0.0386  (2^28: 0.0386)
+budget                               iid/adaptive                                sobol/prop                            sobol/adaptive                              sobol/oracle   sobol/iid ratio [16-84% bootstrap over reps]
+2^14        3.05x [ 2.4, 4.0] rms 8.0e-04 z+0.9 z28+0.9    1.90x [ 1.6, 2.4] rms 1.0e-03 z-1.2 z28-1.2    2.71x [ 2.2, 3.7] rms 8.5e-04 z-1.6 z28-1.6    6.06x [ 4.8, 8.2] rms 5.7e-04 z-1.5 z28-1.5   0.89 [0.62,1.30]
+2^15        5.34x [ 4.1, 7.6] rms 4.3e-04 z+0.6 z28+0.6    1.62x [ 1.2, 2.4] rms 7.8e-04 z-1.1 z28-1.1    3.45x [ 2.5, 5.8] rms 5.3e-04 z-1.6 z28-1.6    5.38x [ 4.1, 7.9] rms 4.3e-04 z-1.5 z28-1.5   0.65 [0.38,1.20]
+2^16       13.95x [11.0,19.1] rms 1.9e-04 z+0.8 z28+0.8    1.82x [ 1.4, 2.5] rms 5.2e-04 z-2.0 z28-2.0    4.23x [ 3.2, 6.2] rms 3.4e-04 z-0.7 z28-0.7    5.81x [ 4.4, 8.7] rms 2.9e-04 z-0.3 z28-0.3   0.30 [0.20,0.49]
+2^17        7.33x [ 5.8,10.0] rms 1.8e-04 z+1.3 z28+1.3    2.40x [ 1.8, 3.9] rms 3.2e-04 z-2.7 z28-2.7    3.65x [ 2.7, 5.9] rms 2.6e-04 z-0.6 z28-0.6    5.89x [ 4.4, 9.4] rms 2.0e-04 z-0.7 z28-0.7   0.50 [0.33,0.85]
+2^18       14.22x [10.0,25.6] rms 9.3e-05 z+0.9 z28+0.9    3.82x [ 2.9, 5.5] rms 1.8e-04 z-0.5 z28-0.5    6.35x [ 4.8, 9.1] rms 1.4e-04 z-0.9 z28-0.9    9.48x [ 7.5,13.3] rms 1.1e-04 z-1.1 z28-1.1   0.45 [0.23,0.75]
+2^19       13.75x [10.5,19.6] rms 6.7e-05 z+0.6 z28+0.6    2.65x [ 2.1, 3.6] rms 1.5e-04 z-0.0 z28-0.0   11.08x [ 8.6,15.4] rms 7.4e-05 z-0.9 z28-0.9   11.86x [ 9.3,16.1] rms 7.2e-05 z-0.8 z28-0.8   0.81 [0.50,1.30]
+
+ft:probes/finetune/group_lam0.1.npz  err 0.0520  (2^28: 0.0520)
+budget                               iid/adaptive                                sobol/prop                            sobol/adaptive                              sobol/oracle   sobol/iid ratio [16-84% bootstrap over reps]
+2^14        2.44x [ 2.0, 3.1] rms 1.0e-03 z+0.1 z28+0.1    6.77x [ 5.3, 9.2] rms 6.2e-04 z-1.1 z28-1.1    3.90x [ 2.9, 5.7] rms 8.2e-04 z-0.2 z28-0.2    5.77x [ 4.6, 7.8] rms 6.7e-04 z+0.8 z28+0.8   1.60 [1.04,2.59]
+2^15        4.15x [ 3.4, 5.4] rms 5.6e-04 z+0.2 z28+0.2    4.20x [ 3.4, 5.4] rms 5.6e-04 z-0.6 z28-0.6    5.95x [ 4.6, 8.5] rms 4.7e-04 z-0.2 z28-0.2    5.65x [ 4.7, 7.2] rms 4.8e-04 z-0.0 z28-0.0   1.43 [0.96,2.19]
+2^16        4.64x [ 3.4, 7.3] rms 3.7e-04 z+0.3 z28+0.3    3.72x [ 2.9, 5.1] rms 4.2e-04 z-1.2 z28-1.2    6.57x [ 5.1, 9.1] rms 3.1e-04 z+1.2 z28+1.2    4.37x [ 3.6, 5.4] rms 3.9e-04 z+0.4 z28+0.4   1.41 [0.83,2.21]
+2^17        5.60x [ 4.5, 7.7] rms 2.4e-04 z+1.6 z28+1.6    3.35x [ 2.8, 4.3] rms 3.1e-04 z+0.1 z28+0.1    7.59x [ 6.2, 9.6] rms 2.1e-04 z+1.0 z28+1.0    7.28x [ 5.7,10.3] rms 2.1e-04 z+0.7 z28+0.7   1.36 [0.90,1.93]
+2^18        4.68x [ 3.6, 6.5] rms 1.9e-04 z+2.3 z28+2.3    4.56x [ 3.2, 7.4] rms 1.9e-04 z-0.1 z28-0.1    7.84x [ 6.4,10.0] rms 1.4e-04 z-0.2 z28-0.2   12.21x [ 9.2,17.9] rms 1.2e-04 z+0.2 z28+0.2   1.68 [1.12,2.41]
+2^19        6.18x [ 4.8, 8.6] rms 1.1e-04 z+2.0 z28+2.0    4.73x [ 3.7, 6.6] rms 1.3e-04 z+0.3 z28+0.3    9.38x [ 7.0,13.4] rms 9.3e-05 z+1.0 z28+1.0    9.82x [ 7.7,13.4] rms 9.1e-05 z+1.0 z28+1.0   1.52 [0.93,2.44]
+
+ft:probes/finetune/group_lam0.3.npz  err 0.0686  (2^28: 0.0686)
+budget                               iid/adaptive                                sobol/prop                            sobol/adaptive                              sobol/oracle   sobol/iid ratio [16-84% bootstrap over reps]
+2^14        2.19x [ 1.5, 4.1] rms 1.2e-03 z+1.0 z28+1.0    6.13x [ 5.0, 7.9] rms 7.4e-04 z-1.2 z28-1.2    4.57x [ 3.8, 5.8] rms 8.6e-04 z-0.3 z28-0.3    4.95x [ 4.1, 6.2] rms 8.3e-04 z-0.2 z28-0.2   2.08 [1.16,3.13]
+2^15        3.66x [ 2.7, 5.6] rms 6.8e-04 z+0.8 z28+0.8    3.17x [ 2.6, 4.3] rms 7.3e-04 z-1.3 z28-1.3    3.00x [ 2.3, 4.4] rms 7.5e-04 z-0.4 z28-0.4    4.22x [ 3.4, 5.5] rms 6.3e-04 z-0.7 z28-0.7   0.82 [0.48,1.40]
+2^16        3.98x [ 3.2, 5.0] rms 4.6e-04 z+1.6 z28+1.6    4.91x [ 3.9, 6.6] rms 4.1e-04 z-0.4 z28-0.4    7.16x [ 5.8, 9.3] rms 3.4e-04 z+0.5 z28+0.5    9.10x [ 6.7,14.0] rms 3.0e-04 z+0.2 z28+0.2   1.80 [1.26,2.59]
+2^17        3.86x [ 3.2, 4.9] rms 3.3e-04 z+2.5 z28+2.5    5.16x [ 3.9, 7.5] rms 2.9e-04 z+0.3 z28+0.3    5.06x [ 4.0, 7.0] rms 2.9e-04 z+0.0 z28+0.0    4.84x [ 3.8, 6.7] rms 2.9e-04 z-0.0 z28-0.0   1.31 [0.90,2.02]
+2^18        4.24x [ 3.4, 5.5] rms 2.2e-04 z+4.5 z28+4.5    3.91x [ 2.7, 6.8] rms 2.3e-04 z+1.4 z28+1.4    5.51x [ 4.3, 7.6] rms 2.0e-04 z-0.5 z28-0.5    6.21x [ 4.7, 9.1] rms 1.8e-04 z-0.4 z28-0.4   1.30 [0.95,1.83]
+2^19        2.84x [ 2.2, 3.9] rms 1.9e-04 z+4.0 z28+4.0    2.76x [ 2.1, 4.0] rms 2.0e-04 z+0.9 z28+0.9    6.90x [ 5.4, 9.5] rms 1.2e-04 z+0.9 z28+0.9    7.06x [ 5.5, 9.7] rms 1.2e-04 z+0.9 z28+0.9   2.43 [1.53,3.82]
+
+geometric mean over models of gain: budget, iid/adaptive, sobol/adaptive, ratio
+2^14   2.54x   3.64x   1.44
+2^15   4.33x   3.95x   0.91
+2^16   6.36x   5.84x   0.92
+2^17   5.41x   5.20x   0.96
+2^18   6.56x   6.50x   0.99
+2^19   6.22x   8.95x   1.44

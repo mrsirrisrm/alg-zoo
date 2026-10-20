@@ -1,0 +1,4 @@
+ft:probes/finetune/group_lam0.npz: 2^28 acc 0.961439 (sd 1.2e-05); harness 0.961445; delta -6.1e-06 (-0.5 sd of the 2^28 truth)  173s
+ft:probes/finetune/group_lam0.1.npz: 2^28 acc 0.947970 (sd 1.4e-05); harness 0.947977; delta -7.3e-06 (-0.5 sd of the 2^28 truth)  363s
+ft:probes/finetune/group_lam0.3.npz: 2^28 acc 0.931409 (sd 1.5e-05); harness 0.931417; delta -8.4e-06 (-0.5 sd of the 2^28 truth)  557s
+ft:probes/finetune/long/group_lam0.1.npz: 2^28 acc 0.952686 (sd 1.3e-05); harness 0.952708; delta -2.1e-05 (-1.6 sd of the 2^28 truth)  144s

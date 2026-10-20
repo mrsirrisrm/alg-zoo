@@ -31,7 +31,8 @@ from boundary_layer import sample_ties, tie_density
 from gauss import Phi, Phi_inv, _gl
 from ground_truth import load_weights
 
-KSET = [0, 4, 5, 6, 7, 8, 9, 11]
+import os
+KSET = [int(j) for j in os.environ['KSET'].split(',')] if os.environ.get('KSET') else [0, 4, 5, 6, 7, 8, 9, 11]
 WMAX = 0.25
 
 

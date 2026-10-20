@@ -40,6 +40,9 @@ def models_list(names):
         out[f'noisy{i}'] = ([th.tensor(d[k][i]) for k in ('W_ih', 'W_hh', 'W_out')], float(d['acc'][i]))
     for i in range(5):
         out[f'seed{i}'] = ([th.tensor(s[k][i]) for k in ('W_ih', 'W_hh', 'W_out')], float(s['acc'][i]))
+    for n in names:
+        if n.startswith('ft:'):                                   # fine-tuned variant (PLAN G): path to an npz
+            f = np.load(n[3:]); out[n] = ([th.tensor(f[k]) for k in ('W_ih', 'W_hh', 'W_out')], float(f['acc28'] if 'acc28' in f else f['acc']))
     return [(n, *out[n]) for n in names]
 
 

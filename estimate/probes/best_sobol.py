@@ -108,7 +108,7 @@ def main():
     for N in BUDGETS:
         gi = np.exp(np.mean([np.log(summary[n][N]['iid/adaptive']['gain']) for n in summary])); gs = np.exp(np.mean([np.log(summary[n][N]['sobol/adaptive']['gain']) for n in summary]))
         print(f"2^{int(np.log2(N))}  {gi:5.2f}x  {gs:5.2f}x  {gs / gi:5.2f}")
-    json.dump(summary, open('probes/best_sobol.json', 'w'), indent=1)
+    json.dump(summary, open(os.environ.get('SOBOL_OUT', 'probes/best_sobol.json'), 'w'), indent=1)
 
 
 if __name__ == '__main__':

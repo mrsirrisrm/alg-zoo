@@ -2,14 +2,14 @@
 so the z checks at 2^19-2^20 are not limited by the 2^26 seed truths (sd 3.5e-5).
 sd of a 2^28 truth: sqrt(p(1-p)/2^28) ~ 1.3-2e-5. Run from estimate/: python probes/truth28.py
 """
-import sys, json, time
+import sys, json, os, time
 sys.path.insert(0, '.'); sys.path.insert(0, 'probes')
 import numpy as np, torch as th
 from ground_truth import forward
 from strat_adaptive import models_list
 
 names = sys.argv[1:] or ['trained', 'noisy0', 'noisy1', 'seed0', 'seed1']
-out = {}; t0 = time.time()
+out = json.load(open('probes/truth28.json')) if os.path.exists('probes/truth28.json') else {}; t0 = time.time()
 for name, W, acc in models_list(names):
     g = th.Generator().manual_seed(2828); c = 0
     with th.no_grad():

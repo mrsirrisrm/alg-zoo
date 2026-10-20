@@ -1,0 +1,60 @@
+=== weights.npz KSET all16
+{
+ "poly": 0.015896069555384366,
+ "mc_lin": 0.01587833573855437,
+ "mc_exact": 0.02105403833808905,
+ "cover": 0.627787036990069,
+ "regions_median": 1448.0,
+ "poly_seconds": 222.50077438354492,
+ "qmc": 256
+}
+=== probes/finetune/group_lam0.1.npz KSET all16
+{
+ "poly": 0.02159183401436509,
+ "mc_lin": 0.021659338704141638,
+ "mc_exact": 0.02426265332910001,
+ "cover": 0.7784890390125496,
+ "regions_median": 613.0,
+ "poly_seconds": 101.35405468940735,
+ "qmc": 256
+}
+=== probes/finetune/group_lam0.3.npz KSET all16
+{
+ "poly": 0.027792117194240292,
+ "mc_lin": 0.027855529377484645,
+ "mc_exact": 0.03150045633319411,
+ "cover": 0.765685701636793,
+ "regions_median": 628.5,
+ "poly_seconds": 108.8297221660614,
+ "qmc": 256
+}
+=== group_lam0.1 KSET learned 0,1,4,5,6,7,8,9
+{
+ "poly": 0.02280005923577754,
+ "mc_lin": 0.022856426020907553,
+ "mc_exact": 0.02426265332910001,
+ "cover": 0.8170834715572869,
+ "regions_median": 402.0,
+ "poly_seconds": 39.32627844810486,
+ "qmc": 256
+}
+=== probes/finetune/linearise_lam0.1.npz KSET all16
+{
+ "poly": 0.021817438461530027,
+ "mc_lin": 0.021809601362612483,
+ "mc_exact": 0.026515826971808713,
+ "cover": 0.7144690711755269,
+ "regions_median": 836.5,
+ "poly_seconds": 187.93380641937256,
+ "qmc": 256
+}
+=== probes/finetune/linearise_lam0.3.npz KSET all16
+{
+ "poly": 0.04033035672883894,
+ "mc_lin": 0.04032161949554088,
+ "mc_exact": 0.044932896748604206,
+ "cover": 0.7289492185953943,
+ "regions_median": 682.5,
+ "poly_seconds": 105.70635962486267,
+ "qmc": 256
+}

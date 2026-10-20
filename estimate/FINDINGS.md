@@ -895,6 +895,83 @@ reps for the paired ratio; gains carry 16-84% bootstrap intervals.
   therefore a property of the model class in the sense that the error set sits on kinks in
   every trained model, but which step's kinks depends on capacity.
 
+## Training the explanation in: pruning the comparator by fine-tuning (`probes/finetune_prune.py`, `ft_metrics.py`, `finetune_summary.py`, `finetune/`, `finetune_*.out`, `polyhedral_trained.out`, `polyhedral_ft*.out`, `best_sobol_ft.*`; PLAN G)
+A different question from the ARC one: not "estimate this model" but "can M(16,10) be
+fine-tuned so that a deductive estimator gets cheap on it, at the same accuracy?" If yes,
+the explanation-vs-estimate gap is a property of how the model was trained; if no, of the
+model class.
+- G0, cheap check first: h32, whose error flips sit on decision-step kinks
+  (`decision_kinks.out`), is only modestly more estimable than M(16,10) on the family table
+  (6.8x vs 3.4x on gap strata, 45% vs 57% surprise left, still a strip model). So
+  kink co-location at the decision step is not the property to train for; the route left is
+  to prune the comparator so the polyhedral integrator has fewer regions.
+- Setup: from the trained weights, AdamW lr 2e-4 cosine, 2^25 sequences in batches of 4096,
+  loss = task CE + lambda R. Three penalties: `group` (G1) = sum_j sqrt(g_j), g_j the soft
+  switching of neuron j's gates at the steps after the first tied element across background
+  redraws inside exact M/S and S/R tie skeletons (p = mean sigmoid(pre/0.5), sum_t p(1-p));
+  `linearise` (G1b) = the same on random inputs at all ten steps, so periphery neurons
+  become always-on or always-off; `lastkink` (G3, control) rewards kinks at the last step.
+  Per model: MC accuracy (2^26), hard per-neuron switching inside skeletons, patterns of all
+  16 neurons at the post-tie steps covering 99% of mass (as `region_count.py`), the
+  decision_kinks statistics, and `polyhedral.py` S/R with KSET = all 16 (exact regions over
+  all ten steps, no fitted periphery) and with the learned kink set.
+- The lambda = 0 control: plain continued training lifts the zoo model from 0.9531 to
+  0.9614 (2^28 truth 0.96144), so "accuracy retained" has two baselines. The zoo's M(16,10)
+  is not at its own optimum.
+- G1 Pareto (`finetune_summary.py`; acc, post-tie regions99 M/S / S/R, neurons switching
+  M/S / S/R):
+    trained        0.9531   2748 / 424   14 / 11
+    group 0        0.9614   2209 / 353   14 / 11
+    group 0.03     0.9597   1680 / 238   12 / 8
+    group 0.05     0.9569   1384 / 173   11 / 7
+    group 0.07     0.9530    977 /  64    9 / 5     (the original accuracy, S/R regions 6.6x fewer)
+    group 0.1      0.9480    641 /  28    9 / 5     (-0.5 pt vs trained, -1.3 vs control; S/R 15x fewer)
+    group 0.3      0.9314    498 /  26    7 / 5
+    group 1        0.8475    152 /  29    8 / 5
+  The penalty freezes the periphery exactly as `freeze_periphery` assumed: n3, n10-n15 stop
+  switching inside skeletons by lambda 0.1 (hard g from 0.5-0.8 to 0.00), while n0, n1, n4,
+  n5, n6, n7, n8, n9 keep switching at every lambda, including lambda 1 at 85% accuracy.
+  The comparator needs those eight neurons; the fine-tune never found a smaller one.
+  Longer at lambda 0.1 (2^27 sequences, `finetune/long/`): acc 0.9527 (2^28 truth 0.95269,
+  the original to within 0.04 pt), post-tie regions 416 / 24 (6.6x / 18x fewer), switching
+  neurons 8 / 4. So the periphery can be frozen at the original accuracy; it costs training,
+  not capacity.
+- G1 for the integrator: nothing. `polyhedral.py` S/R with the learned kink set on group
+  0.1: 402 regions median, poly 0.0228 vs MC-exact 0.0243 (-6%), 39 s; trained with its
+  kink set: 364 regions, 0.0210 vs 0.0211 (-0.4%), 30 s. With KSET = all 16 (exact regions,
+  2^14 discovery draws, 99% cover): trained 3230 regions and 72% of the test mass found,
+  group 0.1 1101 and 82%, long group 0.1 1087 and 85% (poly 0.0238 vs 0.0253), linearise 0.1 1609 and 77%; with 2^12 draws at 99.9% cover 1448 /
+  613 / 836 and 63-78% found. The post-tie region count fell 15x but the integrator's
+  regions span all ten steps, and those are the comparator's own history: the eight core
+  neurons are nonlinear at every step in every model (on random inputs, the periphery's
+  nonlinear steps fall from 9-10 to 1-4 under `linearise`, the core's stay at 10; step 0
+  is a sign(x_0) gate for every neuron, there being no biases). The periphery was never the
+  cost: the trained run already froze it per region at a 0.4% aggregate error. The S/R tie
+  error itself rises under pruning (0.0211 -> 0.0243 at group 0.1, 0.0265 at linearise 0.1).
+- G1b `linearise`: acc 0.9614 / 0.9584 / 0.9430 / 0.9062 at lambda 0.01 / 0.03 / 0.1 / 0.3,
+  post-tie regions 2056/326, 1646/202, 868/70, 380/46; worse than `group` at equal
+  accuracy on every count.
+- G2 sampling route on the pruned models (`best_sobol_ft.out`, 24 reps, 2^28 truths in the
+  npz): the B5 stack gains, iid / Sobol at 2^17, 2^18, 2^19:
+  control (lambda 0, err 0.0386) 7.3 / 3.7, 14.2 / 6.4, 13.8 / 11.1x; group 0.1 (err 0.0520)
+  5.6 / 7.6, 4.7 / 7.8, 6.2 / 9.4x; group 0.3 (err 0.0686) 3.9 / 5.1, 4.2 / 5.5, 2.8 / 6.9x
+  (its iid/adaptive is biased, z28 +4 to +4.5 at 2^18-2^19; Sobol |z28| <= 1.4 everywhere).
+  Trained at 48 / 24 reps: 6.1-6.3 / 10-12x. The sampling gain tracks the error rate (lower
+  error, more of it near the ties, more gain) and does not respond to the pruning; the
+  pruned model at the original accuracy sits inside the trained intervals. Not re-run on the
+  2^27 model for that reason.
+- G3 control (`lastkink`): at lambda 0.03 and 0.3 the last-step kink count does not move
+  (20.9 -> 20.5, 23.7) and accuracy equals the control's; at lambda 3 and 10 it reaches h32's
+  level (53.5, 57.9 per circle) with accuracy 0.42 and 0.20 and enrichment 1.9-2.2 (trained
+  4.5). The h32 statistic can be bought only by destroying the model, and the errors do not
+  move onto the kinks. Goodhart in the strong form.
+- Reading: the gap belongs to the model class. Pruning what can be pruned (the periphery)
+  leaves an eight-neuron comparator whose per-step kinks are the algorithm, and the
+  polyhedral region count at the comparator is 400-3000 per skeleton at every accuracy
+  above 85%. The one real finding for the original model is incidental: it is 0.8 points
+  below where continued training puts it. G4 (boundary-layer-aligned loss) not attempted:
+  G1 found a survivor on accuracy (group 0.07) but no estimator that got cheaper on it.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".

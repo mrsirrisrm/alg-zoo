@@ -1,0 +1,57 @@
+skel  0 (a=0, b=6, v=+1.17, R= 689): poly 0.0240 cover 0.665 | MC linear 0.0239±0.0002 (found 0.908) | MC exact 0.0199±0.0002
+skel  1 (a=4, b=9, v=+0.41, R= 701): poly 0.0083 cover 0.881 | MC linear 0.0085±0.0001 (found 0.896) | MC exact 0.0099±0.0001
+skel  2 (a=6, b=8, v=+0.86, R= 784): poly 0.0168 cover 0.849 | MC linear 0.0169±0.0001 (found 0.896) | MC exact 0.0193±0.0001
+skel  3 (a=5, b=8, v=+0.25, R=1287): poly 0.0063 cover 0.799 | MC linear 0.0065±0.0001 (found 0.808) | MC exact 0.0115±0.0002
+skel  4 (a=1, b=6, v=+0.56, R= 296): poly 0.0113 cover 0.971 | MC linear 0.0114±0.0001 (found 0.963) | MC exact 0.0103±0.0001
+skel  5 (a=0, b=1, v=+0.65, R=  92): poly 0.0037 cover 0.925 | MC linear 0.0036±0.0000 (found 0.994) | MC exact 0.0036±0.0000
+skel  6 (a=4, b=5, v=+0.59, R= 614): poly 0.0165 cover 0.886 | MC linear 0.0166±0.0002 (found 0.922) | MC exact 0.0155±0.0002
+skel  7 (a=1, b=9, v=+0.83, R= 167): poly 0.0069 cover 0.292 | MC linear 0.0067±0.0001 (found 0.982) | MC exact 0.0067±0.0001
+skel  8 (a=3, b=4, v=+0.51, R= 112): poly 0.0435 cover 0.922 | MC linear 0.0435±0.0002 (found 0.991) | MC exact 0.0433±0.0002
+skel  9 (a=3, b=5, v=+0.35, R= 122): poly 0.0179 cover 0.924 | MC linear 0.0180±0.0001 (found 0.988) | MC exact 0.0175±0.0001
+skel 10 (a=1, b=5, v=+0.21, R= 408): poly 0.0094 cover 0.843 | MC linear 0.0094±0.0001 (found 0.943) | MC exact 0.0121±0.0001
+skel 11 (a=5, b=7, v=+0.32, R= 216): poly 0.0142 cover 0.946 | MC linear 0.0142±0.0001 (found 0.975) | MC exact 0.0147±0.0001
+skel 12 (a=0, b=5, v=+0.42, R= 552): poly 0.0166 cover 0.972 | MC linear 0.0158±0.0001 (found 0.937) | MC exact 0.0170±0.0001
+skel 13 (a=5, b=8, v=+1.41, R= 363): poly 0.0136 cover 0.939 | MC linear 0.0138±0.0001 (found 0.964) | MC exact 0.0142±0.0001
+skel 14 (a=7, b=9, v=-0.05, R= 141): poly 0.0004 cover 0.047 | MC linear 0.0005±0.0000 (found 0.990) | MC exact 0.0004±0.0000
+skel 15 (a=2, b=8, v=+1.29, R=1436): poly 0.0004 cover 0.034 | MC linear 0.0004±0.0000 (found 0.774) | MC exact 0.0006±0.0001
+skel 16 (a=2, b=7, v=+1.05, R= 211): poly 0.0372 cover 0.980 | MC linear 0.0366±0.0002 (found 0.975) | MC exact 0.0348±0.0002
+skel 17 (a=7, b=8, v=+0.33, R= 725): poly 0.0185 cover 0.893 | MC linear 0.0178±0.0002 (found 0.906) | MC exact 0.0190±0.0002
+skel 18 (a=2, b=9, v=+0.66, R= 280): poly 0.0194 cover 0.971 | MC linear 0.0194±0.0001 (found 0.969) | MC exact 0.0184±0.0001
+skel 19 (a=0, b=6, v=+0.81, R= 141): poly 0.0573 cover 0.993 | MC linear 0.0568±0.0002 (found 0.988) | MC exact 0.0537±0.0002
+skel 20 (a=0, b=1, v=+0.40, R= 143): poly 0.0046 cover 0.961 | MC linear 0.0050±0.0001 (found 0.982) | MC exact 0.0056±0.0001
+skel 21 (a=8, b=9, v=+0.46, R= 978): poly 0.0057 cover 0.866 | MC linear 0.0057±0.0000 (found 0.853) | MC exact 0.0062±0.0000
+skel 22 (a=4, b=6, v=+1.69, R= 921): poly 0.0080 cover 0.851 | MC linear 0.0089±0.0001 (found 0.858) | MC exact 0.0099±0.0001
+skel 23 (a=0, b=3, v=+0.89, R= 235): poly 0.0229 cover 0.905 | MC linear 0.0224±0.0002 (found 0.974) | MC exact 0.0218±0.0002
+skel 24 (a=0, b=3, v=+1.00, R= 366): poly 0.0149 cover 1.019 | MC linear 0.0144±0.0001 (found 0.948) | MC exact 0.0147±0.0001
+skel 25 (a=3, b=5, v=+1.26, R= 548): poly 0.0070 cover 0.929 | MC linear 0.0071±0.0001 (found 0.928) | MC exact 0.0076±0.0001
+skel 26 (a=6, b=9, v=+0.98, R=1850): poly 0.0070 cover 0.685 | MC linear 0.0069±0.0001 (found 0.684) | MC exact 0.0099±0.0001
+skel 27 (a=2, b=6, v=+0.99, R= 236): poly 0.0146 cover 0.967 | MC linear 0.0147±0.0001 (found 0.977) | MC exact 0.0136±0.0001
+skel 28 (a=1, b=9, v=+0.70, R= 162): poly 0.0173 cover 1.022 | MC linear 0.0162±0.0001 (found 0.983) | MC exact 0.0169±0.0001
+skel 29 (a=2, b=4, v=+0.37, R= 316): poly 0.0052 cover 0.960 | MC linear 0.0040±0.0001 (found 0.951) | MC exact 0.0045±0.0001
+skel 30 (a=1, b=8, v=+0.13, R= 118): poly 0.0361 cover 0.756 | MC linear 0.0360±0.0002 (found 0.991) | MC exact 0.0365±0.0002
+skel 31 (a=3, b=4, v=+0.54, R= 363): poly 0.0104 cover 0.950 | MC linear 0.0101±0.0001 (found 0.952) | MC exact 0.0107±0.0001
+skel 32 (a=1, b=6, v=+0.02, R= 321): poly 0.0074 cover 0.404 | MC linear 0.0052±0.0001 (found 0.952) | MC exact 0.0044±0.0001
+skel 33 (a=2, b=9, v=+1.21, R= 724): poly 0.0241 cover 0.897 | MC linear 0.0246±0.0002 (found 0.904) | MC exact 0.0222±0.0001
+skel 34 (a=2, b=3, v=+0.83, R= 524): poly 0.0237 cover 0.929 | MC linear 0.0261±0.0004 (found 0.926) | MC exact 0.0227±0.0004
+skel 35 (a=0, b=7, v=+0.50, R= 560): poly 0.0107 cover 0.937 | MC linear 0.0105±0.0001 (found 0.920) | MC exact 0.0110±0.0001
+skel 36 (a=5, b=9, v=+1.92, R= 658): poly 0.0178 cover 0.272 | MC linear 0.0169±0.0003 (found 0.919) | MC exact 0.0211±0.0003
+skel 37 (a=5, b=7, v=+0.80, R= 791): poly 0.0192 cover 0.832 | MC linear 0.0180±0.0001 (found 0.892) | MC exact 0.0216±0.0001
+skel 38 (a=2, b=6, v=+1.11, R= 966): poly 0.0265 cover 0.857 | MC linear 0.0262±0.0003 (found 0.856) | MC exact 0.0274±0.0003
+skel 39 (a=0, b=1, v=+1.54, R= 100): poly 0.0300 cover 0.986 | MC linear 0.0303±0.0002 (found 0.990) | MC exact 0.0334±0.0002
+skel 40 (a=4, b=5, v=+0.22, R=  79): poly 0.0041 cover 0.943 | MC linear 0.0041±0.0000 (found 0.992) | MC exact 0.0041±0.0000
+skel 41 (a=4, b=8, v=+0.78, R= 581): poly 0.0473 cover 0.910 | MC linear 0.0466±0.0004 (found 0.923) | MC exact 0.0503±0.0004
+skel 42 (a=1, b=8, v=+1.34, R= 336): poly 0.0220 cover 0.948 | MC linear 0.0221±0.0002 (found 0.958) | MC exact 0.0190±0.0001
+skel 43 (a=5, b=8, v=+0.35, R= 430): poly 0.0070 cover 0.393 | MC linear 0.0065±0.0001 (found 0.938) | MC exact 0.0080±0.0001
+skel 44 (a=1, b=9, v=+0.01, R= 233): poly 0.0159 cover 0.936 | MC linear 0.0157±0.0001 (found 0.966) | MC exact 0.0155±0.0001
+skel 45 (a=6, b=8, v=+0.51, R= 551): poly 0.0131 cover 0.864 | MC linear 0.0130±0.0001 (found 0.931) | MC exact 0.0138±0.0001
+skel 46 (a=2, b=7, v=+1.66, R= 282): poly 0.0145 cover 0.955 | MC linear 0.0145±0.0001 (found 0.962) | MC exact 0.0116±0.0001
+skel 47 (a=0, b=6, v=+0.39, R= 548): poly 0.0132 cover 0.878 | MC linear 0.0128±0.0001 (found 0.923) | MC exact 0.0097±0.0001
+{
+ "poly": 0.020960192179108876,
+ "mc_lin": 0.020764109907886692,
+ "mc_exact": 0.02105403833808905,
+ "cover": 0.8239058991349264,
+ "regions_median": 364.5,
+ "poly_seconds": 29.501492977142334,
+ "qmc": 256
+}

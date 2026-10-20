@@ -1,0 +1,40 @@
+=== weights.npz KSET all16 fit14 cover99
+{
+ "poly": 0.017938547919542018,
+ "mc_lin": 0.017922252790513092,
+ "mc_exact": 0.02105253412612282,
+ "cover": 0.7159762894072262,
+ "regions_median": 3230.5,
+ "poly_seconds": 728.073734998703,
+ "qmc": 256
+}
+=== probes/finetune/group_lam0.1.npz KSET all16 fit14 cover99
+{
+ "poly": 0.022820325027686408,
+ "mc_lin": 0.02280262069733718,
+ "mc_exact": 0.02418629890707596,
+ "cover": 0.8174833709390054,
+ "regions_median": 1101.0,
+ "poly_seconds": 202.56802773475647,
+ "qmc": 256
+}
+=== probes/finetune/linearise_lam0.1.npz KSET all16 fit14 cover99
+{
+ "poly": 0.023790369896116177,
+ "mc_lin": 0.02370746669118069,
+ "mc_exact": 0.02646072125975879,
+ "cover": 0.7706498270602413,
+ "regions_median": 1609.5,
+ "poly_seconds": 319.5265100002289,
+ "qmc": 256
+}
+=== probes/finetune/long/group_lam0.1.npz KSET all16 fit14 cover99
+{
+ "poly": 0.02383619151666584,
+ "mc_lin": 0.02382115865123668,
+ "mc_exact": 0.02529039640870562,
+ "cover": 0.8486888025911243,
+ "regions_median": 1086.5,
+ "poly_seconds": 172.1892273426056,
+ "qmc": 256
+}

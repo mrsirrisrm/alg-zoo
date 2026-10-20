@@ -1,0 +1,95 @@
+trained: acc 0.9531  regions99 M/S 2748 S/R 424  switching neurons {'1': 14, '2': 11}  last-kinks 20.9 enrich 4.52
+
+linearise lambda 0.01
+    step   512/8192  ce 0.1338  acc 0.9571  R  19.2286  lr 2.0e-04  8s
+    step  1024/8192  ce 0.1293  acc 0.9588  R  19.1533  lr 1.9e-04  17s
+    step  1536/8192  ce 0.1280  acc 0.9594  R  19.1135  lr 1.8e-04  26s
+    step  2048/8192  ce 0.1265  acc 0.9597  R  19.0660  lr 1.7e-04  34s
+    step  2560/8192  ce 0.1265  acc 0.9599  R  19.0387  lr 1.6e-04  43s
+    step  3072/8192  ce 0.1246  acc 0.9605  R  19.0183  lr 1.4e-04  50s
+    step  3584/8192  ce 0.1246  acc 0.9605  R  18.9725  lr 1.3e-04  57s
+    step  4096/8192  ce 0.1248  acc 0.9604  R  18.9468  lr 1.1e-04  65s
+    step  4608/8192  ce 0.1244  acc 0.9606  R  18.9263  lr 9.2e-05  73s
+    step  5120/8192  ce 0.1248  acc 0.9607  R  18.9139  lr 7.6e-05  79s
+    step  5632/8192  ce 0.1233  acc 0.9612  R  18.9050  lr 6.0e-05  87s
+    step  6144/8192  ce 0.1232  acc 0.9611  R  18.9006  lr 4.6e-05  94s
+    step  6656/8192  ce 0.1238  acc 0.9612  R  18.8956  lr 3.5e-05  102s
+    step  7168/8192  ce 0.1229  acc 0.9613  R  18.8880  lr 2.7e-05  109s
+    step  7680/8192  ce 0.1236  acc 0.9612  R  18.8825  lr 2.2e-05  116s
+    step  8192/8192  ce 0.1228  acc 0.9615  R  18.8800  lr 2.0e-05  125s
+  -> acc 0.9614  regions99 M/S 2056 S/R 326  switching neurons {1: 13, 2: 10}  last-kinks 19.3 enrich 4.42
+
+linearise lambda 0.03
+    step   512/8192  ce 0.1359  acc 0.9564  R  19.0610  lr 2.0e-04  6s
+    step  1024/8192  ce 0.1323  acc 0.9577  R  18.8505  lr 1.9e-04  12s
+    step  1536/8192  ce 0.1316  acc 0.9581  R  18.7399  lr 1.8e-04  17s
+    step  2048/8192  ce 0.1306  acc 0.9582  R  18.6225  lr 1.7e-04  23s
+    step  2560/8192  ce 0.1315  acc 0.9582  R  18.5246  lr 1.6e-04  28s
+    step  3072/8192  ce 0.1305  acc 0.9584  R  18.4313  lr 1.4e-04  34s
+    step  3584/8192  ce 0.1314  acc 0.9583  R  18.3247  lr 1.3e-04  40s
+    step  4096/8192  ce 0.1327  acc 0.9579  R  18.2181  lr 1.1e-04  45s
+    step  4608/8192  ce 0.1330  acc 0.9579  R  18.1267  lr 9.2e-05  51s
+    step  5120/8192  ce 0.1338  acc 0.9579  R  18.0624  lr 7.6e-05  57s
+    step  5632/8192  ce 0.1323  acc 0.9584  R  18.0127  lr 6.0e-05  63s
+    step  6144/8192  ce 0.1323  acc 0.9583  R  17.9857  lr 4.6e-05  70s
+    step  6656/8192  ce 0.1331  acc 0.9583  R  17.9608  lr 3.5e-05  76s
+    step  7168/8192  ce 0.1322  acc 0.9584  R  17.9430  lr 2.7e-05  82s
+    step  7680/8192  ce 0.1330  acc 0.9584  R  17.9272  lr 2.2e-05  88s
+    step  8192/8192  ce 0.1319  acc 0.9587  R  17.9153  lr 2.0e-05  94s
+  -> acc 0.9584  regions99 M/S 1646 S/R 202  switching neurons {1: 11, 2: 8}  last-kinks 13.8 enrich 3.62
+
+linearise lambda 0.1
+    step   512/8192  ce 0.1636  acc 0.9484  R  18.4182  lr 2.0e-04  6s
+    step  1024/8192  ce 0.1684  acc 0.9470  R  17.7585  lr 1.9e-04  11s
+    step  1536/8192  ce 0.1701  acc 0.9462  R  17.4027  lr 1.8e-04  17s
+    step  2048/8192  ce 0.1721  acc 0.9451  R  17.0922  lr 1.7e-04  23s
+    step  2560/8192  ce 0.1758  acc 0.9436  R  16.8266  lr 1.6e-04  29s
+    step  3072/8192  ce 0.1777  acc 0.9428  R  16.6054  lr 1.4e-04  34s
+    step  3584/8192  ce 0.1787  acc 0.9433  R  16.4044  lr 1.3e-04  40s
+    step  4096/8192  ce 0.1796  acc 0.9428  R  16.3009  lr 1.1e-04  46s
+    step  4608/8192  ce 0.1794  acc 0.9432  R  16.2281  lr 9.2e-05  52s
+    step  5120/8192  ce 0.1804  acc 0.9429  R  16.1816  lr 7.6e-05  57s
+    step  5632/8192  ce 0.1789  acc 0.9434  R  16.1374  lr 6.0e-05  63s
+    step  6144/8192  ce 0.1798  acc 0.9430  R  16.1106  lr 4.6e-05  69s
+    step  6656/8192  ce 0.1800  acc 0.9431  R  16.0876  lr 3.5e-05  75s
+    step  7168/8192  ce 0.1795  acc 0.9432  R  16.0672  lr 2.7e-05  81s
+    step  7680/8192  ce 0.1802  acc 0.9431  R  16.0524  lr 2.2e-05  87s
+    step  8192/8192  ce 0.1794  acc 0.9433  R  16.0388  lr 2.0e-05  93s
+  -> acc 0.9430  regions99 M/S 868 S/R 70  switching neurons {1: 9, 2: 7}  last-kinks 11.7 enrich 3.88
+
+linearise lambda 0.3
+    step   512/8192  ce 0.2509  acc 0.9273  R  17.7061  lr 2.0e-04  6s
+    step  1024/8192  ce 0.2904  acc 0.9152  R  16.5745  lr 1.9e-04  12s
+    step  1536/8192  ce 0.2995  acc 0.9099  R  15.9714  lr 1.8e-04  18s
+    step  2048/8192  ce 0.3161  acc 0.9039  R  15.0959  lr 1.7e-04  24s
+    step  2560/8192  ce 0.3015  acc 0.9063  R  14.9114  lr 1.6e-04  31s
+    step  3072/8192  ce 0.2943  acc 0.9074  R  14.7900  lr 1.4e-04  37s
+    step  3584/8192  ce 0.2915  acc 0.9070  R  14.6997  lr 1.3e-04  43s
+    step  4096/8192  ce 0.2888  acc 0.9069  R  14.6312  lr 1.1e-04  49s
+    step  4608/8192  ce 0.2874  acc 0.9067  R  14.5709  lr 9.2e-05  55s
+    step  5120/8192  ce 0.2876  acc 0.9062  R  14.5272  lr 7.6e-05  62s
+    step  5632/8192  ce 0.2847  acc 0.9066  R  14.4904  lr 6.0e-05  68s
+    step  6144/8192  ce 0.2851  acc 0.9064  R  14.4677  lr 4.6e-05  74s
+    step  6656/8192  ce 0.2851  acc 0.9061  R  14.4503  lr 3.5e-05  80s
+    step  7168/8192  ce 0.2843  acc 0.9062  R  14.4325  lr 2.7e-05  85s
+    step  7680/8192  ce 0.2845  acc 0.9062  R  14.4193  lr 2.2e-05  91s
+    step  8192/8192  ce 0.2830  acc 0.9066  R  14.4097  lr 2.0e-05  97s
+  -> acc 0.9062  regions99 M/S 380 S/R 46  switching neurons {1: 7, 2: 6}  last-kinks 8.9 enrich 2.91
+
+Summary (linearise; acc on 2^26, sd 2.6e-5; regions = patterns covering 99% of mass, median over 48 skeletons, all 16 neurons; switching = neurons with hard g_j > 0.05)
+           model     acc   d_acc  reg M/S  reg S/R sw M/S sw S/R last-kinks enrich
+         trained  0.9531 +0.0000     2748      424     14     11       20.9   4.52
+linearise_lam0.01  0.9614 +0.0082     2056      326     13     10       19.3   4.42
+linearise_lam0.03  0.9584 +0.0053     1646      202     11      8       13.8   3.62
+linearise_lam0.1  0.9430 -0.0101      868       70      9      7       11.7   3.88
+linearise_lam0.3  0.9062 -0.0469      380       46      7      6        8.9   2.91
+         trained hard switching per neuron, M/S: 0.12 0.27 0.01 0.77 0.05 0.61 0.27 0.08 0.41 0.05 0.12 0.11 0.10 0.03 0.12 0.78
+                                           S/R: 0.05 0.14 0.00 0.52 0.02 0.40 0.15 0.03 0.23 0.03 0.06 0.06 0.12 0.02 0.09 0.51
+linearise_lam0.01 hard switching per neuron, M/S: 0.13 0.25 0.00 0.64 0.06 0.61 0.26 0.08 0.40 0.06 0.11 0.11 0.02 0.01 0.11 0.78
+                                           S/R: 0.06 0.13 0.00 0.44 0.02 0.39 0.14 0.02 0.22 0.03 0.08 0.07 0.02 0.01 0.08 0.51
+linearise_lam0.03 hard switching per neuron, M/S: 0.15 0.24 0.00 0.33 0.06 0.62 0.26 0.08 0.39 0.06 0.01 0.01 0.01 0.00 0.07 0.72
+                                           S/R: 0.06 0.13 0.00 0.20 0.02 0.40 0.14 0.02 0.22 0.03 0.01 0.01 0.01 0.00 0.06 0.47
+linearise_lam0.1 hard switching per neuron, M/S: 0.13 0.24 0.01 0.00 0.08 0.65 0.23 0.07 0.37 0.29 0.00 0.01 0.01 0.00 0.00 0.11
+                                           S/R: 0.07 0.12 0.00 0.00 0.04 0.43 0.13 0.03 0.21 0.17 0.00 0.01 0.01 0.00 0.00 0.06
+linearise_lam0.3 hard switching per neuron, M/S: 0.00 0.24 0.00 0.00 0.13 0.71 0.22 0.09 0.37 0.21 0.00 0.00 0.00 0.00 0.00 0.00
+                                           S/R: 0.00 0.12 0.00 0.00 0.06 0.49 0.13 0.03 0.21 0.11 0.00 0.00 0.00 0.00 0.00 0.00

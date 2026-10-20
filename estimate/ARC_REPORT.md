@@ -93,3 +93,20 @@ The ordering axis is how much the inputs other than the tied pair move the decis
 1.0 the comparator is incoherent and nothing deduces; at 0 the error is one event of known
 mass and deduction is exact. M(16,10) sits where the level is deducible and the per-input
 structure is not, which is where the challenge was set.
+
+## Can the explanation be trained in? (PLAN G, `probes/finetune_prune.py`, `finetune_summary.out`)
+
+A different question from the one above, asked to locate the gap: if M(16,10) is fine-tuned
+so that the periphery neurons stop switching inside tie skeletons, does any estimator get
+cheap on it? With a group penalty on the post-tie gate switching, a model at the original
+accuracy (0.9527 against 0.9531, 2^27 sequences) has 18x fewer S/R and 6.6x fewer M/S linear
+regions at the post-tie steps, with n3 and n10-n15 frozen. But the eight core neurons (n0,
+n1, n4-n9) keep switching at every penalty weight, down to 85% accuracy, and the polyhedral
+integrator's regions span all ten steps, which are those neurons' own history: 1100-1600
+exact regions per skeleton against 3200 on the trained model, with 72-85% of the mass
+discovered either way, and the sampling route's gain unchanged within its intervals
+(7.6-9.4x with Sobol on the pruned model, 10-12x on the trained one). Rewarding kinks at
+the decision step, h32's signature, reaches h32's kink count only at 42% accuracy and does
+not move the errors onto them. The gap belongs to the model class: what can be pruned was
+never the cost. One incidental fact for the original model: plain continued training takes
+it from 0.9531 to 0.9614, so the zoo weights are 0.8 points short of their own optimum.

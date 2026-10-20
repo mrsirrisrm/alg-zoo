@@ -1,0 +1,51 @@
+trained: acc 0.9531  regions99 M/S 2748 S/R 424  switching neurons {1: 14, 2: 11}  last-kinks 20.9 enrich 4.52
+
+lastkink lambda 3
+    step   512/8192  ce 0.1980  acc 0.9384  R  -0.2523  lr 2.0e-04  7s
+    step  1024/8192  ce 0.2511  acc 0.9262  R  -0.3305  lr 1.9e-04  14s
+    step  1536/8192  ce 0.3110  acc 0.9080  R  -0.4001  lr 1.8e-04  22s
+    step  2048/8192  ce 0.3661  acc 0.8914  R  -0.4615  lr 1.7e-04  28s
+    step  2560/8192  ce 0.4314  acc 0.8710  R  -0.5202  lr 1.6e-04  35s
+    step  3072/8192  ce 0.5098  acc 0.8465  R  -0.5863  lr 1.4e-04  43s
+    step  3584/8192  ce 0.6230  acc 0.8117  R  -0.6659  lr 1.3e-04  49s
+    step  4096/8192  ce 0.7975  acc 0.7581  R  -0.7866  lr 1.1e-04  56s
+    step  4608/8192  ce 1.0837  acc 0.6698  R  -0.9872  lr 9.2e-05  64s
+    step  5120/8192  ce 1.6189  acc 0.4958  R  -1.3385  lr 7.6e-05  70s
+    step  5632/8192  ce 1.7486  acc 0.4502  R  -1.4839  lr 6.0e-05  78s
+    step  6144/8192  ce 1.7735  acc 0.4376  R  -1.5402  lr 4.6e-05  85s
+    step  6656/8192  ce 1.7758  acc 0.4310  R  -1.5695  lr 3.5e-05  92s
+    step  7168/8192  ce 1.7776  acc 0.4269  R  -1.5886  lr 2.7e-05  99s
+    step  7680/8192  ce 1.7778  acc 0.4236  R  -1.6022  lr 2.2e-05  106s
+    step  8192/8192  ce 1.7759  acc 0.4225  R  -1.6111  lr 2.0e-05  113s
+  -> acc 0.4227  regions99 M/S 12240 S/R 8420  switching neurons {1: 14, 2: 14}  last-kinks 53.5 enrich 1.87
+
+lastkink lambda 10
+    step   512/8192  ce 0.9323  acc 0.7628  R  -0.4035  lr 2.0e-04  7s
+    step  1024/8192  ce 3.1109  acc 0.3941  R  -0.9901  lr 1.9e-04  14s
+    step  1536/8192  ce 4.2652  acc 0.2295  R  -1.5516  lr 1.8e-04  21s
+    step  2048/8192  ce 4.2272  acc 0.1933  R  -1.8591  lr 1.7e-04  29s
+    step  2560/8192  ce 4.0175  acc 0.1786  R  -2.1044  lr 1.6e-04  36s
+    step  3072/8192  ce 3.7889  acc 0.1895  R  -2.1823  lr 1.4e-04  43s
+    step  3584/8192  ce 3.5801  acc 0.1920  R  -2.2111  lr 1.3e-04  50s
+    step  4096/8192  ce 3.4361  acc 0.1950  R  -2.2354  lr 1.1e-04  57s
+    step  4608/8192  ce 3.3073  acc 0.1964  R  -2.2537  lr 9.2e-05  64s
+    step  5120/8192  ce 3.2093  acc 0.1975  R  -2.2696  lr 7.6e-05  71s
+    step  5632/8192  ce 3.1408  acc 0.1979  R  -2.2814  lr 6.0e-05  79s
+    step  6144/8192  ce 3.0813  acc 0.1996  R  -2.2899  lr 4.6e-05  86s
+    step  6656/8192  ce 3.0336  acc 0.2003  R  -2.2962  lr 3.5e-05  93s
+    step  7168/8192  ce 3.0016  acc 0.2019  R  -2.3011  lr 2.7e-05  100s
+    step  7680/8192  ce 2.9792  acc 0.2030  R  -2.3055  lr 2.2e-05  107s
+    step  8192/8192  ce 2.9569  acc 0.2033  R  -2.3084  lr 2.0e-05  114s
+  -> acc 0.2037  regions99 M/S 15355 S/R 13606  switching neurons {1: 15, 2: 15}  last-kinks 57.9 enrich 2.19
+
+Summary (lastkink; acc on 2^26, sd 2.6e-5; regions = patterns covering 99% of mass, median over 48 skeletons, all 16 neurons; switching = neurons with hard g_j > 0.05)
+           model     acc   d_acc  reg M/S  reg S/R sw M/S sw S/R last-kinks enrich
+         trained  0.9531 +0.0000     2748      424     14     11       20.9   4.52
+   lastkink_lam3  0.4227 -0.5304    12240     8420     14     14       53.5   1.87
+  lastkink_lam10  0.2037 -0.7494    15355    13606     15     15       57.9   2.19
+         trained hard switching per neuron, M/S: 0.12 0.27 0.01 0.77 0.05 0.61 0.27 0.08 0.41 0.05 0.12 0.11 0.10 0.03 0.12 0.78
+                                           S/R: 0.05 0.14 0.00 0.52 0.02 0.40 0.15 0.03 0.23 0.03 0.06 0.06 0.12 0.02 0.09 0.51
+   lastkink_lam3 hard switching per neuron, M/S: 1.00 0.48 0.00 1.25 0.09 0.87 0.56 0.47 0.56 0.58 0.90 0.94 0.95 0.01 0.74 0.10
+                                           S/R: 0.74 0.26 0.00 1.01 0.07 0.69 0.32 0.26 0.32 0.44 0.66 0.72 0.71 0.01 0.49 0.08
+  lastkink_lam10 hard switching per neuron, M/S: 1.27 0.94 0.00 1.19 0.24 1.23 0.95 0.94 0.96 0.81 1.33 0.74 0.61 0.83 1.15 0.90
+                                           S/R: 1.07 0.65 0.00 1.01 0.23 1.06 0.66 0.65 0.66 0.59 1.15 0.66 0.58 0.69 0.89 0.79

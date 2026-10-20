@@ -122,7 +122,39 @@ level error (`probes/form_abs_all.py`), (iii) surprise explained by the tie laye
 - [x] F4. (left as a note: F3 did not land, and tree pools conflict with the Sobol stream as well as with per-stratum allocation; 1.2-1.6x standalone, ~1.1x composite) Prefix sharing stays a note unless F2 and F3 land: it needs tree-structured pools
       and conflicts with per-stratum allocation (realistic composite 1.1-1.2x).
 
+## G. Training the explanation in (from 2026-10-20; a different question from the ARC one, reported as such)
+
+Fine-tune M(16,10) so that a deductive estimator becomes cheap on it, keeping accuracy.
+Not a claim about the original model: it tests whether the explanation-vs-estimate gap is
+a property of how the model was trained. Pareto sweeps over the penalty weight, with the
+gain of the relevant estimator as the only number that counts.
+
+- [x] G0. (h32 is only modestly more estimable: 6.8x vs 3.4x on gap strata, 45% vs 57% surprise left, still a strip model with a boundary layer; so kink co-location at the decision step is not the property to train for, the pruning route is the one left) Cheap check before training: is h32, whose error flips sit on decision-step
+      kinks (`decision_kinks.out`), markedly more estimable by the deductive routes than
+      M(16,10)? Read off the family table in MAP.md.
+- [x] G1. (survivor found on accuracy: lambda 0.07 at 2^25 and lambda 0.1 at 2^27 keep 0.9530 / 0.9527 with post-tie S/R regions 6.6x / 18x fewer and the periphery n3, n10-n15 frozen; the eight core neurons keep switching at every lambda, even at 85% accuracy; lambda 0 control lifts the zoo model to 0.9614) Prune the comparator by fine-tuning (`probes/finetune_prune.py`, `probes/finetune/`).
+      Loss = task CE + lambda * switching penalty: within a tie skeleton (exact M/S or S/R
+      tie, background redrawn below v as in `region_count.py`), each gate (t > first tied
+      step, neuron j) should be deterministic; penalty per neuron g_j = sum_t p(1-p) with
+      p = mean sigmoid(pre/tau) over backgrounds, grouped over neurons as sum_j sqrt(g_j)
+      so that few neurons are left switching. Sweep lambda in {0, 1e-3, 3e-3, 1e-2, 3e-2,
+      1e-1}; 2^25 sequences from the trained weights, AdamW, lr 2e-4 cosine.
+      Per model: MC accuracy (2^26), hard per-neuron switching, region count at 99% mass
+      (all 16 neurons, M/S and S/R, median over 48 skeletons), last-step kink stats.
+      Verify: a lambda with accuracy within ~0.5 pt of 0.9531 and regions down >= 10x.
+- [x] G2. (nothing: polyhedral regions span all ten steps and are the comparator's own history: learned kink set 402 vs 364 regions, exact regions 1101-1609 vs 3230 at 2^14 discovery draws with 72-85% of the mass found, poly vs MC-exact -6% vs -0.4%; sampling gain on group 0.1 is 4.7-6.2x iid, 7.6-9.4x Sobol, inside the trained intervals) Deductive gain on the survivors: `polyhedral.py --weights` with the learned
+      kink set (S/R, 48 skeletons, same settings as the trained run) and the trained
+      baseline re-run for a paired comparison: regions, poly vs MC-exact agreement, cost.
+      Also 2^28 truth and the B5/Sobol sampling gain on the best survivor, to see whether
+      the sampling route moves too.
+- [x] G3. (Goodhart in the strong form: last-step kinks unmoved at lambda <= 0.3; at lambda 3-10 they reach h32's 54-58 per circle with accuracy 0.42 / 0.20 and enrichment 1.9-2.2) Control arm: the h32-style target (reward kinks at the last step,
+      `--mode lastkink`), two lambdas. Expect the kink statistics to move and the gains not
+      to (Goodhart); record either way.
+- [ ] G4. (not attempted: G1 found a survivor on accuracy but no estimator got cheaper on it, so the premise is gone) Boundary-layer-aligned loss (errors only where the BL margin rule puts them):
+      only if G1 fails to find a survivor, since it needs its own design.
+
 ## Order
 
 A1 → B1 → A2/A3 (parallel, cheap) → B3/B4 → B2 → B5 → C1 → C2 → D1/D2 → D3 → C3 → E.
 Skip C2 if B5 and C1 leave no budget; it only sharpens a conclusion already supported.
+G0 -> G1 -> G2 (-> G3 as control; G4 only if G1 fails).
