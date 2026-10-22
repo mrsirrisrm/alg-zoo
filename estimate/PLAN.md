@@ -170,9 +170,28 @@ tied pair, known from the input alone. Score every feature by held-out log loss 
   decision on M(16,10), whether the pattern adds anything beyond the gap, and the family
   contrast (h32 should peak at the last step, h8 nowhere).
 
+## I. Advice as a structured weight distribution (from 2026-10-22; ARC's compression route)
+
+ARC's suggested route from random to trained networks: advice = a structured weight
+distribution the trained weights look typical of, plus an average-case estimator for it.
+First, the empirical prerequisite on the trained example and seeds 0-4.
+
+- [x] I1. (exact symmetries verified; core n4 0.94, n2 0.87, n1 0.86; n6/n7/n8 a shared role, not shared neurons; seeds 2/4 a second variant) `probes/seed_template.py`: align
+  neurons up to permutation, positive rescaling and W_out shift by activation correlation.
+  Check: accuracy unchanged by every transform.
+- [x] I2. (sign-consistent large entries: W_hh 1/9, W_out 8/101) Per-entry agreement of the
+  aligned weights.
+- [x] I3. (template mean 0.114, draws 0.10-0.11: chance) Template distribution, mean +- s * sd.
+  Check: do draws land in the models' 0.88-0.95?
+- [x] I4/I5. (periphery replaced, shuffled or Gaussian: chance; dynamics alone and readout
+  alone: chance) Core exact, periphery replaced.
+- [ ] I6. Structured classes beyond independent entries: low-rank W_hh, or the hand10
+  algorithm family with fitted parameters. Only worth it with a concrete class in hand.
+
 ## Order
 
 A1 → B1 → A2/A3 (parallel, cheap) → B3/B4 → B2 → B5 → C1 → C2 → D1/D2 → D3 → C3 → E.
 Skip C2 if B5 and C1 leave no budget; it only sharpens a conclusion already supported.
 G0 -> G1 -> G2 (-> G3 as control; G4 only if G1 fails).
 H1 -> H2.
+I1 -> I2 -> I3 -> I4/I5 (I6 open).

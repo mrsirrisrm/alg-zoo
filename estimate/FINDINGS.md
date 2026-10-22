@@ -1027,6 +1027,39 @@ model class.
   b0+2 and its per-pattern mass is unknown, so it cannot stratify, and post-stratifying on
   a variable with unknown masses gives no variance reduction.
 
+## Is there a structured weight distribution behind the seeds? (`probes/seed_template.py`, `.out`; PLAN I)
+ARC's compression route to the MSP ("Competing with sampling", appendix; wide-MLP post,
+"Extending to trained networks"): advice = a structured weight distribution from which the
+trained weights look like a typical draw, plus an average-case estimator for it. The
+empirical prerequisite, on the trained example and zoo seeds 0-4:
+- Alignment up to the exact symmetries (permutation, positive per-neuron rescaling,
+  W_out column shift) by Hungarian matching of activation correlations: accuracy
+  identical after every transform. Pairwise mean matched correlation 0.57-0.66 between the
+  trained example and the seeds, 0.64-0.79 among the seeds (the trained example predates
+  the zoo's training setup).
+- Shared core: n4 (0.94 mean match, the only positive input neuron, W_ih +1.6 to +2.4 after
+  rescaling), n2 (0.87, running max), n1 (0.86, W_ih -0.4 to -0.9). n6, n7, n8 are shared
+  as a role, not as neurons: every model has two or three negative input neurons at about
+  -0.75, but which trained neuron each matches varies (per-seed match 0.30-0.97). Seeds 2
+  and 4 add a second positive input neuron (+1.7, +2.2) that the trained model lacks, so
+  the zoo holds at least two solution variants. The other 9-10 neurons match at 0.1-0.7.
+- Per-entry agreement of the aligned weights is poor outside W_ih: of the large entries,
+  sign-consistent across all six models 1 of 9 (W_hh) and 8 of 101 (W_out); median
+  |mean|/sd 0.44 (W_hh), 0.49 (W_out).
+- Template distribution (per-entry mean +- s * sd of the six aligned models): the mean
+  model has accuracy 0.114, and draws at s = 0.1-1 give 0.10-0.11 (max 0.16). Chance is 0.10.
+- Each model's own core kept exact, everything touching the other 10 neurons replaced:
+  zeroed 0.07-0.10, shuffled within block 0.10 (max 0.15), Gaussian at block rms 0.09-0.10.
+  Shuffling only the periphery's dynamics (W_ih, W_hh) gives 0.10, and only its readout
+  columns 0.10-0.12: both halves are specific.
+- Reading: the seeds share a three-neuron max circuit and a comparator role. Everything
+  else, the periphery's dynamics and readout included, is instance-specific, and no
+  exchangeable or per-entry-independent distribution reproduces it (every such draw is at
+  chance). With the precision result (1.3-1.9 kbits in the best basis), the advice ARC's
+  compression route would need for M(16,10) is close to the weights themselves. Not
+  ruled out: structured classes beyond independent entries (low-rank, symmetry-generated,
+  algorithmic families like hand10's).
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".

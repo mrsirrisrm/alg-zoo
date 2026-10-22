@@ -1,0 +1,74 @@
+I1. symmetry check (acc at 2^20, original vs canonical):
+  trained  0.95352 0.95352
+  seed0    0.91008 0.91008
+  seed1    0.88008 0.88008
+  seed2    0.94850 0.94850
+  seed3    0.93267 0.93267
+  seed4    0.88970 0.88970
+  dead neurons per model: {'trained': 0, 'seed0': 0, 'seed1': 0, 'seed2': 0, 'seed3': 0, 'seed4': 0}
+
+I1. pairwise matched activation correlation (Hungarian on corr; mean over 16 neurons):
+          trained    seed0    seed1    seed2    seed3    seed4
+  trained    1.000    0.638    0.622    0.642    0.660    0.574
+  seed0      0.638    1.000    0.788    0.637    0.788    0.784
+  seed1      0.622    0.788    1.000    0.679    0.753    0.744
+  seed2      0.642    0.637    0.679    1.000    0.672    0.719
+  seed3      0.660    0.788    0.753    0.672    1.000    0.726
+  seed4      0.574    0.784    0.744    0.719    0.726    1.000
+
+I1. per-neuron match to the trained example (rows = trained neuron n0..n15):
+  neuron    seed0    seed1    seed2    seed3    seed4   mean
+  n0        0.626    0.651    0.656    0.769    0.712   0.683
+  n1        0.943    0.902    0.739    0.797    0.907   0.858
+  n2        0.900    0.928    0.901    0.744    0.856   0.866
+  n3        0.565    0.471    0.471    0.377    0.469   0.470
+  n4        0.960    0.999    0.998    0.796    0.951   0.941
+  n5        0.406    0.761    0.619    0.829    0.427   0.608
+  n6        0.504    0.302    0.854    0.974    0.489   0.625
+  n7        0.954    0.646    0.381    0.942    0.603   0.705
+  n8        0.583    0.919    0.792    0.923    0.573   0.758
+  n9        0.491   -0.063   -0.049    0.334   -0.089   0.125
+  n10       0.402    0.529    0.721    0.553    0.568   0.555
+  n11       0.416    0.607    0.787    0.440    0.524   0.555
+  n12       0.507    0.387    0.472    0.406    0.353   0.425
+  n13       0.718    0.739    0.662    0.685    0.800   0.721
+  n14       0.703    0.690    0.717    0.567    0.725   0.680
+  n15       0.526    0.485    0.560    0.421    0.313   0.461
+  aligned acc check: 0.95352 0.91008 0.88008 0.94850 0.93267 0.88969
+
+I2. aligned weights, per-entry agreement across the 6 models:
+  W_ih: 16 entries, large 6, of those sign-consistent 4, |mean|/sd>2 2, median |mean|/sd (large) 1.82
+  W_hh: 256 entries, large 9, of those sign-consistent 1, |mean|/sd>2 0, median |mean|/sd (large) 0.44
+  W_out: 160 entries, large 101, of those sign-consistent 8, |mean|/sd>2 0, median |mean|/sd (large) 0.49
+  W_ih aligned (rows = models, cols = trained neuron order):
+  trained   0.01  -0.73   0.00  -0.03   2.35  -0.04  -0.73  -0.68  -0.81  -0.26   0.00   0.01   0.02  -0.01  -0.10  -0.02
+  seed0     0.02  -0.73   0.01  -0.06   2.19   0.01  -0.16  -0.72  -0.19  -0.59   0.07  -0.01  -0.06   0.11   0.08  -0.10
+  seed1    -0.00  -0.70  -0.03  -0.08   2.36  -0.01  -0.79  -0.12  -0.74  -0.02   0.00   0.07   0.01  -0.00   0.11  -0.00
+  seed2     0.03  -0.87   0.01  -0.04   2.39   0.02  -0.81   0.02  -0.80   1.69  -0.00  -0.01  -0.04   0.02  -0.00  -0.04
+  seed3     0.02  -0.39  -0.03   0.01   1.56  -0.02  -0.74  -0.75  -0.72   0.02   0.01   0.01   0.01  -0.03   0.01   0.00
+  seed4    -0.07  -0.67  -0.01   0.02   2.21  -0.04  -0.04  -0.08  -0.12   2.21   0.03  -0.06  -0.06   0.14   0.03   0.01
+
+I3. template distribution P_s = mean + s*sd*N(0,1) (acc at 2^18, 32 draws):
+  template mean itself: acc 0.11383
+  s=0.10: acc mean 0.1128 sd 0.0110 min 0.0989 max 0.1415
+  s=0.25: acc mean 0.1084 sd 0.0181 min 0.0592 max 0.1517
+  s=0.50: acc mean 0.1025 sd 0.0134 min 0.0649 max 0.1277
+  s=1.00: acc mean 0.1012 sd 0.0153 min 0.0675 max 0.1612
+  six models: 0.9535 0.9101 0.8801 0.9485 0.9327 0.8897
+
+I4. core exact, periphery weights replaced (acc at 2^18, 16 draws; aligned models):
+  model     orig    zero   shuffle(mean/max)  gauss(mean/max)
+  trained  0.9534  0.1022   0.0962/0.1082      0.0986/0.1546
+  seed0    0.9105  0.0991   0.1042/0.1246      0.0887/0.1217
+  seed1    0.8797  0.0996   0.1020/0.1348      0.1008/0.1197
+  seed2    0.9487  0.0983   0.0959/0.1324      0.0982/0.1305
+  seed3    0.9327  0.0736   0.0955/0.1530      0.0954/0.1269
+  seed4    0.8905  0.1011   0.1001/0.1224      0.0959/0.1188
+
+I5. which half carries it: periphery dynamics only (W_ih, W_hh rows/cols) vs readout only (W_out cols), shuffled within the block (acc at 2^18, 16 draws: mean/max):
+  trained  dyn 0.1013/0.1261   read 0.1108/0.1422
+  seed0    dyn 0.1015/0.1341   read 0.1086/0.1336
+  seed1    dyn 0.0989/0.1274   read 0.1044/0.1485
+  seed2    dyn 0.0955/0.1243   read 0.1154/0.1463
+  seed3    dyn 0.1017/0.1292   read 0.1048/0.1554
+  seed4    dyn 0.1005/0.1292   read 0.1097/0.1501
