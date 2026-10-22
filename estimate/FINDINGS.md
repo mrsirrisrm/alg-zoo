@@ -1148,6 +1148,50 @@ scaled 0.9 from the tie step.
   the explanation already describes. The reorganisation itself is the hard step, and it
   happens early, at accuracy below 0.7.
 
+## The sketching bound at a time cut (`probes/cut_rank.py`, `.out`; PLAN J3)
+At cut t, the 0/1 matrix C[prefix i, future j] (4096 prefixes x 4096 + 1024 futures).
+ARC's tail kernel with the tail random over futures is C C^T / M. Two width-m estimators of
+each held-out future's accuracy, at equal cost (m tail evaluations per future): kernel
+quadrature (m prefixes by pivoted Cholesky on the kernel, weights fitted on the other
+futures; deterministic, oracle advice) against m sampled prefixes. A rank-m projection of
+the prefix law is not width m (it needs f on every prefix), so only its spectrum is used.
+- hand10: C has exact finite rank, with the Frobenius energy outside the top 64 singular
+  values at 1e-16 at every cut. Its error depends on the prefix through a few discrete facts.
+  Kernel quadrature beats MC by 10^2-10^5 at m = 8-256 from t = 3 on, and is exact at t = 9.
+- M(16,10), seed 0, h32: C is not low rank. The Frobenius energy outside the top 256 is
+  6e-4 to 2e-2 (M(16,10) 1.2e-2 at mid cuts). Kernel quadrature only "wins" at m <= 8,
+  where a near-constant prediction beats one or two samples. From m = 16 it is at or
+  below MC (gain 0.1-1.5) at cuts 1-7. It wins only when one or two inputs remain: t = 8
+  (M(16,10) 0.4-38, seed 0 1.5-85, h32 5-430) and t = 9 (M(16,10) 290-970, h32 47-2200).
+- h8 (failed, acc 0.43): 1.3-490 at most cuts. Its correctness structure is coarse.
+- Check: the kernel-quadrature error falls about as m^-0.6, against m^-0.12 for the
+  nearest-neighbour atom merging (FINDINGS "Effective dimension"). The kernel is the right
+  object; merging was a poor quadrature.
+- Reading: with oracle advice and the best deterministic atoms, a deduction-projection
+  estimator for the trained models gains nothing at a cut with three or more inputs still
+  to come. The future needs an unbounded number of prefix features there, the tie-wall
+  band across the cut. The gain at one remaining input is the exact-last-input result
+  (B3) and the T = 2 corner of MAP seen from the cut.
+
+## Harmonic scale in input space (`probes/angular.py`, `.out`; PLAN J4)
+The functions live on S^(T-1) (bias-free). Angular decorrelation D(theta) = P(f(x) !=
+f(y)) at angle theta, with theta_half at half the independent-pair value and the degree
+scale D* = pi / theta_half. (A direct per-degree harmonic estimate is noise-dominated at
+high degree.)
+- The label and the network output are low-degree at every T: theta_half 0.26-0.78 rad,
+  D* 4-12, and the output tracks the label's scale to within 1%.
+- Correctness is high-degree because its errors are slivers. theta_half is the sliver
+  scale: 3e-4 (T = 3), 1e-3 (T = 4), 5e-3 (T = 5), 1.5e-2 (T = 8), 2.5e-2 (M(16,10)),
+  7e-3 (h32), so D* is 100-10^4 and C(T + D*, T) is 10^8-10^19 terms, above the MC sample
+  count at every T. The small-angle slope (wall area) of correctness is 4-4.6 at T >= 6,
+  about twice the label's: the error walls run along the label walls (tie layers).
+- hand10's error event ("at most one positive input") has theta_half 0.24 and D* 13, the
+  label's own scale.
+- The check fails: the term count does not reproduce the BnB crossover at T ~ 3-4 (it
+  loses by 10^8 even at T = 3, where BnB wins outright). A polynomial basis pays for
+  sharpness and a region basis pays for count. For this family the regions are the right
+  basis at short T, and Hilton's harmonic halfspace basis is the wrong one.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".

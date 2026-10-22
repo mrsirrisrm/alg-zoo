@@ -239,14 +239,14 @@ estimator (fail the deduction test or are at their ceiling: MAP, ARC_REPORT, I6a
   of I6a forms. Check: the final checkpoint reproduces the zoo model's accuracy.
   Reading: smooth drift with small per-step advice updates (ARC's inductive step is
   plausible here) vs role reorganisation (a concrete obstacle at 432 parameters).
-- [ ] J3. Sketching bound in state space. At steps t = 3..9, the tail kernel
+- [x] J3. (as a prefix x future correctness matrix with equal-cost kernel quadrature: hand10 exact rank <= 64, KQ 10^2-10^5x; trained models not low rank, KQ <= MC from m = 16 until one or two inputs remain; check passes, KQ m^-0.6 vs merging m^-0.12) Sketching bound in state space. At steps t = 3..9, the tail kernel
   K(z, z') = E_future[c(z, .) c(z', .)] over normalised states z = h_t / max|x_<=t| (the
   label-relevant past carried as the skeleton: positions and values of the running top
   two), eigen-decomposed on a reachable-state pool. Report eigenvalue decay and the m needed
   for 1e-3 relative error. Check: the bound must sit at or below the measured atom-merging
   error at equal m (FINDINGS "Effective dimension": N^-0.12), else the kernel is wrong.
   Family: h16 seeds, h32, hand10 (expect near rank one at the tie step).
-- [ ] J4. Harmonic spectrum in input space. Energy of the correctness indicator on S^9 by
+- [x] J4. (angular decorrelation instead of per-degree harmonics: label/output D* 4-12; correctness D* 100-10^4 from sliver widths; hand10 D* 13; check fails, the harmonic basis loses to MC at every T including where BnB wins, so regions not polynomials are the basis here) Harmonic spectrum in input space. Energy of the correctness indicator on S^9 by
   spherical-harmonic degree (Gegenbauer projection, Hilton's halfspace basis), and the
   same for the label and the network-output indicators separately; degree D needed for
   1e-3 inner-product error and the term count C(10+D, 10). Across T = 2..10 at h16 and
