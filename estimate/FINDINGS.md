@@ -1041,7 +1041,9 @@ What holds:
 - The error set has three parts: tie strips whose width scales with M (most errors), the
   sign event "at most one positive input" (16% of the trained model's errors, hand10's
   only event), and a crowding remainder at ranks >= 3 (~6%) with no single mechanism
-  (J5 b, far field).
+  (J5 b, far field). The tie layers and the sign event can both be deduced: the
+  mean-background skeleton plus a FORM skeleton for the sign event gets the trained
+  model's total error to -0.9%, harness rms 19% (sign event entry).
 - The error statistics are short. hand10 + two gains (comparator ratio, leaky delay line;
   ~116 bits) puts every near-tie error bin inside the seed spread, with the right split
   between error types (J5 b).
@@ -1370,6 +1372,32 @@ numbers (11 bits each).
   M(16,10). It is a short account of the family's error statistics, and what it lacks is
   the per-input near-tie context (the multi-neuron kink residue of the earlier ladder,
   pos-table 50.8%).
+
+## Deducing the sign event (`probes/sign_event.py`, `.out`)
+The mean-background tie skeleton (form_abs_all, 15x7) deduces the S/R and M/S layers and
+misses the other errors, 17.5% low on the trained model's total. Most of the gap is the
+sign event, at most one positive input (FINDINGS "Far-field errors"). Its mass is
+analytic (10/1024 + 1/1024). Its failure rate is bulk, so the skeleton gives P(correct)
+directly: label and top value at CDF-midpoint nodes, all position pairs, the 8 other
+negatives at their conditional mean, and P(correct) = Phi(m0 / s) with the margin to the
+best other logit linearised in the background (FORM). 6750 + 9450 skeletons, no labels,
+no random inputs.
+- P(correct | npos = 1): FORM 0.19-0.58 against MC 0.15-0.49 across the 10 harness
+  models, rank-ordered right (seed0 and seed1 highest in both) and biased high by
+  0.02-0.10 (the mean-background step is closer, 0.15-0.58). P(correct | npos = 0): FORM
+  0.12-0.29 against MC 0.09-0.18.
+- Deduced total error = tie skeleton + sign event. Trained: 0.0464 against MC 0.0468
+  (-0.9%, from -17.4%). Harness: -25% to +35%, rms relative error 0.186 (tie skeleton
+  alone 0.228). It helps on 8 of 10 models; on seed0 and seed2, which the tie skeleton
+  already over-estimates, it adds to the over-estimate.
+- The trained model's near-exact total is again its best case. Elsewhere the remainder is
+  the tie skeleton's own model error (M/S on seeds, -50% to +199% earlier) and the crowding
+  errors at ranks >= 3 (largest on the noisy copies), which no skeleton covers.
+- So the shortest deductive account now has three parts: two tie boundary layers (width
+  from margin / slope at the mean background), the sign event (analytic mass, FORM
+  P(correct)), and nothing for crowding. The advice is a few lines; the rest is ~2e4
+  skeleton evaluations of the network. It is within 1% on M(16,10) and within ~19% rms
+  over the harness.
 
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
