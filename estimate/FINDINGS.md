@@ -1220,7 +1220,8 @@ copy chain scaled by 1 + g).
   prior): all near-tie bins (gap < 0.1) of both types fall inside the spread of trained +
   seeds 0-4, 7/12 bins in total. Accuracy is 0.950 (trained 0.953). The error composition
   matches: S/R 0.032 / M/S 0.009 / other positions 0.009, against 0.030 / 0.010 / 0.008.
-  The leaky copies let distant inputs win, and that is the other-position channel.
+  (Corrected by the far-field entry below: the fit's other-position errors are hand10's
+  own sign event, at most one positive input, at 91%. The leaky copies add ~0.001.)
 - k = 3 (+ comparator-chain gain) adds nothing (7/12, ~25 bits).
 - The miss is the far field: trained S/R and M/S error rates at gap >= 0.1 (0.008, 0.002
   / 0.003, 0.002, 0.002) are 0 in the gain family. This is the same far field that the
@@ -1260,6 +1261,31 @@ Each gets n99 (patterns covering 99% of mass) and the best BnB advantage over MC
   errors (J4, J5), not the count. A random net's errors are bulk (accuracy 0.13-0.71,
   chance about 1/T to 1/2), so the comparison is on the cost of resolving the regions,
   not on the error shape.
+
+## Far-field errors: the sign event and crowding (`probes/far_field.py`, `far_field_rest.py`, `.out`)
+Far field = errors other than S/R with gap < 0.1 and M/S with gap < 0.1 (0.28 of the
+trained model's errors, 0.25-0.32 seeds, 0.15 h32). Decomposed, for the trained model
+(all errors 0.047):
+- The sign event, at most one positive input (mass 0.011, error rate 0.67-0.69), carries
+  57% of the far field (0.0075, 16% of all errors). Seeds 0/2: 20% / 47%; h32: 88%. This
+  is hand10's only error event (hand10: 100% of its far field, rate 0.79-0.85), so the
+  J5 family already contains it, and its other-position errors are this event. A
+  bias-free ReLU net reads negative inputs only through recurrent dynamics, and once
+  the second largest is negative every learned model is close to guessing on the rank.
+- Strip tails measured in relative gap: about 20% of the npos >= 2 far field lies within
+  gap / M < 0.1. The net is homogeneous, so the strip width scales with M (far rate rises
+  with M on trained and seed0). The absolute 0.1 cut counts these as far field; they
+  belong to the tie layer.
+- Picks of rank 3 or lower with npos >= 2 (0.0027, 6% of errors; seed0 0.0053, seed2
+  0.0033). No single named rule covers more than ~45% in any model, and most cover under
+  25%: chosen after M 0.17-0.43, a superseded running max 0.24-0.45, the last input 0.03-0.18,
+  pM + 1 0.05-0.08. They are enriched for crowding (3rd/2nd ratio median 0.86-0.91
+  against 0.71 overall) and for S before M (0.66-0.74 against 0.50, i.e. S must survive
+  the reset when the max arrives). pM = 9 holds 25-45% of the npos >= 2 far field
+  (2.5-4.5x its mass).
+- Net: hand10 + 2 gains (J5) covers the near-tie strips and the sign event. What it leaves
+  is ~10% of the trained model's errors: relative-gap strip tails (wider than the gains'
+  sharp strips) and crowding errors at ranks >= 3, which are not one mechanism.
 
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
