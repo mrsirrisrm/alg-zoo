@@ -1120,6 +1120,34 @@ of the basin (44 bits at h16) are not subtracted.
   structured code under which M(16,10) sits inside a tolerance-1e-3 basin (J5's finite-gain
   hand family is that code's first candidate).
 
+## Train-and-explain on the zoo checkpoints (`probes/train_explain.py`, `.out`; PLAN J2)
+Seeds 0-4 at n_seqs 0, 2^20..2^30 (the trained example has no checkpoints). Every final
+checkpoint reproduces seeds_h16.npz exactly. Per checkpoint: accuracy, share of errors in
+the tie strip (gap < 0.03), matched activation correlation to the next and final
+checkpoints, best neuron correlation with the running max, mean R^2 of the neurons on
+named variables, precision bits (J1 method, tol 1e-3), accuracy with the Schur coupling
+scaled 0.9 from the tie step.
+- One reorganisation, then drift. Every seed has a single window at 2^22-2^24 where the
+  matched correlation to the next checkpoint drops to 0.71-0.87, accuracy jumps (about
+  0.45 -> 0.69), the running-max neuron appears (0.50-0.56 -> 0.72-0.79) and named-variable
+  R^2 rises (0.45 -> 0.56-0.65). Before it, consecutive checkpoints correlate 0.91-0.97;
+  after 2^25, 0.94-1.00, and 0.99+ from 2^28. Caveat: the checkpoints are log-spaced, so
+  "smooth" is between endpoints that are similar, not a dense trajectory.
+- Precision forms early and then stops: 0.8-1.3 kbits at 2^20, 2.3-2.9 kbits by 2^24-2^26,
+  then flat (within about +-15%) while accuracy gains another 5-15 points (seed 0: 0.79 ->
+  0.91 at 2.49 -> 2.53 kbits; seed 3: 0.89 -> 0.93 at 2.38 -> 2.57). Late training improves
+  the model at fixed precision.
+- Late training moves the errors into the tie strip: the strip share of errors rises
+  monotonically from 0.04-0.05 (untrained and 2^20) to 0.14-0.20 at 2^30. The tie-layer
+  explanation of the finished models covers more of the error the longer training runs.
+- The coupling-scaling sensitivity (0.9 * N) has no common trend across seeds (final
+  accuracy ratio 0.55-0.88); left as measured.
+- Reading against ARC's inductive step: after the 2^22-2^24 reorganisation, an explanation
+  updated by small increments per checkpoint is plausible for this family. The roles
+  persist, the precision budget is fixed and the error set narrows toward the strip that
+  the explanation already describes. The reorganisation itself is the hard step, and it
+  happens early, at accuracy below 0.7.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".

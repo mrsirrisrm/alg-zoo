@@ -231,7 +231,7 @@ estimator (fail the deduction test or are at their ceiling: MAP, ARC_REPORT, I6a
   39 of 43 surprise points). If bits of optimisation ~ 1-2 kbits, the precision IS the
   explanation and M(16,10) is fully understood in ARC's sense with no estimator beating
   MC; if far larger, structure remains unfound. h32 and hand10 give the family contrast.
-- [ ] J2. Train-and-explain on the checkpoints. M(16,10)'s zoo twin (seed of
+- [x] J2. (one reorganisation at 2^22-2^24 in every seed, then drift with consecutive correlation 0.94-1.00; precision 2.3-2.9 kbits by 2^24-2^26 then flat while accuracy gains 5-15 points; strip share of errors 0.05 -> 0.14-0.20) Train-and-explain on the checkpoints. M(16,10)'s zoo twin (seed of
   `zoo_2nd_argmax(16, 10)`, the trained example has no checkpoints) and seeds 0-4 at
   n_seqs 0, 2^20..2^29: accuracy, the I1 alignment of each checkpoint to its successor
   (role persistence: max circuit, comparator, periphery), the tie-layer FORM level and
