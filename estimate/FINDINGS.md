@@ -1283,9 +1283,39 @@ trained model's errors, 0.25-0.32 seeds, 0.15 h32). Decomposed, for the trained 
   against 0.71 overall) and for S before M (0.66-0.74 against 0.50, i.e. S must survive
   the reset when the max arrives). pM = 9 holds 25-45% of the npos >= 2 far field
   (2.5-4.5x its mass).
-- Net: hand10 + 2 gains (J5) covers the near-tie strips and the sign event. What it leaves
+- Net: hand10 + 2 gains (J5) covers the near-tie strips and the sign event in
+  distribution, not input by input (next entry). What it leaves
   is ~10% of the trained model's errors: relative-gap strip tails (wider than the gains'
   sharp strips) and crowding errors at ranks >= 3, which are not one mechanism.
+
+## Surprise accounting with the J5 family (`probes/surprise_family.py`, `.out`; J1 and J5 follow-up)
+The correctness bit c(x), held out as in "Against ARC's ask". Gains refitted per model to
+its own error-vs-gap curve. The family runs on x and is calibrated with 2-12 fitted
+numbers (11 bits each).
+| predictor | trained | seed0 | seed2 | params |
+|---|---|---|---|---|
+| constant | 0.274 bits/input | 0.437 | 0.293 | 1 |
+| gaps-logit (task) | 61.9% | 76.4% | 64.0% | 8 |
+| fam-agree | 83.4% | 92.2% | 84.0% | 2 |
+| fam-logit (family margin) | 69.6% | 85.5% | 71.2% | 5 |
+| fam + gaps | 60.8% | 75.7% | 63.1% | 12 |
+| pos-table (task, fitted) | 50.8% | 62.9% | 56.0% | 4440 |
+- Matching the error statistics does not explain the errors. The family agrees with the
+  net on c(x) for 0.940 (trained), 0.871 (seed0) and 0.941 (seed2) of inputs, below
+  "always correct" (0.953 / 0.910 / 0.949). As a predictor it is worse than the task-only
+  gap logistic, and it adds ~1 point to it. Its strips are in the right places in
+  distribution (gap, type), but which near-tie inputs fail is set by context that the
+  two gains do not carry.
+- Where the residual sits (family-logit): near-tie 84-87% of the leftover bits (mass
+  0.44, 78-85% of errors), far 8-18%, sign event 3-5%. The sign event is cheap because its
+  rate is ~0.7 inside a region that the task features already name.
+- J1 bookkeeping: family account ~171 bits (hand10 ~100, gains ~16, 5 calibration
+  weights) + N x 0.19-0.37 bits; the weights 2.4-3.2 kbits + N x 0. The weights are the
+  shorter account above N* = 6-15k observed inputs, well below the ~10^5-10^6 needed to
+  pin accuracy to 5e-4. By ARC's criterion this family is not the explanation of
+  M(16,10). It is a short account of the family's error statistics, and what it lacks is
+  the per-input near-tie context (the multi-neuron kink residue of the earlier ladder,
+  pos-table 50.8%).
 
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).

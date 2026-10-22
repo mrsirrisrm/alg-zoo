@@ -1,0 +1,33 @@
+
+trained: acc 0.9530  gains e=-0.0218 g=+0.0094  family agrees with the net on c(x) 0.9404
+  regions (mass / share of net errors): sign (npos<=1) 0.011/0.18  near-tie 0.438/0.79  far 0.551/0.03
+  predictor    bits/in % const params | residual share by region: sign (npos<=1)       near-tie            far
+  constant      0.2735  100.0%      1 |           0.14           0.70           0.16
+  gaps-logit    0.1693   61.9%      8 |           0.06           0.86           0.08
+  pos-table     0.1389   50.8%   4440 |           0.05           0.88           0.07
+  fam-agree     0.2281   83.4%      2 |           0.06           0.81           0.13
+  fam-logit     0.1902   69.6%      5 |           0.05           0.87           0.08
+  fam+gaps      0.1664   60.8%     12 |           0.06           0.87           0.08
+  J1: family account 171 bits + N x 0.1902; weights 2429 bits + N x 0 -> the weights are shorter above N* = 11870 inputs
+
+seed0: acc 0.9097  gains e=-0.0343 g=+0.0199  family agrees with the net on c(x) 0.8711
+  regions (mass / share of net errors): sign (npos<=1) 0.011/0.07  near-tie 0.438/0.85  far 0.551/0.09
+  predictor    bits/in % const params | residual share by region: sign (npos<=1)       near-tie            far
+  constant      0.4374  100.0%      1 |           0.05           0.72           0.23
+  gaps-logit    0.3342   76.4%      8 |           0.04           0.77           0.19
+  pos-table     0.2753   62.9%   4440 |           0.03           0.81           0.16
+  fam-agree     0.4033   92.2%      2 |           0.03           0.76           0.21
+  fam-logit     0.3738   85.5%      5 |           0.03           0.79           0.18
+  fam+gaps      0.3310   75.7%     12 |           0.04           0.78           0.18
+  J1: family account 171 bits + N x 0.3738; weights 2516 bits + N x 0 -> the weights are shorter above N* = 6273 inputs
+
+seed2: acc 0.9485  gains e=-0.0204 g=+0.0085  family agrees with the net on c(x) 0.9408
+  regions (mass / share of net errors): sign (npos<=1) 0.011/0.17  near-tie 0.438/0.78  far 0.551/0.05
+  predictor    bits/in % const params | residual share by region: sign (npos<=1)       near-tie            far
+  constant      0.2928  100.0%      1 |           0.13           0.69           0.18
+  gaps-logit    0.1872   64.0%      8 |           0.05           0.82           0.13
+  pos-table     0.1639   56.0%   4440 |           0.04           0.85           0.11
+  fam-agree     0.2460   84.0%      2 |           0.05           0.79           0.16
+  fam-logit     0.2085   71.2%      5 |           0.04           0.84           0.12
+  fam+gaps      0.1848   63.1%     12 |           0.05           0.83           0.13
+  J1: family account 171 bits + N x 0.2085; weights 3247 bits + N x 0 -> the weights are shorter above N* = 14755 inputs
