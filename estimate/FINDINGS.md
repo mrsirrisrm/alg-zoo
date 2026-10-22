@@ -1060,6 +1060,30 @@ empirical prerequisite, on the trained example and zoo seeds 0-4:
   ruled out: structured classes beyond independent entries (low-rank, symmetry-generated,
   algorithmic families like hand10's).
 
+## Scattering modes of W_hh and the Capon/Bartlett readout (`probes/schur_modes.py`, `.out`; PLAN I6a)
+Tools carried over from the tropical-pythia work (Schur split of an operator into
+block-diagonal transmission and strictly-upper coupling; whitening index of a readout
+against the data second moment). Six aligned models in the unit-rms canonical basis.
+- No shared Schur shape (I6 candidate class, negative): spectral radius 0.81-1.51 (trained
+  two real amplifying modes 1.27/1.17; seed 1 a complex pair at 1.51; seeds 0, 2, 4 below
+  1). Coupling N holds 84-100% of ||W_hh||^2 in every model (Henrici 0.92-1.00) but with
+  different rank: one row carries 90% of it on the trained example and seed 1, 8-11 rows
+  on seeds 0, 3, 4.
+- The comparator is backscattered. N = 0 everywhere: chance (0.11-0.21). N = 0 only after
+  the later of the top two has arrived (state exact before): 0.27-0.35. N scaled by 0.9 or
+  1.1 from that step: 0.53-0.86 overall, 0.43-0.60 on the strip (gap < 0.03), so a 10%
+  change in the coupling costs 20-40 points. N shuffled, or the diagonal permuted with N
+  intact: 0.27-0.32. Same as the Pythia MLP finding (the off-diagonal part does the work)
+  and consistent with the precision result: the balance is in the coupling, not in the modes.
+- The readout is already more than Capon: omega = 4-6.5 at eps 1e-2 and 11-50 at 1e-6,
+  with R = E[h_10 h_10^T] of effective rank 1.3-1.8 (the state is dominated by the scale
+  direction, by homogeneity). W_out lives in the low-variance subspace, nulling the common
+  scale. Whitening it further at inference costs accuracy monotonically (trained 0.953 ->
+  0.673 at eps 1e-1 -> 0.465 at 1e-4).
+- Reading: covariance-metric tools find the known picture (scale nulled by the readout,
+  decision carried by a finely balanced non-normal coupling) and give no class of weight
+  distributions the seeds share. Nothing here changes the estimation picture.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".

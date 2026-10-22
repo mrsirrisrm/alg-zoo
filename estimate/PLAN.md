@@ -187,6 +187,11 @@ First, the empirical prerequisite on the trained example and seeds 0-4.
   alone: chance) Core exact, periphery replaced.
 - [ ] I6. Structured classes beyond independent entries: low-rank W_hh, or the hand10
   algorithm family with fitted parameters. Only worth it with a concrete class in hand.
+- [x] I6a. (no shared Schur shape: rho 0.81-1.51, coupling 84-100% of the energy at rank 1 to 11;
+  the comparator is backscattered, N*0.9 or *1.1 from the tie step costs 20-40 points; the
+  readout is already more than Capon, omega 4-50, whitening at inference hurts) `probes/schur_modes.py`:
+  Schur transmission/coupling split of W_hh and Capon/Bartlett view of the readout, from
+  the tropical-pythia tooling.
 
 ## Order
 
@@ -194,4 +199,4 @@ A1 → B1 → A2/A3 (parallel, cheap) → B3/B4 → B2 → B5 → C1 → C2 → 
 Skip C2 if B5 and C1 leave no budget; it only sharpens a conclusion already supported.
 G0 -> G1 -> G2 (-> G3 as control; G4 only if G1 fails).
 H1 -> H2.
-I1 -> I2 -> I3 -> I4/I5 (I6 open).
+I1 -> I2 -> I3 -> I4/I5 -> I6a (I6 open).
