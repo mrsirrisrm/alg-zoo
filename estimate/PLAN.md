@@ -252,7 +252,7 @@ estimator (fail the deduction test or are at their ceiling: MAP, ARC_REPORT, I6a
   1e-3 inner-product error and the term count C(10+D, 10). Across T = 2..10 at h16 and
   across h at T = 4. Check: predicts the BnB crossover (MAP: T ~ 3-4) without running BnB.
   After J1: J2's per-checkpoint bits measure how precision forms in training, not selection.
-- [ ] J5. Algorithmic variables and a finite-gain hand family (the concrete I6 class).
+- [x] J5. (rich lag-table surrogate beats every h16 net, 0.96-0.99, so the errors live in the residual; hand10 + 2 gains (comparator ratio, leaky delay line; ~16 bits) puts every near-tie bin inside the seed spread at acc 0.950 with the right S/R / M/S / other split; misses the far-field tail; per-pair patterns are seed-specific, not a family statistic) Algorithmic variables and a finite-gain hand family (the concrete I6 class).
   (a) Regress every neuron's activation on named variables (running max, 2nd max, time
   since each, current input, their ReLU differences); extend Goldowsky-Dill's n1/n6/n7/n8
   fit (R^2 0.992) to all 16. (b) hand10 with k finite comparator gains fitted to the

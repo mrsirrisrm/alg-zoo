@@ -1192,6 +1192,54 @@ high degree.)
   sharpness and a region basis pays for count. For this family the regions are the right
   basis at short T, and Hilton's harmonic halfspace basis is the wrong one.
 
+## Algorithmic variables and a finite-gain hand family (`probes/alg_vars.py`, `probes/hand_gains.py`, `.out`; PLAN J5)
+(a) Every neuron regressed on named variables pooled over t (running max M and 2nd max S,
+x_t, the four ReLU differences against M_{t-1} and S_{t-1}, M and S times one-hots of the
+lag since each; `--rich` adds the joint (lag M, lag S) table times M, S and x_t). The
+surrogate replaces h_9 by its fit and reads out with the model's own W_out.
+- Check passes: on the trained model n7 0.99, n6/n1/n8 0.97 with the base set (0.98-0.99
+  rich), Goldowsky-Dill's comparators. Mean held-out R^2 is 0.79-0.90 base and 0.83-0.94
+  rich over the six h16 models (h32 0.80 / 0.87).
+- Base set: the surrogate is worse than the net (0.60-0.86 against 0.88-0.95). R^2 0.99
+  is not enough for one neuron: swapping n7's fit alone costs 4 points. The readout
+  amplifies the residual.
+- Rich set: the surrogate is better than the net on every h16 model (0.960-0.989 against
+  0.877-0.953), with tie-bin S/R errors 4-80x lower and M/S near-tie errors gone (h32 is
+  the exception, 0.992 against 0.9945). So the lag table carries the algorithm, and the
+  network's errors, its tie strips included, live in the 6-17% residual from it. This
+  locates the error; it does not compress anything (the rich fit has 327 x 16
+  coefficients, more than the net).
+(b) hand10 plus k finite gains, fitted to the trained model's error rate in 6 gap bins
+for each of S/R and M/S. A single-gain scan shows that hand10's comparator input gain,
+running-max input gain and the comparators' max term act as one ratio and only open an
+M/S strip, and that they open it as a sharp step (0.48, 0.29, 0.01). S/R ties are decided
+by the delay-line copies, so the second gain is a leaky delay line (W_hh[i, i+1] of the
+copy chain scaled by 1 + g).
+- k = 1 (e only): no S/R strip, 2/12 bins in the seed spread.
+- k = 2 (e = -0.020, g = +0.009; ~16 bits at the 1e-3 accuracy step against a +-0.1
+  prior): all near-tie bins (gap < 0.1) of both types fall inside the spread of trained +
+  seeds 0-4, 7/12 bins in total. Accuracy is 0.950 (trained 0.953). The error composition
+  matches: S/R 0.032 / M/S 0.009 / other positions 0.009, against 0.030 / 0.010 / 0.008.
+  The leaky copies let distant inputs win, and that is the other-position channel.
+- k = 3 (+ comparator-chain gain) adds nothing (7/12, ~25 bits).
+- The miss is the far field: trained S/R and M/S error rates at gap >= 0.1 (0.008, 0.002
+  / 0.003, 0.002, 0.002) are 0 in the gain family. This is the same far field that the
+  per-pair width model under-predicts ("Position dependence of the tie widths"). The
+  share of errors at gap >= 0.1 or at other positions is 0.20 (k = 2) against 0.28
+  (trained) and 0.25-0.47 (seeds).
+- Per-pair error patterns are not a family statistic. Each seed's 90 per-pair S/R rates
+  log-correlate with the trained model's at -0.12 to 0.26, and the fit's at 0.05-0.31,
+  inside that spread. Within one model the widths predict the pairs (0.88-0.95 earlier),
+  so the pair pattern is seed-specific detail.
+- For J1: hand10 (~100 bits as a construction) plus two gains (~16 bits) reproduces the
+  family's near-tie error statistics and error composition. Each trained model then
+  spends 2.4-3.2 kbits of precision on the seed-specific pair pattern and the far-field
+  tail, which this class does not describe. It is a small class for the statistics, not
+  for the weights or for M(16,10)'s particular errors. Its accuracy matches only because
+  it was fitted to it, so it is no estimator.
+- Strip share here counts errors with min(gap S-R, gap M-S) < 0.03 (J2 used the top-two
+  gap only), hence 0.38-0.77 here against J2's 0.14-0.20.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".

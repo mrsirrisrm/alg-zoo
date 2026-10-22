@@ -1,0 +1,25 @@
+error rate by gap bin [0,.01) [.01,.03) [.03,.1) [.1,.3) [.3,1) [1,10): S/R x6 | M/S x6
+  trained  acc 0.9534  0.375 0.189 0.049 0.008 0.002 0.000 | 0.260 0.072 0.010 0.003 0.002 0.002
+  seed0    acc 0.9099  0.428 0.297 0.111 0.023 0.006 0.004 | 0.409 0.293 0.104 0.013 0.005 0.007
+  seed1    acc 0.8802  0.406 0.293 0.134 0.043 0.031 0.029 | 0.364 0.207 0.062 0.016 0.010 0.016
+  seed2    acc 0.9487  0.372 0.216 0.065 0.012 0.003 0.001 | 0.220 0.026 0.010 0.004 0.002 0.005
+  seed3    acc 0.9329  0.406 0.250 0.078 0.014 0.005 0.003 | 0.342 0.149 0.040 0.008 0.003 0.005
+  seed4    acc 0.8908  0.412 0.303 0.125 0.035 0.016 0.013 | 0.421 0.287 0.100 0.019 0.009 0.016
+  hand10   acc 0.9903  0.003 0.003 0.003 0.001 0.000 0.000 | 0.001 0.001 0.000 0.000 0.000 0.000
+
+k=1: gains e=+0.0092  loss 36.68  acc 0.9750
+  fit       0.003 0.003 0.002 0.001 0.000 0.000 | 0.472 0.255 0.005 0.000 0.000 0.000
+  in spread    no    no    no    no    no   yes |    no   yes    no    no    no    no   (2/12)
+  per-pair log corr with trained: S/R 0.31  M/S 0.21;  surprise ~8 bits for 1 gains
+
+k=2: gains e=-0.0199 g=+0.0091  loss 2.10  acc 0.9496
+  fit       0.428 0.251 0.053 0.002 0.000 0.000 | 0.332 0.093 0.012 0.000 0.000 0.000
+  in spread   yes   yes   yes    no    no   yes |   yes   yes   yes    no    no    no   (7/12)
+  per-pair log corr with trained: S/R 0.05  M/S 0.20;  surprise ~16 bits for 2 gains
+
+k=3: gains e=-0.0170 g=+0.0079 c=-0.0072  loss 1.32  acc 0.9454
+  fit       0.398 0.230 0.065 0.006 0.000 0.000 | 0.316 0.085 0.009 0.000 0.000 0.000
+  in spread   yes   yes   yes    no    no   yes |   yes   yes   yes    no    no    no   (7/12)
+  per-pair log corr with trained: S/R 0.25  M/S 0.22;  surprise ~25 bits for 3 gains
+
+seed spread of the per-pair S/R log corr with trained: 0.14 0.06 0.03 0.26 -0.12
