@@ -193,6 +193,77 @@ First, the empirical prerequisite on the trained example and seeds 0-4.
   Schur transmission/coupling split of W_hh and Capon/Bartlett view of the readout, from
   the tropical-pythia tooling.
 
+## J. Insight tools after the ARC review (from 2026-10-22; insight first, FLOPs second)
+
+Framing from the ARC material (sources and notes in FINDINGS "Is there a structured weight
+distribution behind the seeds?" and the session review of 2026-10-22):
+- "Mechanistic" = deductive: no random or pseudorandom sampling (Wu 2025 §1.2: a Sobol
+  lattice is still inductive); low-dimensional numerical subroutines are fine (Remark 2.2).
+  Our stratified/Sobol estimators are sampling, however well designed.
+- Full understanding = total surprise of the explanation ~ bits of optimisation used to
+  select the model (AlgZoo post; "Formal verification, heuristic explanations and surprise
+  accounting"). This axis is FLOP-free and we have only measured one side of it.
+- The sketching theorem (Hilton, halfspace note) bounds every deduction-projection
+  estimator: projecting onto m modes costs at most the (m+1)th eigenvalue of the tail
+  kernel E_f[f f^T]. Measured, it bounds a class, not one design.
+- Train-and-explain is ARC's "inductive step"; the zoo ships checkpoints at 0, 2^20..2^29
+  sequences (`n_seqs`) that no probe has used.
+Dropped: further sampling designs, region enumeration, sampled covariances inside an
+estimator (fail the deduction test or are at their ceiling: MAP, ARC_REPORT, I6a).
+
+- [ ] J1. Bits of optimisation. -log2 of the prior mass of the basin {acc >= acc* - tol},
+  tol 1e-3 and 1e-2, for M(16,10), seeds 0-4, h8, h32 (and hand10 as the zero-search
+  reference). Three estimators, reported side by side:
+  (a) Laplace: GN Hessian (reuse `weight_perturbation.py` / `precision.py`) with the exact
+      symmetry directions (16 rescalings, 16 W_out column shifts) projected out and counted
+      as free; basin widths sqrt(2 tol / (c lambda_i)) clipped at the prior width.
+  (b) Local learning coefficient (singular learning theory, SGLD; devinterp-style): handles
+      the degenerate directions the Laplace estimate clips by hand.
+  (c) Direct check of (a) along the top 50 eigendirections: measured accuracy loss at the
+      predicted half-width (the quadratic regime broke by sigma 0.01, A2).
+  Prior: the zoo's training init is U(+-1/sqrt(h)) but trained W_ih sits at +-10, so the
+  init has no mass on the basin. Report under (i) per-tensor Gaussian at the trained rms
+  (scale-free, matches precision.py's tau = 1) and (ii) the AdamW weight-decay prior.
+  Check: (a) with prior (i) reproduces precision.py's eigenbasis floor (1.3-1.9 kbits)
+  within the symmetry correction; (c) within 2x of (a) per direction.
+  Reading to write: compare with the explanation side (algorithm ~100 bits; 8 numbers carry
+  39 of 43 surprise points). If bits of optimisation ~ 1-2 kbits, the precision IS the
+  explanation and M(16,10) is fully understood in ARC's sense with no estimator beating
+  MC; if far larger, structure remains unfound. h32 and hand10 give the family contrast.
+- [ ] J2. Train-and-explain on the checkpoints. M(16,10)'s zoo twin (seed of
+  `zoo_2nd_argmax(16, 10)`, the trained example has no checkpoints) and seeds 0-4 at
+  n_seqs 0, 2^20..2^29: accuracy, the I1 alignment of each checkpoint to its successor
+  (role persistence: max circuit, comparator, periphery), the tie-layer FORM level and
+  surprise left (existing probes), J1 bits per checkpoint, and where the coupling balance
+  of I6a forms. Check: the final checkpoint reproduces the zoo model's accuracy.
+  Reading: smooth drift with small per-step advice updates (ARC's inductive step is
+  plausible here) vs role reorganisation (a concrete obstacle at 432 parameters).
+- [ ] J3. Sketching bound in state space. At steps t = 3..9, the tail kernel
+  K(z, z') = E_future[c(z, .) c(z', .)] over normalised states z = h_t / max|x_<=t| (the
+  label-relevant past carried as the skeleton: positions and values of the running top
+  two), eigen-decomposed on a reachable-state pool. Report eigenvalue decay and the m needed
+  for 1e-3 relative error. Check: the bound must sit at or below the measured atom-merging
+  error at equal m (FINDINGS "Effective dimension": N^-0.12), else the kernel is wrong.
+  Family: h16 seeds, h32, hand10 (expect near rank one at the tie step).
+- [ ] J4. Harmonic spectrum in input space. Energy of the correctness indicator on S^9 by
+  spherical-harmonic degree (Gegenbauer projection, Hilton's halfspace basis), and the
+  same for the label and the network-output indicators separately; degree D needed for
+  1e-3 inner-product error and the term count C(10+D, 10). Across T = 2..10 at h16 and
+  across h at T = 4. Check: predicts the BnB crossover (MAP: T ~ 3-4) without running BnB.
+- [ ] J5. Algorithmic variables and a finite-gain hand family (the concrete I6 class).
+  (a) Regress every neuron's activation on named variables (running max, 2nd max, time
+  since each, current input, their ReLU differences); extend Goldowsky-Dill's n1/n6/n7/n8
+  fit (R^2 0.992) to all 16. (b) hand10 with k finite comparator gains fitted to the
+  per-(pair, gap) error curve, not the weights. Check: reproduces the strip statistics
+  (tie widths, FORM level) of M(16,10) and the seeds within their harness spread.
+  Count its total surprise for J1.
+- [ ] J6 (only if J5 finds a small class). Approximate symmetry reduction: n4 against
+  n1/n6/n7/n8 as abs-units; region count of the reduced net against the original.
+- [ ] J7 (short note, alongside). Random-RNN base case for this architecture: the state
+  after one step lies on two rays for any weights (scalar input), so ARC's Gaussian start
+  fails at init. Run the BnB crossover (`survey/crossover.py`) on random-weight RNNs at
+  T = 2..6 to separate architecture from training in MAP.
+
 ## Order
 
 A1 → B1 → A2/A3 (parallel, cheap) → B3/B4 → B2 → B5 → C1 → C2 → D1/D2 → D3 → C3 → E.
@@ -200,3 +271,4 @@ Skip C2 if B5 and C1 leave no budget; it only sharpens a conclusion already supp
 G0 -> G1 -> G2 (-> G3 as control; G4 only if G1 fails).
 H1 -> H2.
 I1 -> I2 -> I3 -> I4/I5 -> I6a (I6 open).
+J1 -> J2 -> J3/J4 -> J5 (-> J6); J7 alongside.
