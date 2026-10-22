@@ -1027,6 +1027,60 @@ model class.
   b0+2 and its per-pattern mass is unknown, so it cannot stratify, and post-stratifying on
   a variable with unknown masses gives no variance reduction.
 
+## Summary of PLAN I and J: ARC's directions against M(16,10) (Oct 2026)
+The question after the review of ARC's writing (matching sampling principle,
+deduction-projection estimators and the sketching bound, Hilton's harmonic halfspace basis,
+surprise accounting, advice as a structured weight distribution, train-and-explain) was
+which of their directions give insight into this model family, regardless of FLOPs. The
+entries below hold the numbers; this is the reading.
+
+What holds:
+- The algorithm has names. A per-neuron fit on the running top two, their lags and the
+  joint lag table reads out better than every h16 net (0.96-0.99 against 0.88-0.95), so
+  the network's errors live in its residual from the named variables (J5 a).
+- The error set has three parts: tie strips whose width scales with M (most errors), the
+  sign event "at most one positive input" (16% of the trained model's errors, hand10's
+  only event), and a crowding remainder at ranks >= 3 (~6%) with no single mechanism
+  (J5 b, far field).
+- The error statistics are short. hand10 + two gains (comparator ratio, leaky delay line;
+  ~116 bits) puts every near-tie error bin inside the seed spread, with the right split
+  between error types (J5 b).
+- Training has one reorganisation (2^22-2^24 sequences, accuracy ~0.45 -> 0.69), then
+  drift. Precision is flat after it, and the strip share of errors rises. ARC's inductive
+  step is plausible after the reorganisation, not across it (J2).
+- The difficulty for deduction is architectural. Random-init and shuffled weights have
+  the same or more activation regions and the same BnB-vs-MC crossover at T ~ 3-4.
+  Training removes regions and shapes the slivers (J7).
+
+What fails, and why:
+- No structured weight distribution: the seeds share a three-neuron max circuit and a
+  comparator role. Template and periphery draws fall to chance, and no Schur shape is
+  shared. The advice the compression route needs is close to the weights (I, I6a).
+- Basin volume measures precision, not selection: 4-8 bits per parameter for every
+  model, and the ~100-bit hand10 costs 5.5 kbits. A Gaussian weight code is not
+  description length (J1).
+- Both bounds on deduction-projection estimators are negative. At a time cut the
+  correctness matrix is not low rank, and kernel quadrature with oracle advice is at or
+  below MC until one or two inputs remain (J3). In input space, correctness has harmonic
+  degree 100-10^4 from its sliver widths, so the harmonic basis loses to MC at every T.
+  Regions, not polynomials, are the basis here (J4).
+- The short family explains the distribution of errors, not the errors. It agrees with
+  the net's correctness bit less often than "always correct" does, and as a predictor it
+  is worse than the task-only gap logistic. At ~171 bits + N x 0.19-0.37 bits against the
+  weights' 2.4-3.2 kbits, the weights are the shorter account above N* = 6-15k inputs
+  (surprise accounting with the J5 family).
+
+Bottom line:
+- What ARC's criterion asks to be explained is which near-tie inputs fail. That is
+  seed-specific (per-pair error patterns log-correlate -0.12 to 0.26 across seeds) and is
+  carried by the fine balance of the comparator coupling (scaling it by 10% costs 20-40
+  points, I6a). No direction tried here compresses it below the weights for N above ~10^4.
+  Every positive result is about the family's statistics, which a task-level prior plus
+  one or two parameters already supplies (the blurred-comparator control in "Against
+  ARC's ask").
+- Open: a short code for the per-input near-tie context (I6). There is no concrete
+  candidate. J6 was skipped because J5's class describes statistics, not weights.
+
 ## Is there a structured weight distribution behind the seeds? (`probes/seed_template.py`, `.out`; PLAN I)
 ARC's compression route to the MSP ("Competing with sampling", appendix; wide-MLP post,
 "Extending to trained networks"): advice = a structured weight distribution from which the

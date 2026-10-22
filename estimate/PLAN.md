@@ -274,3 +274,4 @@ G0 -> G1 -> G2 (-> G3 as control; G4 only if G1 fails).
 H1 -> H2.
 I1 -> I2 -> I3 -> I4/I5 -> I6a (I6 open).
 J1 -> J2 -> J3/J4 -> J5 (-> J6); J7 alongside.
+I and J consolidated: FINDINGS "Summary of PLAN I and J".
