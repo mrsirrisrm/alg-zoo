@@ -1,0 +1,72 @@
+
+trained: h=16, 432 params, acc 0.95340, log2(h!) 44 bits
+  prior (i) per-tensor rms: scales [6.436, 0.561, 2.348]; |u*|^2/2 = 312 bits (location); trace(G) 2.39e+04, eigs > 1e-6 max: 308
+    calibration: c = 0.337 (loss / KL), 10-90% of ratio/c 0.63-2.57, 14 draws in range
+    tol 0.001: K 0.00297; precision 2429 bits over 400 directions; total 2741 bits; precision per constrained direction 6.07
+    tol 0.01: K 0.0297; precision 1774 bits over 399 directions; total 2085 bits; precision per constrained direction 4.45
+    (c) top-50 directions at their basin edge, loss/tol (mean of +-): median 0.83, 10-90% 0.71-0.96; asymmetry |+ - -|/sum median 0.34; first 10: 0.72 0.81 0.65 0.64 0.75 0.69 0.81 0.69 0.84 0.86
+  prior (ii) global rms: scales 1.939; |u*|^2/2 = 312 bits (location); trace(G) 2.63e+05, eigs > 1e-6 max: 260
+    calibration: c = 0.336 (loss / KL), 10-90% of ratio/c 0.63-1.81, 12 draws in range
+    tol 0.001: K 0.00298; precision 2811 bits over 400 directions; total 3122 bits; precision per constrained direction 7.03
+    tol 0.01: K 0.0298; precision 2151 bits over 400 directions; total 2463 bits; precision per constrained direction 5.38
+  (13s)
+
+seed0: h=16, 432 params, acc 0.91038, log2(h!) 44 bits
+  prior (i) per-tensor rms: scales [6.212, 0.469, 1.307]; |u*|^2/2 = 312 bits (location); trace(G) 4.39e+04, eigs > 1e-6 max: 274
+    calibration: c = 0.754 (loss / KL), 10-90% of ratio/c 0.52-4.98, 12 draws in range
+    tol 0.001: K 0.00133; precision 2529 bits over 375 directions; total 2841 bits; precision per constrained direction 6.75
+    tol 0.01: K 0.0133; precision 1930 bits over 350 directions; total 2242 bits; precision per constrained direction 5.52
+    (c) top-50 directions at their basin edge, loss/tol (mean of +-): median 1.04, 10-90% 0.94-1.15; asymmetry |+ - -|/sum median 0.29; first 10: 0.73 0.76 0.99 0.96 1.16 0.91 1.13 1.04 1.12 1.03
+  prior (ii) global rms: scales 1.48; |u*|^2/2 = 312 bits (location); trace(G) 3.49e+05, eigs > 1e-6 max: 255
+    calibration: c = 0.66 (loss / KL), 10-90% of ratio/c 0.40-2.63, 9 draws in range
+    tol 0.001: K 0.00151; precision 2880 bits over 386 directions; total 3192 bits; precision per constrained direction 7.46
+    tol 0.01: K 0.0151; precision 2261 bits over 363 directions; total 2573 bits; precision per constrained direction 6.23
+  (13s)
+
+seed1: h=16, 432 params, acc 0.88063, log2(h!) 44 bits
+  prior (i) per-tensor rms: scales [6.348, 1.213, 1.078]; |u*|^2/2 = 312 bits (location); trace(G) 2.3e+05, eigs > 1e-6 max: 276
+    calibration: c = 0.511 (loss / KL), 10-90% of ratio/c 0.73-1.91, 14 draws in range
+    tol 0.001: K 0.00196; precision 2951 bits over 399 directions; total 3263 bits; precision per constrained direction 7.40
+    tol 0.01: K 0.0196; precision 2299 bits over 392 directions; total 2611 bits; precision per constrained direction 5.87
+    (c) top-50 directions at their basin edge, loss/tol (mean of +-): median 1.09, 10-90% 0.95-1.24; asymmetry |+ - -|/sum median 0.36; first 10: 1.14 1.14 1.16 1.08 1.11 0.89 0.75 1.12 1.28 1.14
+  prior (ii) global rms: scales 1.672; |u*|^2/2 = 312 bits (location); trace(G) 4.38e+05, eigs > 1e-6 max: 273
+    calibration: c = 0.572 (loss / KL), 10-90% of ratio/c 0.75-1.60, 9 draws in range
+    tol 0.001: K 0.00175; precision 3157 bits over 400 directions; total 3468 bits; precision per constrained direction 7.89
+    tol 0.01: K 0.0175; precision 2500 bits over 397 directions; total 2811 bits; precision per constrained direction 6.30
+  (13s)
+
+seed2: h=16, 432 params, acc 0.94901, log2(h!) 44 bits
+  prior (i) per-tensor rms: scales [7.884, 3.408, 3.5]; |u*|^2/2 = 312 bits (location); trace(G) 4.75e+05, eigs > 1e-6 max: 299
+    calibration: c = 0.344 (loss / KL), 10-90% of ratio/c 0.88-1.49, 11 draws in range
+    tol 0.001: K 0.00291; precision 3247 bits over 400 directions; total 3559 bits; precision per constrained direction 8.12
+    tol 0.01: K 0.0291; precision 2588 bits over 398 directions; total 2899 bits; precision per constrained direction 6.50
+    (c) top-50 directions at their basin edge, loss/tol (mean of +-): median 1.16, 10-90% 0.87-1.30; asymmetry |+ - -|/sum median 0.20; first 10: 0.39 1.11 1.24 1.27 1.25 1.38 1.36 0.46 1.10 1.38
+  prior (ii) global rms: scales 3.704; |u*|^2/2 = 312 bits (location); trace(G) 5.6e+05, eigs > 1e-6 max: 298
+    calibration: c = 0.35 (loss / KL), 10-90% of ratio/c 0.84-1.45, 11 draws in range
+    tol 0.001: K 0.00286; precision 3277 bits over 400 directions; total 3588 bits; precision per constrained direction 8.19
+    tol 0.01: K 0.0286; precision 2617 bits over 398 directions; total 2928 bits; precision per constrained direction 6.57
+  (12s)
+
+seed3: h=16, 432 params, acc 0.93239, log2(h!) 44 bits
+  prior (i) per-tensor rms: scales [5.549, 0.412, 1.761]; |u*|^2/2 = 312 bits (location); trace(G) 7.85e+03, eigs > 1e-6 max: 350
+    calibration: c = 0.587 (loss / KL), 10-90% of ratio/c 0.61-1.78, 10 draws in range
+    tol 0.001: K 0.0017; precision 2565 bits over 400 directions; total 2877 bits; precision per constrained direction 6.41
+    tol 0.01: K 0.017; precision 1910 bits over 397 directions; total 2222 bits; precision per constrained direction 4.81
+    (c) top-50 directions at their basin edge, loss/tol (mean of +-): median 0.78, 10-90% 0.68-0.92; asymmetry |+ - -|/sum median 0.28; first 10: 0.40 0.73 0.82 0.97 0.83 0.72 0.77 0.85 0.82 0.77
+  prior (ii) global rms: scales 1.546; |u*|^2/2 = 312 bits (location); trace(G) 8.78e+04, eigs > 1e-6 max: 311
+    calibration: c = 0.53 (loss / KL), 10-90% of ratio/c 0.50-1.69, 12 draws in range
+    tol 0.001: K 0.00189; precision 2957 bits over 400 directions; total 3268 bits; precision per constrained direction 7.39
+    tol 0.01: K 0.0189; precision 2295 bits over 400 directions; total 2607 bits; precision per constrained direction 5.74
+  (13s)
+
+seed4: h=16, 432 params, acc 0.88984, log2(h!) 44 bits
+  prior (i) per-tensor rms: scales [5.045, 0.563, 1.494]; |u*|^2/2 = 312 bits (location); trace(G) 4.88e+04, eigs > 1e-6 max: 281
+    calibration: c = 0.56 (loss / KL), 10-90% of ratio/c 0.70-2.56, 14 draws in range
+    tol 0.001: K 0.00179; precision 2516 bits over 383 directions; total 2828 bits; precision per constrained direction 6.57
+    tol 0.01: K 0.0179; precision 1913 bits over 348 directions; total 2225 bits; precision per constrained direction 5.50
+    (c) top-50 directions at their basin edge, loss/tol (mean of +-): median 1.02, 10-90% 0.85-1.15; asymmetry |+ - -|/sum median 0.47; first 10: 0.86 0.79 0.74 0.97 1.09 1.07 1.28 1.07 1.09 1.05
+  prior (ii) global rms: scales 1.399; |u*|^2/2 = 312 bits (location); trace(G) 2.32e+05, eigs > 1e-6 max: 260
+    calibration: c = 0.646 (loss / KL), 10-90% of ratio/c 0.77-1.58, 10 draws in range
+    tol 0.001: K 0.00155; precision 2827 bits over 395 directions; total 3139 bits; precision per constrained direction 7.16
+    tol 0.01: K 0.0155; precision 2202 bits over 365 directions; total 2514 bits; precision per constrained direction 6.03
+  (13s)

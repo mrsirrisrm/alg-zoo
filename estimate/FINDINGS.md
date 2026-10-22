@@ -1084,6 +1084,42 @@ against the data second moment). Six aligned models in the unit-rms canonical ba
   decision carried by a finely balanced non-normal coupling) and give no class of weight
   distributions the seeds share. Nothing here changes the estimation picture.
 
+## Bits of optimisation by basin volume (`probes/opt_bits.py`, `opt_bits.out` h16, `opt_bits_family.out` h8/h32/hand10; PLAN J1 a, c)
+-log2 prior mass of the basin {acc >= acc* - tol}: GN Hessian of the KL to the model's own
+softmax in absolute coordinates, whitened by a zero-centred Gaussian prior (per-tensor rms
+of the model; global rms gives +10-15%), accuracy loss = c * KL calibrated on isotropic
+noise, water-filled posterior; bits = location 1/2|u*|^2 + precision. tol 1e-3 (1e-2):
+| model | params | acc | precision bits | constrained dirs | bits/param | edge check (loss/tol, top 50) |
+|---|---|---|---|---|---|---|
+| h8 | 152 | 0.427 | 701 (483) | 136 | 4.6 | 1.27, asymmetry 1.00 (not quadratic) |
+| trained h16 | 432 | 0.953 | 2429 (1774) | 400 | 5.6 | 0.83 |
+| seeds 0-4 | 432 | 0.88-0.95 | 2516-3247 (1871-2513) | 375-400 | 5.8-7.5 | 0.78-1.16 |
+| h32 | 1376 | 0.994 | 5898 (3922) | 1288 | 4.3 | 1.88 |
+| hand10 | 726 | 0.990 | 5491 (4451) | 626 | 7.6 | 2.63 (outside 2x) |
+Location adds 312 bits (h16), 110 (h8), 993 (h32), 524 (hand10). Every h16 model has
+exactly 32 free directions: the 16 rescalings and 16 W_out column shifts. log2(h!) copies
+of the basin (44 bits at h16) are not subtracted.
+- The check fails as designed, and it decides the reading: hand10 is a ~100-bit integer
+  construction (0, +-1, +-2, exact cancellations) and its basin costs 5.5 kbits, more than
+  any h16 model. Its calibration constant is 1e3x the trained models' (its logits are small,
+  so KL is a poor proxy for accuracy there), and its edge check is 2.6x off, but a factor
+  2.6 is ~0.7 bits per direction (~440 bits), which does not change the conclusion.
+- Basin bits are 4-8 bits per parameter for every model in the family: failed (h8), good
+  (h16), near-perfect (h32), trained or designed. They measure how precisely the FUNCTION
+  must be pinned under a Gaussian weight prior, which is a property of long ReLU recurrences,
+  not of how much structure training found (same lesson as MAP: region count is geometry).
+- This revises the framing in "Weight precision as description length": precision under
+  a Gaussian code is not description length. A short structured description (integers,
+  exact cancellations, an algorithm) can need kilobits under that code, as hand10 shows. So
+  M(16,10)'s 1.9-2.4 kbits does not show that its explanation must be long, and the
+  "sampling is cheaper than any description that long" argument is withdrawn as stated.
+- For ARC's criterion (total surprise ~ bits of optimisation) both sides must use the same
+  prior, and that prior has to be structured (a code in which hand10 is short). A local
+  basin estimate cannot supply it, and the local learning coefficient (J1 b) is also local,
+  so it is not run. The useful question that remains is constructive: the shortest
+  structured code under which M(16,10) sits inside a tolerance-1e-3 basin (J5's finite-gain
+  hand family is that code's first candidate).
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".

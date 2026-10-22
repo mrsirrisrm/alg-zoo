@@ -211,7 +211,7 @@ distribution behind the seeds?" and the session review of 2026-10-22):
 Dropped: further sampling designs, region enumeration, sampled covariances inside an
 estimator (fail the deduction test or are at their ceiling: MAP, ARC_REPORT, I6a).
 
-- [ ] J1. Bits of optimisation. -log2 of the prior mass of the basin {acc >= acc* - tol},
+- [x] J1. (a, c done: basin bits 4-8 per parameter for every model, failed, trained or designed; hand10, a ~100-bit construction, costs 5.5 kbits, so basin volume measures precision, not selection; b not run, LLC is also local; precision-as-description framing withdrawn, FINDINGS) Bits of optimisation. -log2 of the prior mass of the basin {acc >= acc* - tol},
   tol 1e-3 and 1e-2, for M(16,10), seeds 0-4, h8, h32 (and hand10 as the zero-search
   reference). Three estimators, reported side by side:
   (a) Laplace: GN Hessian (reuse `weight_perturbation.py` / `precision.py`) with the exact
@@ -223,7 +223,8 @@ estimator (fail the deduction test or are at their ceiling: MAP, ARC_REPORT, I6a
       predicted half-width (the quadratic regime broke by sigma 0.01, A2).
   Prior: the zoo's training init is U(+-1/sqrt(h)) but trained W_ih sits at +-10, so the
   init has no mass on the basin. Report under (i) per-tensor Gaussian at the trained rms
-  (scale-free, matches precision.py's tau = 1) and (ii) the AdamW weight-decay prior.
+  (scale-free, matches precision.py's tau = 1) and (ii) one global rms (used instead of the
+  AdamW weight-decay prior, which has no clean scale under Adam).
   Check: (a) with prior (i) reproduces precision.py's eigenbasis floor (1.3-1.9 kbits)
   within the symmetry correction; (c) within 2x of (a) per direction.
   Reading to write: compare with the explanation side (algorithm ~100 bits; 8 numbers carry
@@ -250,6 +251,7 @@ estimator (fail the deduction test or are at their ceiling: MAP, ARC_REPORT, I6a
   same for the label and the network-output indicators separately; degree D needed for
   1e-3 inner-product error and the term count C(10+D, 10). Across T = 2..10 at h16 and
   across h at T = 4. Check: predicts the BnB crossover (MAP: T ~ 3-4) without running BnB.
+  After J1: J2's per-checkpoint bits measure how precision forms in training, not selection.
 - [ ] J5. Algorithmic variables and a finite-gain hand family (the concrete I6 class).
   (a) Regress every neuron's activation on named variables (running max, 2nd max, time
   since each, current input, their ReLU differences); extend Goldowsky-Dill's n1/n6/n7/n8
