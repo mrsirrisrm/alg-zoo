@@ -259,9 +259,9 @@ estimator (fail the deduction test or are at their ceiling: MAP, ARC_REPORT, I6a
   per-(pair, gap) error curve, not the weights. Check: reproduces the strip statistics
   (tie widths, FORM level) of M(16,10) and the seeds within their harness spread.
   Count its total surprise for J1.
-- [ ] J6 (only if J5 finds a small class). Approximate symmetry reduction: n4 against
+- [ ] J6 (skipped for now: J5's small class describes the error statistics, not the weights) (only if J5 finds a small class). Approximate symmetry reduction: n4 against
   n1/n6/n7/n8 as abs-units; region count of the reduced net against the original.
-- [ ] J7 (short note, alongside). Random-RNN base case for this architecture: the state
+- [x] J7 (random init and shuffled-trained weights: region counts equal or up to 12x larger than trained, the crossover at T ~ 3-4 the same; architecture sets the difficulty, training removes regions and shapes the error slivers) (short note, alongside). Random-RNN base case for this architecture: the state
   after one step lies on two rays for any weights (scalar input), so ARC's Gaussian start
   fails at init. Run the BnB crossover (`survey/crossover.py`) on random-weight RNNs at
   T = 2..6 to separate architecture from training in MAP.

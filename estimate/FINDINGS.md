@@ -1240,6 +1240,27 @@ copy chain scaled by 1 + g).
 - Strip share here counts errors with min(gap S-R, gap M-S) < 0.03 (J2 used the top-two
   gap only), hence 0.38-0.77 here against J2's 0.14-0.20.
 
+## Random-weight base case for the model-space map (`probes/random_crossover.py`, `.out`; PLAN J7)
+At h = 2/4/8/16 and T = 2..6, three weight sets per cell: the trained zoo best seed, PyTorch's
+default init (uniform +-1/sqrt(h)), and the trained entries shuffled within each matrix.
+Each gets n99 (patterns covering 99% of mass) and the best BnB advantage over MC
+(crossover.py's method, two configs, 60 s cap, BnB only where n99 <= 2500). One draw each.
+- The region count is architectural. Random nets have as many regions as trained ones at
+  small h or T and many more at large h and T: h16 T5 92k (init) / 54k (shuffle) against
+  8.5k trained; h16 T6 366k / 111k against 29k; h8 T6 60k (init) against 9.2k. The
+  exception is h8 T6 shuffle (1.0k). Training lowers the count where the count is large;
+  it does not create it. The spectral radius does not set it either: init has rho 0.5-0.6
+  and the trained and shuffled nets 1-76, with similar counts.
+- The crossover is architectural. BnB's advantage falls with T in the same way for all
+  three: > 1 at T = 2-3 (init and shuffle 2-80 at T = 3; T = 2 is a lower bound > 300 set
+  by the 2^26 truth), 0.04-3 at T = 4, 0.01-0.3 at T = 5-6, and out of reach (n99 > 2500)
+  at h >= 8, T >= 5. MAP's crossover at T ~ 3-4 holds for random weights.
+- So what training adds is not difficulty for deduction. At large h and T it removes
+  regions (up to 12x at h16 T6), and its contribution is the sliver geometry of the
+  errors (J4, J5), not the count. A random net's errors are bulk (accuracy 0.13-0.71,
+  chance about 1/T to 1/2), so the comparison is on the cost of resolving the regions,
+  not on the error shape.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".
