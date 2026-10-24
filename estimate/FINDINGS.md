@@ -1436,9 +1436,14 @@ label-trained continuation from the same init is the task-only control.
   learned networks (Wu et al. 2026: trained nets "seem likely to require access to the
   training trajectory"). It sharpens the J5 bottom line: the per-input pattern is not
   merely uncompressed, it is basin-specific, and the basin is where the training run went.
-- From-scratch students (task epiplexity for this architecture; S/H bookkeeping): see
-  `epiplexity_scratch.out` (h16, 2^24) and `epiplexity_scratch_h64.out` (h64, 2^26).
-  [numbers pending]
+- From-scratch h16 student, 2^24 samples (2.9e11 FLOPs): the student learns nothing for
+  2^16 samples (chance, as the zoo checkpoints do), then distilling from the teacher is
+  easier than the task itself (accuracy 0.815 against 0.768 for the label-trained student
+  at 2^24; the zoo seeds are at ~0.75 there). Prequential code of c: 1.5e7 bits = S 4.3e6
+  + N x 0.64, near-tie disagreement still falling (0.306 at 2^24). The prequential S is
+  2000x the weights' 2.4 kbits: as the paper warns, it is the area of slow learning, an
+  upper bound on the task's epiplexity for SGD on this architecture, and says nothing
+  about the near-tie pattern. h64 at 2^26 pending (`epiplexity_scratch_h64.out`).
 - Caveats: one student seed per cell; the lr sweep covers 1e-4 to 3e-3 under AdamW with
   the zoo's weight decay; a learner with a different inductive bias (wider, or given the
   family as advice) is a different observer and bound, which is what the h64 run tests.
