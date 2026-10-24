@@ -46,8 +46,30 @@ weights above ~10^4 inputs. Ordered by how directly each item bears on that.
 - **Christiano, "Returning to ARC"** (AF, 4 Aug 2026). Two bets: every phenomenon has an
   explanation, and finding explanations is not much harder than finding phenomena. He
   puts the second below 50-50. Our result is a data point on the second bet.
-- **Matolcsi, "Obstacles in ARC's agenda"** (sequence, 2025: finding explanations, LPE,
-  MAD). Not yet read. It is the closest existing critique to CRITIQUE.md / ARC_REPORT.md.
+- **Matolcsi, "Obstacles in ARC's agenda"** (AF sequence, Apr 2025; ex-ARC Theory
+  Oct 2023 to Jan 2025). Finding explanations: the obstacles are empirical regularities
+  (brute facts versus structure that hides deception), capacity allocation, dependence on
+  the outside world, teleology, and when to start explaining. His point 7 is directly
+  about us: "explaining small networks on tasks like second argmax sidesteps empirical
+  regularities, which are the main worry". LPE: the only results are an independence
+  method that loses to importance sampling (Wu and Hilton 2024) and a toy theorem; the
+  fallback "match what the model knows" he could not pin down in a year at ARC. Replies:
+  Hilton (May 2025) agrees the best case is a formal framework with MAD/LPE as tests;
+  **Christiano (Aug 2026): ARC now holds that purely computational systems can be fully
+  explained, and capacity allocation is handled by a budget-indexed family of
+  estimators, not by choosing what to explain.** M(16,10) is a purely computational
+  system, so it is a clean test of the first claim with none of Matolcsi's caveats.
+- **AlgZoo comment thread** (LW, Jan to Aug 2026). Goldowsky-Dill (28 Jan): neurons
+  1, 6, 7, 8 are linear in running max, running second, and lag of the max, R² 0.992
+  (gist NixGD/2651be79). That is a subset of our J5a named-variable fit, found
+  independently. Hilton's ask to us (Feb): "turn this argument into a mechanistic
+  estimate of the model's accuracy ... deducing correlations from the weights rather than
+  only observing them". phoenix (6 Aug): accuracy is exactly computable from the weights
+  so estimating it is a weaker goal (true at 2^35 FLOPs; the point of the exercise is the
+  FLOP axis, which they miss). **Hilton (17 Aug 2026), asked about progress: knows of no
+  effort on these models beyond the thread, progress "fairly marginal", "not much closer
+  to succeeding at the challenge".** So as of August the field's state on M(16,10) was
+  our Feb gist; ARC_REPORT.md is the only measured negative result.
 
 ## Separating structure from noise (most actionable)
 
@@ -103,8 +125,8 @@ weights above ~10^4 inputs. Ordered by how directly each item bears on that.
 
 - No 2026 paper on mechanistic estimation for *trained* networks. ARC say it is the next
   step and have published nothing on it yet.
-- Nobody else working on M(16,10) in public apart from our gist (mrsirrisrm). The AlgZoo
-  LessWrong comment thread could not be fetched. Worth reading by hand.
+- Nobody else working on M(16,10) in public apart from our gist and Goldowsky-Dill's
+  notebook, confirmed by Hilton in Aug 2026.
 - MINAR (arXiv 2602.21442) is GNN circuit discovery, not relevant.
 
 ## Candidate next steps
@@ -118,6 +140,10 @@ weights above ~10^4 inputs. Ordered by how directly each item bears on that.
    (K=3/K=4) on the random-init RNN (J7) at h16, T = 2..10. Widen h to find the crossover
    in h/T, and compare with Yan Su's n/L scaling. This puts our "architectural
    difficulty" claim on ARC's own axis.
-3. **Read Matolcsi's sequence and Christiano's comment thread.** Place ARC_REPORT.md
-   relative to them before writing to Jacob.
+3. **Write to Jacob.** Done reading. ARC_REPORT.md answers his Feb ask with a measured
+   negative, lands in the regime (narrow, deep, trained) his May paper names as open,
+   and is the kind of toy case Winer says would be "a major win" either way. Frame it
+   against Christiano's Aug 2026 claim that purely computational systems can be fully
+   explained: here is one with 432 parameters where the per-input error pattern has
+   resisted every compression tried.
 4. (Lower) Susceptibilities to near-tie data shifts. SPD on M(16,10).
