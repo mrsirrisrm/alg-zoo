@@ -273,7 +273,7 @@ estimator (fail the deduction test or are at their ceiling: MAP, ARC_REPORT, I6a
   student RNN, initialised from an independent seed (knows the task, other basin), from the
   teacher's noisy copy (same basin) and from scratch (h16, h64). Compare the student's
   near-tie disagreement with the independent-seed reference and the J5 family's residual.
-- [ ] K2. ARC's cumulant propagator (`mlp_cumulant_propagation`, K = 3/4) on unrolled
+- [x] K2. (control reproduces their n/L gains; random-init RNN with the shifted encoding: K=2 beats MC 31x at h16 T=10 and the gain does not fall with T, K=3 unstable; trained weights: K=2 mean logits off 3-10x and the joint-Gaussian P(correct) 0.15 against 0.953; so ARC's base case holds for this architecture and the difficulty is training plus the non-mean target) ARC's cumulant propagator (`mlp_cumulant_propagation`, K = 1/2/3) on unrolled
   random-init RNNs at h16, T = 2..10, widening h to find the h/T crossover against MC, to put
   the J7 "architectural difficulty" on ARC's own n/L axis (challenge write-ups: 10-12x at
   n/L 64, 2-4x at n/L 8; M(16,10) is at 1.6).

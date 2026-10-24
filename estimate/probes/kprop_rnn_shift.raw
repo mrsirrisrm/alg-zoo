@@ -1,0 +1,226 @@
+   h   T    h/T seed | K=1: mse/var  flops  gain | K=2: mse/var  flops  gain | K=3: mse/var  flops  gain
+  16   2    8.0    0 | K=1: 1.03e-01  3.8e+03   2.94 | K=2: 7.21e-05  3.0e+04 536.74 | K=3: 3.00e-03  1.2e+06   0.31
+  16   2    8.0    1 | K=1: 1.26e-01  3.8e+03   2.42 | K=2: 4.15e-04  3.0e+04  93.11 | K=3: 2.82e-04  1.2e+06   3.29
+  16   3    5.3    0 | K=1: 2.72e-01  6.7e+03   0.95 | K=2: 9.02e-04  6.0e+04  32.17 | K=3: 2.15e-01  2.4e+06   0.00
+  16   3    5.3    1 | K=1: 1.23e+00  6.7e+03   0.21 | K=2: 4.52e-04  6.0e+04  64.21 | K=3: 8.44e-03  2.4e+06   0.08
+  16   4    4.0    0 | K=1: 1.05e-01  1.0e+04   2.18 | K=2: 4.96e-04  9.8e+04  47.17 | K=3: 8.77e-03  4.0e+06   0.07
+  16   4    4.0    1 | K=1: 2.29e-01  1.0e+04   1.00 | K=2: 7.27e-04  9.8e+04  32.24 | K=3: 7.17e-02  4.0e+06   0.01
+  16   6    2.7    0 | K=1: 1.71e-01  1.8e+04   1.10 | K=2: 2.57e-04  2.1e+05  65.21 | K=3: 1.07e-02  8.5e+06   0.04
+  16   6    2.7    1 | K=1: 5.22e-01  1.8e+04   0.36 | K=2: 2.27e-04  2.1e+05  74.02 | K=3: 3.90e-03  8.5e+06   0.10
+  16   8    2.0    0 | K=1: 4.95e-01  2.9e+04   0.33 | K=2: 3.45e-04  3.6e+05  36.82 | K=3: 4.77e-03  1.5e+07   0.06
+  16   8    2.0    1 | K=1: 6.13e-01  2.9e+04   0.26 | K=2: 1.67e-04  3.6e+05  76.26 | K=3: 1.17e-03  1.5e+07   0.26
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+  16  10    1.6    0 | K=1: 6.22e-01  4.1e+04   0.22 | K=2: 3.19e-04  5.8e+05  31.10 | K=3: 1.90e-01  2.6e+07   0.00
+  16  10    1.6    1 | K=1: 6.73e-01  4.1e+04   0.21 | K=2: 9.80e-05  5.8e+05 101.32 | K=3: 4.55e-05  2.6e+07   4.94
+  32   2   16.0    0 | K=1: 3.40e-01  9.5e+03   1.35 | K=2: 2.52e-04  1.6e+05 108.82 | K=3: 1.97e-03  9.9e+06   0.22
+  32   2   16.0    1 | K=1: 4.11e-02  9.5e+03  11.21 | K=2: 2.16e-04  1.6e+05 127.01 | K=3: 3.19e-03  9.9e+06   0.14
+  32   3   10.7    0 | K=1: 7.42e-02  1.7e+04   5.20 | K=2: 1.28e-04  3.2e+05 162.00 | K=3: 1.69e-02  1.8e+07   0.02
+  32   3   10.7    1 | K=1: 2.27e-01  1.7e+04   1.70 | K=2: 1.69e-04  3.2e+05 122.58 | K=3: 1.75e-01  1.8e+07   0.00
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+  32   4    8.0    0 | K=1: 2.34e-01  2.5e+04   1.48 | K=2: 1.09e-03  5.0e+05  16.02 | K=3: 2.07e-01  2.8e+07   0.00
+  32   4    8.0    1 | K=1: 3.71e-01  2.5e+04   0.93 | K=2: 3.91e-04  5.0e+05  44.62 | K=3: 3.06e-03  2.8e+07   0.10
+  32   6    5.3    0 | K=1: 5.83e-01  4.4e+04   0.51 | K=2: 1.03e-03  9.5e+05  13.39 | K=3: 2.43e-03  5.4e+07   0.10
+  32   6    5.3    1 | K=1: 4.83e-01  4.4e+04   0.61 | K=2: 3.04e-04  9.5e+05  45.13 | K=3: 1.27e-02  5.4e+07   0.02
+  32   8    4.0    0 | K=1: 3.62e-01  6.6e+04   0.73 | K=2: 1.47e-03  1.5e+06   7.74 | K=3: 1.64e-02  8.8e+07   0.01
+  32   8    4.0    1 | K=1: 4.57e-01  6.6e+04   0.58 | K=2: 3.50e-04  1.5e+06  32.51 | K=3: 1.23e-02  8.8e+07   0.02
+  32  10    3.2    0 | K=1: 7.39e-01  9.1e+04   0.32 | K=2: 1.24e-03  2.3e+06   7.78 | K=3: 1.89e-02  1.3e+08   0.01
+  32  10    3.2    1 | K=1: 5.87e-01  9.1e+04   0.41 | K=2: 1.00e-03  2.3e+06   9.61 | K=3: 4.60e-03  1.3e+08   0.04
+  64   2   32.0    0 | K=1: 8.08e-02  2.7e+04   7.76 | K=2: 2.14e-04  1.0e+06  78.16 | K=3: 8.86e-05  9.4e+07   2.03
+  64   2   32.0    1 | K=1: 3.14e-02  2.7e+04  19.96 | K=2: 2.64e-04  1.0e+06  63.42 | K=3: 4.07e-06  9.4e+07  44.18
+  64   3   21.3    0 | K=1: 4.83e-02  5.0e+04  10.56 | K=2: 2.19e-04  2.0e+06  57.75 | K=3: 8.66e-03  1.7e+08   0.02
+  64   3   21.3    1 | K=1: 4.72e-02  5.0e+04  10.79 | K=2: 5.72e-04  2.0e+06  22.09 | K=3: 3.17e-03  1.7e+08   0.05
+  64   4   16.0    0 | K=1: 1.77e-01  7.4e+04   2.59 | K=2: 1.53e-03  3.1e+06   7.12 | K=3: 1.83e-01  2.6e+08   0.00
+  64   4   16.0    1 | K=1: 1.40e-01  7.4e+04   3.26 | K=2: 6.60e-05  3.1e+06 165.25 | K=3: 3.55e-02  2.6e+08   0.00
+  64   6   10.7    0 | K=1: 3.46e-01  1.3e+05   1.16 | K=2: 4.91e-04  5.6e+06  18.59 | K=3: 1.64e-03  4.7e+08   0.07
+  64   6   10.7    1 | K=1: 5.84e-01  1.3e+05   0.69 | K=2: 2.74e-04  5.6e+06  33.24 | K=3: 2.77e-02  4.7e+08   0.00
+  64   8    8.0    0 | K=1: 2.07e-01  1.8e+05   1.78 | K=2: 1.72e-04  8.4e+06  46.74 | K=3: 3.99e-02  7.1e+08   0.00
+  64   8    8.0    1 | K=1: 3.72e-01  1.8e+05   0.99 | K=2: 6.34e-04  8.4e+06  12.67 | K=3: 9.45e-02  7.1e+08   0.00
+  64  10    6.4    0 | K=1: 6.09e-01  2.5e+05   0.56 | K=2: 3.62e-04  1.2e+07  19.98 | K=3: 6.05e-02  1.0e+09   0.00
+  64  10    6.4    1 | K=1: 3.27e-01  2.5e+05   1.05 | K=2: 1.45e-04  1.2e+07  49.88 | K=3: 1.98e-01  1.0e+09   0.00
+ 128   2   64.0    0 | K=1: 5.85e-02  8.6e+04  13.15 | K=2: 2.02e-04  7.1e+06  46.18 | K=3: 2.20e-04  1.0e+09   0.29
+ 128   2   64.0    1 | K=1: 6.08e-02  8.6e+04  12.65 | K=2: 1.58e-04  7.1e+06  58.95 | K=3: 5.22e-03  1.0e+09   0.01
+ 128   3   42.7    0 | K=1: 4.33e-02  1.6e+05  14.01 | K=2: 2.71e-04  1.4e+07  25.90 | K=3: 1.71e-02  2.0e+09   0.00
+ 128   3   42.7    1 | K=1: 1.87e-01  1.6e+05   3.25 | K=2: 3.10e-04  1.4e+07  22.65 | K=3: 3.12e-02  2.0e+09   0.00
+ 128   4   32.0    0 | K=1: 5.27e-01  2.5e+05   1.03 | K=2: 1.86e-04  2.2e+07  33.08 | K=3: 1.37e-02  2.9e+09   0.00
+ 128   4   32.0    1 | K=1: 2.33e-01  2.5e+05   2.33 | K=2: 6.96e-04  2.2e+07   8.83 | K=3: 6.67e-01  2.9e+09   0.00
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+ 128   6   21.3    0 | K=1: 1.08e+00  4.1e+05   0.45 | K=2: 1.10e-03  3.8e+07   4.81 | K=3: 1.30e-01  5.1e+09   0.00
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+ 128   6   21.3    1 | K=1: 4.06e-01  4.1e+05   1.19 | K=2: 6.79e-04  3.8e+07   7.83 | K=3: 4.35e+00  5.1e+09   0.00
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+ 128   8   16.0    0 | K=1: 8.04e-01  5.9e+05   0.56 | K=2: 6.71e-04  5.5e+07   7.24 | K=3: 1.35e-02  7.4e+09   0.00
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+Snapping negative variance to zero
+ 128   8   16.0    1 | K=1: 5.20e-01  5.9e+05   0.87 | K=2: 8.59e-04  5.5e+07   5.66 | K=3: 2.35e+01  7.4e+09   0.00
+ 128  10   12.8    0 | K=1: 1.05e+00  7.8e+05   0.41 | K=2: 4.44e-04  7.3e+07  10.20 | K=3: 1.41e-02  1.0e+10   0.00
+ 128  10   12.8    1 | K=1: 5.97e-01  7.8e+05   0.72 | K=2: 4.29e-04  7.3e+07  10.55 | K=3: 4.44e-02  1.0e+10   0.00

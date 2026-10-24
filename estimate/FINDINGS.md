@@ -1457,6 +1457,47 @@ label-trained continuation from the same init is the task-only control.
   the zoo's weight decay; a learner with a different inductive bias (wider, or given the
   family as advice) is a different observer and bound, which is what the h64 run tests.
 
+## ARC's cumulant propagation on the unrolled RNN (`probes/kprop_rnn.py`, `kprop_rnn*.raw/.json`, `kprop_control.out`, `kprop_joint.out`; PLAN K2)
+Wu et al. (2026, `mlp_cumulant_propagation`) estimate E[output] of a random MLP from the
+input cumulants, beating MC for wide nets. The RNN h_t = relu(x_t W_ih + W_hh h_{t-1}) is an
+exact MLP of constant width once the unread inputs are carried through: units for
+relu(x_t + c) with bias c = 6 (one per input; the carried unit is Gaussian to all orders)
+and T + 1 linear layers. Checked against the RNN forward. Score as ARC do, mse/var of the
+mean logits against 2^22 MC samples, with MC charged the RNN forward (5,760 FLOPs at
+h16 T10) and kprop their own FLOP counter; gain > 1 means kprop beats MC at equal FLOPs.
+- Control, ARC's own setting (He MLP, width n, L = T + 1 layers): every K beats MC and the
+  gain tracks n/L (K=2: 0.3x at n/L 3.2, 4.4x at 6.4, 13x at 25.6, 480x at 128), K=3's
+  error falls monotonically, as in their paper and the challenge write-ups.
+- Random-init RNN, default torch init, mean logits, two seeds per cell: K=2 beats MC at
+  every depth and the gain does not fall with T: h16 93-537x (T=2), 32-64x, 32-47x,
+  65-74x, 37-76x, 31-101x (T=10); h32 8-10x, h64 20-50x and h128 10x at T=10; mse/var
+  ~3e-4 throughout. K=1 (mean field) sits at 0.2-20x, above 1 only at T <= 4, and K=3 at
+  0-5x: the harmonic K=3 recursion is unstable for this structure at every width tried
+  (the control converges). So on ARC's metric and ARC's weights, M(16,10)'s architecture is
+  inside the regime where deduction wins, and depth is not what makes it hard.
+- The encoding matters: carrying x_t as the pair relu(x_t), relu(-x_t) (exactly
+  anticorrelated units, no bias) makes K=2 lose from T = 4 at every width (0.03x at T=10)
+  and K=3 diverge (mse/var up to 10^15), while the control is unaffected (`kprop_rnn.raw`,
+  the first sweep). A cumulant truncation is sensitive to degenerate units; the
+  shifted encoding is the fair one.
+- Trained weights, ARC's metric: the same K=2 estimate of the mean logits is off by 3-10x
+  on M(16,10) (-34.8 against MC -6.3, -55.0 against -5.7) and on seed2 (-59.7 against
+  -22.1), while on the random init it is exact to three decimals. Training moves the
+  hidden state onto the positive cone and two rays (E0, J7), where a Gaussian-plus-
+  corrections closure of the layer law is wrong at the first step.
+- Trained weights, the task's metric: carry x to the output and read P(argmax logits = 2nd
+  argmax x) off the K=2 joint Gaussian of (logits, x): 0.150 for M(16,10) (truth 0.953),
+  0.207 for seed0 (0.910), 0.107 for seed2 (0.949); the random init gives 0.107 (0.104).
+  K=1 gives chance everywhere. Correctness is a high-degree function of the joint output
+  (J4), so even a correct joint Gaussian would not carry it; here the Gaussian is also wrong.
+- Reading for K2: ARC's base case holds for this architecture (random weights, mean
+  outputs: 30x over MC at T = 10), so the difficulty of M(16,10) is not architectural in
+  ARC's sense of width over depth. It is the two things their paper lists as open:
+  trained weights (their own metric fails by 3-10x) and a target that is not a mean (the
+  correctness bit, which the J3/J4 bounds already placed outside every low-order basis).
+  J7's statement should be read as: the *region count* and the BnB crossover are set by
+  the architecture; the cumulant route's failure is set by training.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".

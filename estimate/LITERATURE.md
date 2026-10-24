@@ -137,7 +137,9 @@ weights above ~10^4 inputs. Ordered by how directly each item bears on that.
    Then test whether the per-input near-tie correctness bit is predictable by any
    time-bounded learner given the family, or behaves like H_T. Decides whether our
    bottom line is "incompressible structure" or "noise".
-2. **ARC's cumulant propagator on unrolled RNNs.** Run `mlp_cumulant_propagation`
+2. **ARC's cumulant propagator on unrolled RNNs** (done: PLAN K2, FINDINGS "ARC's cumulant
+   propagation on the unrolled RNN"; outcome: their base case holds here, 30x at T = 10 on
+   random weights, and fails on trained weights). Run `mlp_cumulant_propagation`
    (K=3/K=4) on the random-init RNN (J7) at h16, T = 2..10. Widen h to find the crossover
    in h/T, and compare with Yan Su's n/L scaling. This puts our "architectural
    difficulty" claim on ARC's own axis.
