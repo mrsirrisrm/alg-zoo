@@ -268,7 +268,7 @@ estimator (fail the deduction test or are at their ceiling: MAP, ARC_REPORT, I6a
 
 ## K. After the literature survey (`LITERATURE.md`, Oct 2026)
 
-- [x] K1. (positive control: the teacher's 0.5% noisy copy distils back to near-tie disagreement 0.015 by 2^20; an independent seed does not move from 0.128 in 2^26 samples at any lr 1e-4 to 3e-3, same as the label-trained control, so the teacher-specific near-tie pattern is time-bounded entropy for SGD outside the basin; from-scratch S/H numbers pending) Epiplexity of the
+- [x] K1. (positive control: the teacher's 0.5% noisy copy distils back to near-tie disagreement 0.015 by 2^20; an independent seed does not move from 0.128 in 2^26 samples at any lr 1e-4 to 3e-3, same as the label-trained control, so the teacher-specific near-tie pattern is time-bounded entropy for SGD outside the basin; from scratch, h64 at 2^26 distils to near-tie disagreement 0.101 against the label-trained 0.106 and the teacher's own error floor 0.085, so a stronger learner at the original training's compute also lands on the task-level account) Epiplexity of the
   near-tie pattern (Finzi et al. 2026): prequential coding of the teacher's outputs by a
   student RNN, initialised from an independent seed (knows the task, other basin), from the
   teacher's noisy copy (same basin) and from scratch (h16, h64). Compare the student's

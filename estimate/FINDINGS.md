@@ -1443,7 +1443,16 @@ label-trained continuation from the same init is the task-only control.
   + N x 0.64, near-tie disagreement still falling (0.306 at 2^24). The prequential S is
   2000x the weights' 2.4 kbits: as the paper warns, it is the area of slow learning, an
   upper bound on the task's epiplexity for SGD on this architecture, and says nothing
-  about the near-tie pattern. h64 at 2^26 pending (`epiplexity_scratch_h64.out`).
+  about the near-tie pattern.
+- From-scratch h64 student, 2^26 samples (1.7e13 FLOPs, the cost of the original training
+  run): the label-trained h64 reaches accuracy 0.9714 (above the h16 teacher) and disagrees
+  with the teacher on 0.106 of near-tie inputs; the distilled h64 reaches 0.101 (accuracy
+  0.938). The teacher's own near-tie error rate is 0.0851, which is where a perfect
+  task-solver would sit, so distillation has moved the student 0.005 of the way toward the
+  teacher's errors and no further; the distilled student's near-tie disagreement has been
+  flat at 0.09-0.11 since 2^23. Its H_c is 0.175 bits/input, at the family's 0.19: a
+  stronger learner with 100x the compute of the seed-initialised runs lands on the same
+  task-level account, not on the teacher's pattern.
 - Caveats: one student seed per cell; the lr sweep covers 1e-4 to 3e-3 under AdamW with
   the zoo's weight decay; a learner with a different inductive bias (wider, or given the
   family as advice) is a different observer and bound, which is what the h64 run tests.
