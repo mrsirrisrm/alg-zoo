@@ -1,0 +1,121 @@
+=== teacher trained, init seed2, lr 1e-4, k 23
+trained: acc 0.9532; held-out 1048576 inputs; regions mass all 1.000 near-tie 0.438 sign 0.011 far 0.551
+  student init-seed2-distil (17s, 1.45e+11 FLOPs): acc 0.9430
+    prequential code of c: 2.357e+06 bits = S 7.657e+03 + N x H 0.2801
+    near-tie dis_c: 0.128 0.126 0.126 0.126 0.124 0.127 0.124 0.125 0.123 0.125
+    near-tie bits_c: 0.569 0.567 0.564 0.560 0.555 0.562 0.547 0.548 0.537 0.541
+  student init-seed2-label (17s, 1.45e+11 FLOPs): acc 0.9492
+    prequential code of c: 2.444e+06 bits = S 1.328e+04 + N x H 0.2897
+    near-tie dis_c: 0.128 0.128 0.128 0.127 0.127 0.128 0.128 0.128 0.129 0.127
+    near-tie bits_c: 0.572 0.584 0.571 0.567 0.568 0.571 0.569 0.575 0.574 0.569
+  references at N = 2^23: weights 2429 bits; family 171 + N x 0.1902 = 1.596e+06 bits; constant 2.288e+06
+=== teacher trained, init seed2, lr 3e-4, k 23
+trained: acc 0.9532; held-out 1048576 inputs; regions mass all 1.000 near-tie 0.438 sign 0.011 far 0.551
+  student init-seed2-distil (14s, 1.45e+11 FLOPs): acc 0.9410
+    prequential code of c: 2.418e+06 bits = S 8.724e+04 + N x H 0.2778
+    near-tie dis_c: 0.127 0.130 0.129 0.136 0.126 0.128 0.131 0.134 0.126 0.126
+    near-tie bits_c: 0.564 0.586 0.569 0.629 0.555 0.563 0.592 0.578 0.548 0.531
+  student init-seed2-label (14s, 1.45e+11 FLOPs): acc 0.9469
+    prequential code of c: 2.499e+06 bits = S 4.041e+04 + N x H 0.2931
+    near-tie dis_c: 0.127 0.130 0.129 0.131 0.132 0.130 0.133 0.129 0.129 0.129
+    near-tie bits_c: 0.571 0.585 0.589 0.581 0.601 0.580 0.582 0.570 0.575 0.573
+  references at N = 2^23: weights 2429 bits; family 171 + N x 0.1902 = 1.596e+06 bits; constant 2.288e+06
+=== teacher trained, init seed2, lr 1e-3, k 23
+trained: acc 0.9532; held-out 1048576 inputs; regions mass all 1.000 near-tie 0.438 sign 0.011 far 0.551
+  student init-seed2-distil (13s, 1.45e+11 FLOPs): acc 0.9264
+    prequential code of c: 2.635e+06 bits = S -3.627e+04 + N x H 0.3184
+    near-tie dis_c: 0.128 0.134 0.140 0.144 0.133 0.143 0.138 0.163 0.140 0.146
+    near-tie bits_c: 0.583 0.591 0.614 0.641 0.587 0.605 0.608 0.670 0.587 0.607
+  student init-seed2-label (13s, 1.45e+11 FLOPs): acc 0.9436
+    prequential code of c: 2.678e+06 bits = S 1.728e+05 + N x H 0.2987
+    near-tie dis_c: 0.129 0.133 0.133 0.134 0.134 0.148 0.135 0.139 0.155 0.134
+    near-tie bits_c: 0.596 0.595 0.595 0.592 0.599 0.646 0.609 0.609 0.705 0.583
+  references at N = 2^23: weights 2429 bits; family 171 + N x 0.1902 = 1.596e+06 bits; constant 2.288e+06
+=== teacher trained, init seed2, lr 3e-3, k 23
+trained: acc 0.9532; held-out 1048576 inputs; regions mass all 1.000 near-tie 0.438 sign 0.011 far 0.551
+  student init-seed2-distil (15s, 1.45e+11 FLOPs): acc 0.9188
+    prequential code of c: 3.214e+06 bits = S 3.787e+05 + N x H 0.3380
+    near-tie dis_c: 0.134 0.163 0.163 0.180 0.164 0.155 0.146 0.163 0.154 0.161
+    near-tie bits_c: 0.597 0.850 0.750 0.818 0.698 0.665 0.606 0.669 0.631 0.637
+  student init-seed2-label (15s, 1.45e+11 FLOPs): acc 0.9284
+    prequential code of c: 3.204e+06 bits = S 3.755e+05 + N x H 0.3371
+    near-tie dis_c: 0.137 0.184 0.149 0.218 0.163 0.202 0.178 0.148 0.144 0.156
+    near-tie bits_c: 0.626 1.015 0.677 1.305 0.792 0.922 0.865 0.623 0.649 0.658
+  references at N = 2^23: weights 2429 bits; family 171 + N x 0.1902 = 1.596e+06 bits; constant 2.288e+06
+=== teacher trained, init noisy:0.005, lr 1e-4, k 23
+trained: acc 0.9532; held-out 1048576 inputs; regions mass all 1.000 near-tie 0.438 sign 0.011 far 0.551
+  student init-noisy:0.005-distil (14s, 1.45e+11 FLOPs): acc 0.9505
+    prequential code of c: 5.303e+05 bits = S 2.611e+04 + N x H 0.0601
+    near-tie dis_c: 0.123 0.071 0.044 0.026 0.019 0.017 0.016 0.016 0.016 0.015
+    near-tie bits_c: 0.589 0.281 0.179 0.141 0.129 0.126 0.123 0.123 0.120 0.118
+  student init-noisy:0.005-label (15s, 1.45e+11 FLOPs): acc 0.9587
+    prequential code of c: 7.706e+05 bits = S -2.668e+04 + N x H 0.0950
+    near-tie dis_c: 0.124 0.073 0.049 0.043 0.044 0.031 0.036 0.034 0.041 0.042
+    near-tie bits_c: 0.591 0.286 0.190 0.179 0.184 0.154 0.166 0.164 0.181 0.182
+  references at N = 2^23: weights 2429 bits; family 171 + N x 0.1902 = 1.596e+06 bits; constant 2.288e+06
+=== teacher trained, init noisy:0.005, lr 1e-3, k 23
+trained: acc 0.9532; held-out 1048576 inputs; regions mass all 1.000 near-tie 0.438 sign 0.011 far 0.551
+  student init-noisy:0.005-distil (17s, 1.45e+11 FLOPs): acc 0.9479
+    prequential code of c: 6.525e+05 bits = S 3.728e+04 + N x H 0.0733
+    near-tie dis_c: 0.079 0.045 0.037 0.025 0.029 0.041 0.035 0.031 0.035 0.035
+    near-tie bits_c: 0.296 0.180 0.159 0.137 0.142 0.173 0.153 0.142 0.148 0.147
+  student init-noisy:0.005-label (17s, 1.45e+11 FLOPs): acc 0.9589
+    prequential code of c: 1.010e+06 bits = S 5.532e+04 + N x H 0.1138
+    near-tie dis_c: 0.093 0.056 0.052 0.037 0.047 0.059 0.047 0.050 0.049 0.056
+    near-tie bits_c: 0.362 0.213 0.211 0.167 0.192 0.229 0.193 0.206 0.209 0.221
+  references at N = 2^23: weights 2429 bits; family 171 + N x 0.1902 = 1.596e+06 bits; constant 2.288e+06
+=== teacher trained, init seed2, lr 1e-4, k 26
+trained: acc 0.9532; held-out 1048576 inputs; regions mass all 1.000 near-tie 0.438 sign 0.011 far 0.551
+  student init-seed2-distil (91s, 1.16e+12 FLOPs): acc 0.9392
+    prequential code of c: 1.852e+07 bits = S 9.398e+04 + N x H 0.2746
+    near-tie dis_c: 0.128 0.126 0.126 0.126 0.124 0.127 0.124 0.125 0.123 0.125 0.125 0.123 0.125
+    near-tie bits_c: 0.569 0.567 0.564 0.560 0.555 0.562 0.547 0.548 0.537 0.541 0.528 0.522 0.523
+  student init-seed2-label (91s, 1.16e+12 FLOPs): acc 0.9489
+    prequential code of c: 1.954e+07 bits = S -7.708e+04 + N x H 0.2923
+    near-tie dis_c: 0.128 0.128 0.128 0.127 0.127 0.128 0.128 0.128 0.129 0.127 0.128 0.128 0.128
+    near-tie bits_c: 0.572 0.584 0.571 0.567 0.568 0.571 0.569 0.575 0.574 0.569 0.573 0.570 0.572
+  references at N = 2^26: weights 2429 bits; family 171 + N x 0.1902 = 1.276e+07 bits; constant 1.830e+07
+=== teacher trained, init seed2, lr 3e-4, k 26
+trained: acc 0.9532; held-out 1048576 inputs; regions mass all 1.000 near-tie 0.438 sign 0.011 far 0.551
+  student init-seed2-distil (84s, 1.16e+12 FLOPs): acc 0.9361
+    prequential code of c: 1.899e+07 bits = S 2.703e+05 + N x H 0.2790
+    near-tie dis_c: 0.127 0.130 0.129 0.136 0.126 0.128 0.131 0.134 0.126 0.126 0.131 0.128 0.129
+    near-tie bits_c: 0.564 0.586 0.569 0.629 0.555 0.563 0.592 0.578 0.548 0.531 0.543 0.524 0.530
+  student init-seed2-label (84s, 1.16e+12 FLOPs): acc 0.9455
+    prequential code of c: 1.990e+07 bits = S -4.560e+04 + N x H 0.2973
+    near-tie dis_c: 0.127 0.130 0.129 0.131 0.132 0.130 0.133 0.129 0.129 0.129 0.131 0.131 0.130
+    near-tie bits_c: 0.571 0.585 0.589 0.581 0.601 0.580 0.582 0.570 0.575 0.573 0.574 0.578 0.583
+  references at N = 2^26: weights 2429 bits; family 171 + N x 0.1902 = 1.276e+07 bits; constant 1.830e+07
+=== teacher trained, init seed3, lr 1e-4, k 26
+trained: acc 0.9532; held-out 1048576 inputs; regions mass all 1.000 near-tie 0.438 sign 0.011 far 0.551
+  student init-seed3-distil (108s, 1.16e+12 FLOPs): acc 0.9275
+    prequential code of c: 1.848e+07 bits = S -3.844e+04 + N x H 0.2760
+    near-tie dis_c: 0.149 0.148 0.148 0.148 0.148 0.147 0.147 0.146 0.146 0.146 0.148 0.148 0.147
+    near-tie bits_c: 0.545 0.543 0.541 0.540 0.539 0.535 0.536 0.533 0.533 0.531 0.540 0.538 0.529
+  student init-seed3-label (108s, 1.16e+12 FLOPs): acc 0.9336
+    prequential code of c: 1.888e+07 bits = S -5.691e+04 + N x H 0.2822
+    near-tie dis_c: 0.150 0.148 0.149 0.150 0.149 0.149 0.150 0.148 0.150 0.150 0.150 0.150 0.150
+    near-tie bits_c: 0.551 0.546 0.546 0.549 0.546 0.545 0.550 0.544 0.550 0.550 0.548 0.554 0.549
+  references at N = 2^26: weights 2429 bits; family 171 + N x 0.1902 = 1.276e+07 bits; constant 1.830e+07
+=== teacher seed2, init trained, lr 1e-4, k 23
+seed2: acc 0.9486; held-out 1048576 inputs; regions mass all 1.000 near-tie 0.438 sign 0.011 far 0.551
+  student init-trained-distil (17s, 1.45e+11 FLOPs): acc 0.9547
+    prequential code of c: 2.220e+06 bits = S 1.082e+05 + N x H 0.2517
+    near-tie dis_c: 0.128 0.127 0.125 0.127 0.122 0.121 0.120 0.120 0.117 0.115
+    near-tie bits_c: 0.617 0.608 0.595 0.600 0.566 0.555 0.537 0.523 0.496 0.476
+  student init-trained-label (16s, 1.45e+11 FLOPs): acc 0.9588
+    prequential code of c: 2.368e+06 bits = S 2.441e+04 + N x H 0.2794
+    near-tie dis_c: 0.129 0.127 0.126 0.126 0.124 0.122 0.121 0.120 0.119 0.120
+    near-tie bits_c: 0.620 0.613 0.600 0.600 0.589 0.575 0.565 0.556 0.545 0.543
+  references at N = 2^23: weights 3247 bits; family 171 + N x 0.2085 = 1.749e+06 bits; constant 2.453e+06
+=== teacher seed0, init trained, lr 1e-4, k 23
+seed0: acc 0.9099; held-out 1048576 inputs; regions mass all 1.000 near-tie 0.438 sign 0.011 far 0.551
+  student init-trained-distil (15s, 1.45e+11 FLOPs): acc 0.9324
+    prequential code of c: 3.776e+06 bits = S 3.082e+05 + N x H 0.4133
+    near-tie dis_c: 0.193 0.192 0.191 0.191 0.190 0.191 0.192 0.190 0.189 0.184
+    near-tie bits_c: 1.127 1.116 1.095 1.024 0.969 0.928 0.886 0.835 0.778 0.712
+  student init-trained-label (15s, 1.45e+11 FLOPs): acc 0.9588
+    prequential code of c: 4.666e+06 bits = S 1.053e+05 + N x H 0.5437
+    near-tie dis_c: 0.194 0.194 0.192 0.192 0.192 0.189 0.189 0.189 0.187 0.186
+    near-tie bits_c: 1.139 1.135 1.110 1.098 1.085 1.059 1.045 1.032 1.003 0.985
+  references at N = 2^23: weights 2516 bits; family 171 + N x 0.3738 = 3.136e+06 bits; constant 3.665e+06

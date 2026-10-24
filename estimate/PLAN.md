@@ -266,6 +266,20 @@ estimator (fail the deduction test or are at their ceiling: MAP, ARC_REPORT, I6a
   fails at init. Run the BnB crossover (`survey/crossover.py`) on random-weight RNNs at
   T = 2..6 to separate architecture from training in MAP.
 
+## K. After the literature survey (`LITERATURE.md`, Oct 2026)
+
+- [x] K1. (positive control: the teacher's 0.5% noisy copy distils back to near-tie disagreement 0.015 by 2^20; an independent seed does not move from 0.128 in 2^26 samples at any lr 1e-4 to 3e-3, same as the label-trained control, so the teacher-specific near-tie pattern is time-bounded entropy for SGD outside the basin; from-scratch S/H numbers pending) Epiplexity of the
+  near-tie pattern (Finzi et al. 2026): prequential coding of the teacher's outputs by a
+  student RNN, initialised from an independent seed (knows the task, other basin), from the
+  teacher's noisy copy (same basin) and from scratch (h16, h64). Compare the student's
+  near-tie disagreement with the independent-seed reference and the J5 family's residual.
+- [ ] K2. ARC's cumulant propagator (`mlp_cumulant_propagation`, K = 3/4) on unrolled
+  random-init RNNs at h16, T = 2..10, widening h to find the h/T crossover against MC, to put
+  the J7 "architectural difficulty" on ARC's own n/L axis (challenge write-ups: 10-12x at
+  n/L 64, 2-4x at n/L 8; M(16,10) is at 1.6).
+- [ ] K3. Write to Jacob: ARC_REPORT.md against Christiano's Aug 2026 claim that purely
+  computational systems can be fully explained, plus K1.
+
 ## Order
 
 A1 → B1 → A2/A3 (parallel, cheap) → B3/B4 → B2 → B5 → C1 → C2 → D1/D2 → D3 → C3 → E.

@@ -131,7 +131,8 @@ weights above ~10^4 inputs. Ordered by how directly each item bears on that.
 
 ## Candidate next steps
 
-1. **Epiplexity of the near-tie pattern.** Requential code for M(16,10) from zoo
+1. **Epiplexity of the near-tie pattern** (done: PLAN K1, FINDINGS "Epiplexity of the
+   near-tie pattern"). Requential code for M(16,10) from zoo
    checkpoints. Compare S_T against the ~116-bit family and the 2.4-3.2 kbit weights.
    Then test whether the per-input near-tie correctness bit is predictable by any
    time-bounded learner given the family, or behaves like H_T. Decides whether our

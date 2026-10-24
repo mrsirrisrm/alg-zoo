@@ -1399,6 +1399,50 @@ no random inputs.
   skeleton evaluations of the network. It is within 1% on M(16,10) and within ~19% rms
   over the harness.
 
+## Epiplexity of the near-tie pattern: a bounded learner against the teacher's outputs (`probes/epiplexity.py`, `epiplexity_init.out`, `epiplexity_scratch*.out`; LITERATURE step 1)
+Finzi et al. (2026) split what a compute-bounded observer gets from data into epiplexity
+S_T (the structure a bounded learner extracts, estimated as the area under its prequential
+loss curve above the final loss) and time-bounded entropy H_T (what is left per sample,
+including pseudorandom content that a short program generates but no bounded learner
+recovers). The question from the J5 surprise accounting: is the seed-specific near-tie
+failure pattern structure we failed to compress, or time-bounded entropy relative to SGD?
+Setup: the stream is (x, y = teacher's argmax); a student RNN of the same architecture is
+trained online by AdamW (zoo hyperparameters, batch 1024) and each batch is coded before
+the update, so the code charges no parameter bits. The code of c(x) is derived from the
+student's p(y = label). Held out: 2^20 inputs, near-tie = npos >= 2 and min(g1, g2) < 0.1
+(mass 0.438). The observer that matters starts already knowing the task, so the student
+is initialised from an independently trained seed and distilled onto the teacher; the
+label-trained continuation from the same init is the task-only control.
+- Independent-seed reference: the other h16 seeds disagree with the trained model on c(x)
+  for 0.13-0.22 of near-tie inputs (seed2 0.129, seed3 0.150, seed0 0.193), 0.007-0.05 far.
+- Positive control (same basin): the trained model + 0.5% rms weight noise starts at
+  near-tie disagreement 0.123 and distils back to 0.015 by 2^20 samples at lr 1e-4
+  (H_c 0.060 bits/input; the label-trained copy ends at 0.04 and accuracy 0.9587, above
+  the teacher's 0.9532, so the teacher is not at its basin's optimum).
+- From an independent seed the pattern is not acquired. seed2 -> trained at lr 1e-4,
+  3e-4, 1e-3, 3e-3 over 2^23 samples: near-tie disagreement 0.123-0.126 at the low rates
+  (start 0.128) and worse at the high ones (0.146, 0.161), the same as the label-trained
+  control (0.127-0.134). At 2^26 samples (1.2e12 FLOPs, 60x the J5 N*): 0.125 (lr 1e-4),
+  0.129 (3e-4); seed3 -> trained 0.147 from 0.149. Reverse direction, trained -> seed2:
+  0.128 -> 0.115 in 2^23; trained -> seed0: 0.193 -> 0.184. Accuracy falls 0.5-2 points
+  in every cross-basin distillation. H_c stays at 0.27-0.29 bits/input (seed2 init) against
+  the family's 0.19 and the in-basin copy's 0.06.
+- Reading: relative to SGD at 1e11-1e12 FLOPs (the original training was 2^30 samples,
+  ~2e13), the teacher-specific part of the near-tie pattern is time-bounded entropy, not
+  structure: a 2.4-kbit program for it exists (the weights), a learner in the same basin
+  recovers it from ~2^20 input-output pairs, and a learner that knows the task equally well
+  but sits in another basin does not recover it from 2^26 pairs at any step size. This is
+  the pseudorandom regime of the epiplexity split, and it is ARC's own expectation for
+  learned networks (Wu et al. 2026: trained nets "seem likely to require access to the
+  training trajectory"). It sharpens the J5 bottom line: the per-input pattern is not
+  merely uncompressed, it is basin-specific, and the basin is where the training run went.
+- From-scratch students (task epiplexity for this architecture; S/H bookkeeping): see
+  `epiplexity_scratch.out` (h16, 2^24) and `epiplexity_scratch_h64.out` (h64, 2^26).
+  [numbers pending]
+- Caveats: one student seed per cell; the lr sweep covers 1e-4 to 3e-3 under AdamW with
+  the zoo's weight decay; a learner with a different inductive bias (wider, or given the
+  family as advice) is a different observer and bound, which is what the h64 run tests.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".
