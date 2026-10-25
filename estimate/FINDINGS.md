@@ -1543,6 +1543,24 @@ label-trained continuation from the same init is the task-only control.
     quantisation, puts it at chance (accuracy 0.10-0.21); 8-bit quantisation alone halves
     the accuracy (0.69). No small or coarse part of it carries the pattern. Retrained sparse
     or quantised students are a different test and were not run.
+  - Width: capacity or basin? (`epiplexity_scratch_h16_k30_*.out`, `h32_k30_*.out`.) The
+    other-basin h16 inits recover none of the pattern; a same-width h16 student trained
+    from scratch under distillation ends in a basin of its own, so it separates the two
+    readings. At 2^30 under the students' constant-lr recipe: h16 distil near-tie error
+    0.242, shared 0.526, against label 0.231 / 0.485; h32 distil 0.118 / 0.533 against
+    label 0.134 / 0.338; h64 0.097 / 0.614 against 0.081 / 0.285; h128 0.083 / 0.633
+    against 0.037 / 0.173. The excess of distil over its matched label control, the part
+    of the shared fraction that is the teacher's pattern rather than the student's own
+    near-tie weakness, is 0.04, 0.20, 0.33, 0.46 for h16, h32, h64, h128: width is the
+    axis. But the h16 run is confounded: the students run at constant lr after a short
+    warmup (0.01 at h16), while the zoo decays lr 100x over the run (`alg_zoo/training.py`,
+    2^14 warmup steps, exponential to 0.01x), and the from-scratch h16 student reaches
+    accuracy 0.866 at 2^30 where the zoo's h16 reaches 0.953 at the same budget, its late
+    near-tie disagreement bouncing 0.212 / 0.224 / 0.237 over the last three doublings
+    (h32 reaches 0.939, label 0.934, in the same way). So at h16 and h32 the constant-lr
+    students are noise-floor limited, not capacity limited, and the width row above cannot
+    be read as capacity until the same students are trained with the zoo's schedule
+    (`--zoo-schedule`; runs in progress, h16, h32 and h128 distil).
   - Reading, final for K1. The seed-specific part of the near-tie pattern is learnable from
     input-output pairs: a 4-8x wider student at 4-64x the teacher's training compute
     recovers about half of the errors that are unique to this teacher and two thirds of

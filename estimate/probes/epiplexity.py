@@ -74,16 +74,23 @@ def evaluate(P, xb, yT, lab, reg):
     return out
 
 
-def run(Wt, h, target, k, seed, xb, yTb, labb, reg, W0=None, lr=None):
-    """W0: student's initial weights (None: random init of width h); lr: None = zoo's 0.04/sqrt(h)."""
+def run(Wt, h, target, k, seed, xb, yTb, labb, reg, W0=None, lr=None, zoo=False):
+    """W0: student's initial weights (None: random init of width h); lr: None = zoo's 0.04/sqrt(h).
+    zoo: the zoo's schedule (alg_zoo/training.py): 2^14 warmup steps, then exponential decay to 0.01x
+    at half the run and flat after; default is constant lr after a short warmup."""
     gen = th.Generator().manual_seed(1000 + seed)
     P = init(h, gen) if W0 is None else [th.tensor(a, dtype=th.float32, device=DEV).requires_grad_() for a in W0]
     opt = th.optim.AdamW(P, lr=lr or 0.04 / h ** 0.5, weight_decay=1e-3)
-    warm = WARM if W0 is None else 64
-    sched = th.optim.lr_scheduler.LambdaLR(opt, lambda s: min((s + 1) / warm, 1.0))
+    nsteps = 1 << (k - 10)
+    if zoo:
+        lam = lambda s: min(s / (1 << 14), 1.0) * max(0.01 ** (2 * s / nsteps), 0.01)
+    else:
+        warm = WARM if W0 is None else 64
+        lam = lambda s: min((s + 1) / warm, 1.0)
+    sched = th.optim.lr_scheduler.LambdaLR(opt, lam)
     gx = th.Generator().manual_seed(seed)
     tot_y = tot_c = 0.0; marks = {}; nxt = 1 << 14; t0 = time.time()
-    for step in range(1 << (k - 10)):
+    for step in range(nsteps):
         x = th.randn(B, T, generator=gx).to(DEV)
         with th.no_grad():
             yT = forward(x, *Wt).argmax(-1); lab = x.topk(2, -1).indices[:, 1]
@@ -111,6 +118,7 @@ def main():
     ap.add_argument('--device', default='cpu')
     ap.add_argument('--targets', default='distil,label')
     ap.add_argument('--save', action='store_true', help='save each final student to <out stem>_<tag>.npz')
+    ap.add_argument('--zoo-schedule', action='store_true', help="the zoo's lr schedule (2^14 warmup, decay to 0.01x) instead of constant lr")
     a = ap.parse_args(); L = loaders(); hs = [int(v) for v in a.h.split(',')]
     global DEV; DEV = a.device
     inits = [(None, h) for h in hs] if a.init == 'scratch' else [(nm, 16) for nm in a.init.split(',')]
@@ -138,7 +146,7 @@ def main():
         for nm, h in inits:
             if nm == name: continue
             for target in a.targets.split(','):
-                marks, dt, Pf = run(Wt, h, target, a.k, a.seed, xb, yTb, labb, reg, None if nm is None else init_weights(nm, L[name]()), a.lr)
+                marks, dt, Pf = run(Wt, h, target, a.k, a.seed, xb, yTb, labb, reg, None if nm is None else init_weights(nm, L[name]()), a.lr, a.zoo_schedule)
                 tag = f'h{h}-{target}' if nm is None else f'init-{nm}-{target}'; res[name][tag] = marks
                 if a.save: np.savez(f'{a.out.rsplit(".", 1)[0]}_{name}_{tag}.npz', W_ih=Pf[0], W_hh=Pf[1], W_out=Pf[2])
                 N = max(marks); m = marks[N]; Hy, Hc = m['all']['bits_y'], m['all']['bits_c']
