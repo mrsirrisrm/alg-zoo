@@ -65,10 +65,12 @@ def evaluate(P, xb, yT, lab, reg):
     q = lp[ar, lab].exp().clamp(1e-9, 1 - 1e-9); c = (yT == lab).double()
     bits_c = (-(c * q.log() + (1 - c) * (1 - q).log()) / np.log(2)).cpu().numpy()
     dis = (y != yT).cpu().numpy(); disc = ((y == lab) != (yT == lab)).cpu().numpy()
+    eT = (yT != lab).cpu().numpy(); eS = (y != lab).cpu().numpy()      # teacher's / student's own errors
     out = {'acc': (y == lab).double().mean().item()}
     for k, m in reg.items():
         out[k] = dict(bits_y=float(bits_y[m].mean()), bits_c=float(bits_c[m].mean()),
-                      dis_y=float(dis[m].mean()), dis_c=float(disc[m].mean()))
+                      dis_y=float(dis[m].mean()), dis_c=float(disc[m].mean()),
+                      err=float(eS[m].mean()), shared=float((eT & eS)[m].sum() / max(eT[m].sum(), 1)))
     return out
 
 
@@ -96,7 +98,7 @@ def run(Wt, h, target, k, seed, xb, yTb, labb, reg, W0=None, lr=None):
         if n == nxt:
             with th.no_grad(): Pd = [p.detach() for p in P]
             marks[n] = dict(code_y=tot_y, code_c=tot_c, **evaluate(Pd, xb, yTb, labb, reg)); nxt *= 2
-    return marks, time.time() - t0
+    return marks, time.time() - t0, [p.detach().cpu().numpy() for p in P]
 
 
 def main():
@@ -107,6 +109,8 @@ def main():
     ap.add_argument('--lr', type=float, default=None)
     ap.add_argument('--out', default='probes/epiplexity.json')
     ap.add_argument('--device', default='cpu')
+    ap.add_argument('--targets', default='distil,label')
+    ap.add_argument('--save', action='store_true', help='save each final student to <out stem>_<tag>.npz')
     a = ap.parse_args(); L = loaders(); hs = [int(v) for v in a.h.split(',')]
     global DEV; DEV = a.device
     inits = [(None, h) for h in hs] if a.init == 'scratch' else [(nm, 16) for nm in a.init.split(',')]
@@ -133,11 +137,15 @@ def main():
         res[name] = {}
         for nm, h in inits:
             if nm == name: continue
-            for target in ('distil', 'label'):
-                marks, dt = run(Wt, h, target, a.k, a.seed, xb, yTb, labb, reg, None if nm is None else init_weights(nm, L[name]()), a.lr)
+            for target in a.targets.split(','):
+                marks, dt, Pf = run(Wt, h, target, a.k, a.seed, xb, yTb, labb, reg, None if nm is None else init_weights(nm, L[name]()), a.lr)
                 tag = f'h{h}-{target}' if nm is None else f'init-{nm}-{target}'; res[name][tag] = marks
+                if a.save: np.savez(f'{a.out.rsplit(".", 1)[0]}_{name}_{tag}.npz', W_ih=Pf[0], W_hh=Pf[1], W_out=Pf[2])
                 N = max(marks); m = marks[N]; Hy, Hc = m['all']['bits_y'], m['all']['bits_c']
                 print(f'  student {tag} ({dt:.0f}s, {3 * N * flops_per_sample(h):.2e} FLOPs): acc {m["acc"]:.4f}')
+                print('    student error / shared fraction of teacher errors: ' + '  '.join(
+                    f'{r} {m[r]["err"]:.4f}/{m[r]["shared"]:.3f}' for r in reg))
+                print('    near-tie shared: ' + ' '.join(f'{marks[n]["near-tie"]["shared"]:.3f}' for n in sorted(marks)))
                 print(f'    prequential code of y: {m["code_y"]:.3e} bits = S {m["code_y"] - N * Hy:.3e} + N x H {Hy:.4f}')
                 print(f'    prequential code of c: {m["code_c"]:.3e} bits = S {m["code_c"] - N * Hc:.3e} + N x H {Hc:.4f}')
                 print('    held-out disagreement with teacher y / c, bits_c: ' + '  '.join(

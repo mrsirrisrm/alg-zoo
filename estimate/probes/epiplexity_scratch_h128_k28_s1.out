@@ -1,0 +1,26 @@
+
+trained: acc 0.9532; held-out 1048576 inputs; regions mass all 1.000 near-tie 0.438 sign 0.011 far 0.551
+  seed ref seed0   : disagree y / c  all 0.1038/0.0974  near-tie 0.1998/0.1933  sign 0.6985/0.3805  far 0.0160/0.0158
+  seed ref seed1   : disagree y / c  all 0.1327/0.1247  near-tie 0.2217/0.2136  sign 0.7275/0.3261  far 0.0506/0.0503
+  seed ref seed2   : disagree y / c  all 0.0696/0.0628  near-tie 0.1333/0.1289  sign 0.7096/0.2613  far 0.0067/0.0065
+  seed ref seed3   : disagree y / c  all 0.0806/0.0732  near-tie 0.1562/0.1503  sign 0.7098/0.2713  far 0.0084/0.0081
+  seed ref seed4   : disagree y / c  all 0.1218/0.1144  near-tie 0.2249/0.2172  sign 0.6763/0.3049  far 0.0292/0.0290
+  student h128-distil (1288s, 2.68e+14 FLOPs): acc 0.9512
+    student error / shared fraction of teacher errors: all 0.0488/0.684  near-tie 0.0900/0.635  sign 0.7822/0.930  far 0.0020/0.500
+    near-tie shared: 0.841 0.831 0.782 0.750 0.793 0.642 0.580 0.561 0.575 0.604 0.631 0.638 0.643 0.676 0.635
+    prequential code of y: 4.125e+07 bits = S 5.563e+06 + N x H 0.1330
+    prequential code of c: 3.623e+07 bits = S 5.322e+06 + N x H 0.1151
+    held-out disagreement with teacher y / c, bits_c: all 0.0345/0.0316 0.115  near-tie 0.0699/0.0670 0.239  sign 0.2568/0.1132 0.398  far 0.0021/0.0020 0.012
+    N: 2^14 2^15 2^16 2^17 2^18 2^19 2^20 2^21 2^22 2^23 2^24 2^25 2^26 2^27 2^28
+    near-tie dis_c: 0.811 0.805 0.749 0.710 0.720 0.516 0.338 0.218 0.144 0.120 0.121 0.070 0.065 0.064 0.067
+    near-tie bits_c: 3.052 3.048 3.030 2.572 2.069 1.643 1.097 0.725 0.485 0.417 0.428 0.253 0.234 0.229 0.239
+  student h128-label (1285s, 2.68e+14 FLOPs): acc 0.9829
+    student error / shared fraction of teacher errors: all 0.0171/0.158  near-tie 0.0352/0.162  sign 0.1580/0.163  far 0.0001/0.007
+    near-tie shared: 0.841 0.830 0.783 0.740 0.782 0.605 0.546 0.461 0.441 0.306 0.253 0.265 0.171 0.189 0.162
+    prequential code of y: 1.046e+08 bits = S 1.816e+06 + N x H 0.3829
+    prequential code of c: 7.891e+07 bits = S 9.477e+05 + N x H 0.2904
+    held-out disagreement with teacher y / c, bits_c: all 0.0509/0.0492 0.290  near-tie 0.0942/0.0928 0.531  sign 0.7885/0.6820 3.861  far 0.0023/0.0023 0.030
+    N: 2^14 2^15 2^16 2^17 2^18 2^19 2^20 2^21 2^22 2^23 2^24 2^25 2^26 2^27 2^28
+    near-tie dis_c: 0.811 0.805 0.750 0.711 0.714 0.520 0.366 0.225 0.208 0.129 0.107 0.109 0.096 0.099 0.093
+    near-tie bits_c: 3.052 3.048 3.029 2.582 2.064 1.656 1.164 0.761 0.743 0.483 0.436 0.495 0.495 0.531 0.531
+  references at N = 2^28: weights 2429 bits; family 171 + N x 0.1902 = 5.106e+07 bits; constant 7.322e+07

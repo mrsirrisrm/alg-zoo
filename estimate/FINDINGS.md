@@ -1490,13 +1490,56 @@ label-trained continuation from the same init is the task-only control.
     parameters and its program is not short. Whether that student's account compresses
     below the teacher's 2.4 kbits is the surprise-accounting question again, for a
     2^14-parameter student; open.
-- Caveats: one student seed per cell; late marks move by 0.02-0.03 between doublings, so
-  single marks are trajectory-noisy, though distil sits below label at the last three
-  marks for h128 and the shared-error fractions are on 2^20 held-out inputs; student
-  weights were not saved, so the shared fraction is overall, not near-tie only; the lr
-  sweep covers 1e-4 to 3e-3 under AdamW with the zoo's weight decay; a learner with a
-  different inductive bias (wider, or given the family as advice) is a different observer
-  and bound, which is what the h64 and h128 runs test.
+- 2^30 samples, a second student seed, and the near-tie shared fraction measured directly
+  (`epiplexity_scratch_h{64,128}_k30_{distil,label}.out`, `epiplexity_scratch_h128_k28_s1.out`,
+  `epiplexity_shared.py/.out`; the probe now records the student's own error and the
+  fraction of the teacher's errors it also makes, per region and per mark, and saves the
+  final weights). 2^30 is 1.1e15 FLOPs for h128, 64x the original training; 80 min per
+  student on the 3090.
+  - Second seed reproduces the first: h128 at 2^28, student seed 1, near-tie disagreement
+    distil 0.067 against label 0.093 (seed 0: 0.076 / 0.103).
+  - Near-tie shared fraction (of the teacher's 39k held-out near-tie errors, the student
+    also errs), with the student's own near-tie error rate: h128 distil 2^30 **0.633** at
+    error 0.083 (the teacher's is 0.085); h128 label 0.173 at 0.037; h128 distil seed 1 at
+    2^28 0.635 at 0.090, label 0.162 at 0.035; h64 distil 0.614 at 0.097, label 0.285 at
+    0.081. The independent h16 seeds share 0.28-0.41 at errors 0.09-0.20 (seed2, at the
+    distilled students' error rate, 0.284); h32 shares 0.04 at error 0.007. So at matched
+    error rate distillation lifts the shared fraction from 0.28 to 0.63.
+  - It saturates. The distilled h128's shared fraction by mark from 2^22: 0.567, 0.573,
+    0.611, 0.577, 0.659, 0.634, 0.648, 0.648, 0.633; h64 from 2^24: 0.616, 0.615, 0.573,
+    0.634, 0.574, 0.614. Flat at about two thirds from 2^26 to 2^30, a 16x range of
+    compute, while the label students' fraction keeps falling (h128: 0.275 -> 0.173) as they
+    get better than the teacher. What still falls for the distilled students after 2^26 is
+    their own extra error (near-tie disagreement 0.076 -> 0.063 -> 0.060 for h128), not the
+    overlap.
+  - Which errors are recovered (`epiplexity_shared.out`). Of the teacher's near-tie errors,
+    0.192 are made by no other seed (teacher-unique) and 0.808 by at least one (0.025 by all
+    five). The distilled h128 recovers **0.533** of the teacher-unique errors (seed 1 at
+    2^28: 0.581; h64: 0.494) and 0.657 of the shared ones; the label-trained h128 recovers
+    0.060 of the unique and 0.200 of the shared; the seeds recover 0 of the unique by
+    construction and 0.35-0.51 of the shared. The distilled students' sharing with the
+    other seeds' errors (0.17-0.29) is at seed2's level (0.18-0.24), not above it: they
+    learned the teacher's pattern, not a generic h16 pattern.
+  - Prequential at 2^30, h128 distil: code of c 1.35e8 bits = S 2.2e7 + N x 0.105; label
+    H_c 0.276; family 0.19; constant 0.27.
+  - Reading, final for K1. The seed-specific part of the near-tie pattern is learnable from
+    input-output pairs: a 4-8x wider student at 4-64x the teacher's training compute
+    recovers about half of the errors that are unique to this teacher and two thirds of
+    its near-tie errors overall, and a same-width student in another basin recovers none
+    of it. Beyond 2^26 more compute buys no more of the pattern: the recovered fraction is
+    flat at two thirds over 16x. In Finzi's split, two thirds of the pattern is S_T for a
+    wide learner at ~1e13 FLOPs and the last third is H_T up to 1e15 at least. Against the
+    J5 surprise accounting this is the first account other than the weights that predicts
+    the teacher-specific errors at all, but it is a 2^14-parameter network trained on 2^30
+    pairs, so it does not shorten the description: the short-code question (I6) is open as
+    before, with the new fact that the thing to be coded is two thirds learnable.
+- Caveats: late marks move by 0.02-0.03 between doublings, so single marks are
+  trajectory-noisy, though the second student seed, the last five marks and both widths
+  agree; one seed per cell for h64 and for the other-basin inits; the h64 label student at
+  2^30 is at a worse point than at 2^28 (0.9604 against 0.9758, lr 0.005 with no decay);
+  the lr sweep for the other-basin inits covers 1e-4 to 3e-3 under AdamW with the zoo's
+  weight decay; a learner with a different inductive bias (wider, or given the family as
+  advice) is a different observer and bound, which is what the h64 and h128 runs test.
 
 ## ARC's cumulant propagation on the unrolled RNN (`probes/kprop_rnn.py`, `kprop_rnn*.raw/.json`, `kprop_control.out`, `kprop_joint.out`; PLAN K2)
 Wu et al. (2026, `mlp_cumulant_propagation`) estimate E[output] of a random MLP from the

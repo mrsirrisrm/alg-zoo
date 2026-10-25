@@ -133,8 +133,9 @@ weights above ~10^4 inputs. Ordered by how directly each item bears on that.
 
 1. **Epiplexity of the near-tie pattern** (done: PLAN K1, FINDINGS "Epiplexity of the
    near-tie pattern"; outcome: entropy for SGD on the same architecture outside the
-   basin to 2^28, slow structure for a 4-8x wider student at 4-16x the training's
-   FLOPs, which recovers two thirds of the teacher's errors from I/O pairs). Requential code for M(16,10) from zoo
+   basin to 2^28, slow structure for a 4-8x wider student at 4-64x the training's
+   FLOPs, which recovers two thirds of the teacher's near-tie errors and half of the
+   teacher-unique ones from I/O pairs, saturating at that from 2^26 to 2^30). Requential code for M(16,10) from zoo
    checkpoints. Compare S_T against the ~116-bit family and the 2.4-3.2 kbit weights.
    Then test whether the per-input near-tie correctness bit is predictable by any
    time-bounded learner given the family, or behaves like H_T. Decides whether our
