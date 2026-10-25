@@ -1,0 +1,16 @@
+near-tie inputs the teacher gets right: 420073; flipped by f=+1: 37417 (0.089)
+  teacher margin quantiles (0.1, 0.25, 0.5, 0.75, 0.9): flipped 0.214 0.533 1.143 2.056 3.226 | not flipped 2.109 3.596 5.920 9.142 13.027
+  flipped answer is top1 0.168, third 0.741
+  flip rate by octile of the teacher margin on correct near-tie inputs:
+    [ 0.000,  1.744)  n  52509  flipped 0.486
+    [ 1.744,  3.021)  n  52509  flipped 0.143
+    [ 3.021,  4.216)  n  52509  flipped 0.050
+    [ 4.216,  5.452)  n  52509  flipped 0.020
+    [ 5.452,  6.882)  n  52509  flipped 0.009
+    [ 6.882,  8.736)  n  52509  flipped 0.004
+    [ 8.736, 11.694)  n  52509  flipped 0.001
+    [11.694, 51.747)  n  52509  flipped 0.000
+
+teacher near-tie errors 39087: student f=0 reproduces 0.790, f=+1 0.912, f=-1 (told it is right) says the label 0.541
+  teacher wrong-answer margin quantiles: reproduced at f=0 0.335 0.761 1.536 2.833 4.660 | only with the flag 0.065 0.176 0.412 0.809 1.441 | never 0.074 0.197 0.503 1.137 2.292
+  counts: both 30875, only with flag 5789, never 3431

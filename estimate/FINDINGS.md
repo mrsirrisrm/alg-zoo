@@ -1598,6 +1598,34 @@ label-trained continuation from the same init is the task-only control.
     the width it is mostly reachable from scratch. The label-trained h32 under the zoo's
     schedule reaches accuracy 0.994 and near-tie error 0.009, so h32 is also ample for
     the task itself.
+  - Privileged information: tell the student which samples are errors
+    (`epiplexity_flag.py`, `epiplexity_flag_*.out`, `epiplexity_flag_which.py/.out`;
+    Martin's idea). The teacher's near-tie behaviour is where it errs (c) and what it
+    says when it does, and the second part is nearly free: given the true c as an extra
+    input channel (+1 error, -1 right, constant over the sequence) the h128 student at
+    2^30 reproduces 0.944 of the teacher's near-tie errors and disagrees with it on 0.9%
+    of near-tie inputs, so H(y_T | x, c) is close to zero and all the content is in c.
+    The experiment is the flag at training time only, dropped to 0 on half the samples,
+    tested with it off: does knowing which samples are errors help the student learn the
+    x -> c map? No. Near-tie shared fraction / disagreement with the flag off against the
+    unflagged zoo-schedule student at the same budget: 2^26 0.652 / 0.079 against 0.632 /
+    0.074; 2^28 0.774 / 0.034 against 0.797 / 0.031; 2^30 0.810 / 0.027 against 0.829 /
+    0.025; h32 at 2^30 0.625 / 0.056 against 0.669 / 0.047. The trajectories by mark lie
+    on top of each other. So the slowness is not in finding the error set among the
+    samples, it is in representing the map from input to error, and a label for every
+    sample does not shorten it. Two further readings from the trained flagged student. It
+    learns to use the flag late (true-flag shared 0.63 at 2^22, 0.73, 0.84, 0.90, 0.93,
+    0.94 by 2^30): the informative value +1 occurs on 2.3% of samples and only pays once
+    the x-route is good. And the flag acts as a shift of the student's decision threshold
+    along the teacher's own margin, not as separate machinery: forcing f = +1 on near-tie
+    inputs the teacher gets right flips 8.9% of them, with the flip rate by octile of the
+    teacher's margin 0.486, 0.143, 0.050, 0.020, 0.009, 0.004, 0.001, 0.000, the flipped
+    answer the third-largest position on 0.74 and the maximum on 0.17; the errors the
+    student reproduces only when told have median teacher margin 0.41 against 1.54 for
+    those it gets unaided, and told "the teacher is right" on its errors it says the label
+    on 0.54 of them. Consistent with the which-errors result: the error set is a band at
+    the teacher's boundary, the student's x-route resolves it to a finite margin, and the
+    flag moves the threshold within the band.
   - Reading, final for K1. The seed-specific part of the near-tie pattern is learnable from
     input-output pairs by a wider student: trained with the zoo's own schedule, an 8x
     wider student at 64x the teacher's training compute reproduces 0.83 of the teacher's
