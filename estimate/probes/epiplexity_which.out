@@ -1,0 +1,48 @@
+teacher near-tie errors 39087: recovered by student 24752 (0.633), missed 14335
+student gives the teacher's wrong answer on 0.951 of recovered errors; control (label-trained) also errs on 0.173 of teacher errors
+
+quantiles (0.1, 0.25, 0.5, 0.75, 0.9) of each feature, recovered | missed
+  teacher margin           0.324 0.793 1.671 3.101 5.032 | 0.106 0.291 0.692 1.386 2.364
+  g1 (top1-top2)/|top1|    0.006 0.055 0.331 0.595 0.778 | 0.006 0.031 0.260 0.521 0.728
+  g2 (top2-top3)/|top1|    0.002 0.005 0.015 0.045 0.228 | 0.003 0.010 0.026 0.077 0.345
+  min(g1,g2)               0.001 0.004 0.010 0.020 0.037 | 0.002 0.006 0.014 0.028 0.050
+  lag |pM-pS|              1.000 2.000 3.000 6.000 8.000 | 1.000 2.000 4.000 6.000 7.000
+  pos of second            0.000 2.000 6.000 7.000 9.000 | 0.000 2.000 5.000 7.000 8.000
+  npos                     3.000 4.000 5.000 6.000 7.000 | 3.000 4.000 5.000 6.000 7.000
+  |top1|                   0.812 1.097 1.460 1.885 2.331 | 0.769 1.053 1.414 1.825 2.244
+  second < 0                     fraction  recovered 0.000  missed 0.000
+  teacher-unique (no seed errs)  fraction  recovered 0.162  missed 0.245
+  all 5 seeds err                fraction  recovered 0.028  missed 0.019
+  g1 < g2 (error is top pair)    fraction  recovered 0.224  missed 0.267
+  label at t=9                   fraction  recovered 0.107  missed 0.097
+  max at t=9                     fraction  recovered 0.129  missed 0.164
+
+recovery rate by teacher margin:
+  [  0.000,   0.244)  n   4886  teacher-unique 0.228  recovered 0.374  control 0.153
+  [  0.244,   0.512)  n   4886  teacher-unique 0.218  recovered 0.456  control 0.159
+  [  0.512,   0.835)  n   4886  teacher-unique 0.206  recovered 0.506  control 0.162
+  [  0.835,   1.222)  n   4885  teacher-unique 0.203  recovered 0.596  control 0.167
+  [  1.222,   1.729)  n   4886  teacher-unique 0.190  recovered 0.665  control 0.182
+  [  1.729,   2.462)  n   4886  teacher-unique 0.186  recovered 0.739  control 0.183
+  [  2.462,   3.783)  n   4886  teacher-unique 0.162  recovered 0.821  control 0.180
+  [  3.783,  22.561)  n   4885  teacher-unique 0.145  recovered 0.910  control 0.201
+
+recovery rate by min(g1,g2):
+  [  0.000,   0.005)  n  11128  teacher-unique 0.055  recovered 0.707  control 0.395
+  [  0.005,   0.010)  n   7279  teacher-unique 0.092  recovered 0.677  control 0.202
+  [  0.010,   0.020)  n   8978  teacher-unique 0.173  recovered 0.628  control 0.080
+  [  0.020,   0.040)  n   7364  teacher-unique 0.321  recovered 0.563  control 0.023
+  [  0.040,   0.070)  n   3198  teacher-unique 0.512  recovered 0.512  control 0.006
+  [  0.070,   0.100)  n   1140  teacher-unique 0.591  recovered 0.476  control 0.007
+
+recovery rate by g1:
+  [  0.000,   0.005)  n   3353  teacher-unique 0.041  recovered 0.630  control 0.405
+  [  0.005,   0.010)  n   1988  teacher-unique 0.073  recovered 0.600  control 0.185
+  [  0.010,   0.020)  n   2236  teacher-unique 0.119  recovered 0.559  control 0.109
+  [  0.020,   0.040)  n   1965  teacher-unique 0.130  recovered 0.579  control 0.112
+  [  0.040,   0.070)  n   1532  teacher-unique 0.154  recovered 0.627  control 0.130
+  [  0.070,   0.100)  n   1288  teacher-unique 0.200  recovered 0.632  control 0.127
+  [  0.100,   0.300)  n   7058  teacher-unique 0.206  recovered 0.594  control 0.167
+  [  0.300,  10.000)  n  19667  teacher-unique 0.242  recovered 0.666  control 0.155
+
+student margin (label logit minus its top non-label logit; < 0 where it errs), quantiles: recovered -4.980 -3.061 -1.668 -0.779 -0.310 | missed 0.192 0.494 1.099 2.055 3.237

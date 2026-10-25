@@ -1,0 +1,24 @@
+student 17792 parameters; teacher 432 (2429 precision bits, opt_bits)
+magnitude pruning (per matrix), float32 weights counted at 16 bits:
+  keep 1.00              kept  17792  desc ~   284672 bits  near-tie err 0.0826  shared 0.633  unique rec 0.533  acc 0.9548
+  keep 0.50              kept   8896  desc ~   160111 bits  near-tie err 0.8824  shared 0.868  unique rec 0.873  acc 0.1212
+  keep 0.30              kept   5337  desc ~   101055 bits  near-tie err 0.9004  shared 0.905  unique rec 0.907  acc 0.0990
+  keep 0.20              kept   3559  desc ~    69774 bits  near-tie err 0.9009  shared 0.903  unique rec 0.905  acc 0.0988
+  keep 0.10              kept   1779  desc ~    36793 bits  near-tie err 0.9053  shared 0.899  unique rec 0.898  acc 0.0954
+  keep 0.05              kept    889  desc ~    19304 bits  near-tie err 0.9004  shared 0.880  unique rec 0.909  acc 0.0998
+  keep 0.03              kept    534  desc ~    11992 bits  near-tie err 0.9004  shared 0.880  unique rec 0.909  acc 0.0998
+  keep 0.02              kept    357  desc ~     8224 bits  near-tie err 0.9004  shared 0.880  unique rec 0.909  acc 0.0998
+uniform quantisation (per matrix), no pruning:
+  8 bits                 kept  15109  desc ~   131554 bits  near-tie err 0.4637  shared 0.619  unique rec 0.591  acc 0.6896
+  6 bits                 kept  11475  desc ~    85367 bits  near-tie err 0.8224  shared 0.844  unique rec 0.831  acc 0.2085
+  5 bits                 kept   8802  desc ~    61614 bits  near-tie err 0.8847  shared 0.856  unique rec 0.844  acc 0.1181
+  4 bits                 kept   4813  desc ~    34141 bits  near-tie err 0.9001  shared 0.920  unique rec 0.936  acc 0.0998
+  3 bits                 kept   1009  desc ~     8599 bits  near-tie err 0.8995  shared 0.899  unique rec 0.904  acc 0.1002
+  2 bits                 kept     67  desc ~      759 bits  near-tie err 0.8999  shared 0.891  unique rec 0.904  acc 0.1002
+both:
+  keep 0.30 x 6 bits     kept   5329  desc ~    47625 bits  near-tie err 0.9013  shared 0.902  unique rec 0.895  acc 0.0983
+  keep 0.20 x 6 bits     kept   3559  desc ~    34184 bits  near-tie err 0.9009  shared 0.903  unique rec 0.903  acc 0.0988
+  keep 0.20 x 4 bits     kept   3499  desc ~    26694 bits  near-tie err 0.9000  shared 0.919  unique rec 0.937  acc 0.0999
+  keep 0.10 x 6 bits     kept   1779  desc ~    19003 bits  near-tie err 0.9037  shared 0.903  unique rec 0.908  acc 0.0966
+  keep 0.10 x 4 bits     kept   1779  desc ~    15445 bits  near-tie err 0.8999  shared 0.879  unique rec 0.892  acc 0.1000
+  keep 0.05 x 6 bits     kept    889  desc ~    10414 bits  near-tie err 0.9004  shared 0.880  unique rec 0.909  acc 0.0998

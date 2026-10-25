@@ -1522,17 +1522,41 @@ label-trained continuation from the same init is the task-only control.
     learned the teacher's pattern, not a generic h16 pattern.
   - Prequential at 2^30, h128 distil: code of c 1.35e8 bits = S 2.2e7 + N x 0.105; label
     H_c 0.276; family 0.19; constant 0.27.
+  - Which errors are recovered and which missed (`epiplexity_which.py/.out`, the h128
+    distilled student at 2^30). Recovery is a function of the teacher's own decision margin
+    (its top logit minus the label logit on the error): by octile of margin the recovered
+    fraction runs 0.374, 0.456, 0.506, 0.596, 0.665, 0.739, 0.821, 0.910 while the
+    label-trained control sits at 0.15-0.20 in every octile. Median margin 1.67 on
+    recovered errors against 0.69 on missed. On 0.951 of the recovered errors the student
+    gives the teacher's wrong answer, and where it errs with the teacher its own margin is
+    large (median -1.7), where it misses it is confidently right (median +1.1). Geometry
+    matters less: by min(g1, g2) recovery falls only from 0.71 (gap < 0.005) to 0.48 (gap
+    0.07-0.1) while the control falls from 0.40 to 0.007 and the teacher-unique share rises
+    from 0.06 to 0.59; by g1, recovery is 0.56-0.67 in every bin including g1 > 0.3, where
+    0.24 of the errors are teacher-unique. So the student has copied the teacher's decision
+    function to a finite resolution: the missed third is the thin-margin part of the
+    teacher's error set, where the teacher itself is nearly right, not the wide-gap
+    idiosyncratic part, which it gets at the same rate as the strips.
+  - Can the student be shortened (`epiplexity_prune.py/.out`)? The student has 17,792
+    parameters, 2.8e5 bits at 16 bits each, 100x the teacher's 2.4 kbits. Without
+    retraining it is brittle: magnitude-pruning 50% per matrix, or uniform 6-bit
+    quantisation, puts it at chance (accuracy 0.10-0.21); 8-bit quantisation alone halves
+    the accuracy (0.69). No small or coarse part of it carries the pattern. Retrained sparse
+    or quantised students are a different test and were not run.
   - Reading, final for K1. The seed-specific part of the near-tie pattern is learnable from
     input-output pairs: a 4-8x wider student at 4-64x the teacher's training compute
     recovers about half of the errors that are unique to this teacher and two thirds of
     its near-tie errors overall, and a same-width student in another basin recovers none
     of it. Beyond 2^26 more compute buys no more of the pattern: the recovered fraction is
-    flat at two thirds over 16x. In Finzi's split, two thirds of the pattern is S_T for a
-    wide learner at ~1e13 FLOPs and the last third is H_T up to 1e15 at least. Against the
-    J5 surprise accounting this is the first account other than the weights that predicts
-    the teacher-specific errors at all, but it is a 2^14-parameter network trained on 2^30
-    pairs, so it does not shorten the description: the short-code question (I6) is open as
-    before, with the new fact that the thing to be coded is two thirds learnable.
+    flat at two thirds over 16x, and the missed third is the part of the error set within
+    a small margin of the teacher's own decision boundary. In Finzi's split, two thirds of
+    the pattern is S_T for a wide learner at ~1e13 FLOPs and the thin-margin third is H_T
+    up to 1e15 at least. Against the J5 surprise accounting this is the first account other
+    than the weights that predicts the teacher-specific errors at all, but it is a
+    17,792-parameter network trained on 2^30 pairs that cannot be pruned or quantised
+    without retraining, so it does not shorten the description: the short-code question
+    (I6) is open as before, with the new fact that the thing to be coded is two thirds
+    learnable and that its unlearnable part is the thin-margin set.
 - Caveats: late marks move by 0.02-0.03 between doublings, so single marks are
   trajectory-noisy, though the second student seed, the last five marks and both widths
   agree; one seed per cell for h64 and for the other-basin inits; the h64 label student at
