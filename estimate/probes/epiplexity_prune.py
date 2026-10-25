@@ -8,9 +8,9 @@ matrix, b bits), and track its near-tie error, its near-tie shared fraction with
 teacher, its recovery of the teacher-unique errors, and the description length
 (kept parameters x bits, plus log2 C(n, kept) for the mask). No retraining.
 
-Usage: uv run python probes/epiplexity_prune.py
+Usage: uv run python probes/epiplexity_prune.py [--student probes/..._h128-distil.npz]
 """
-import sys
+import sys, argparse
 sys.path.insert(0, '.'); sys.path.insert(0, 'probes')
 import numpy as np, torch as th
 from scipy.special import gammaln
@@ -43,6 +43,7 @@ def quant(W, bits):
 
 
 def main():
+    ap = argparse.ArgumentParser(); ap.add_argument('--student', default=STUDENT); a = ap.parse_args()
     L = loaders(); xb = th.randn(1 << 20, 10, generator=th.Generator().manual_seed(2))
     F = feats(xb); nt = regions(F, xb)['near-tie']; lab = F['label']
 
@@ -50,7 +51,7 @@ def main():
         with th.no_grad(): return (forward(xb, *tens(W)).argmax(-1) != lab).numpy()
     eT = err(L['trained']()); nseed = np.sum([err(L[f'seed{i}']()) for i in range(5)], 0)
     E = eT & nt; U = E & (nseed == 0)
-    W = [np.load(STUDENT)[k] for k in ('W_ih', 'W_hh', 'W_out')]; n = sum(w.size for w in W)
+    W = [np.load(a.student)[k] for k in ('W_ih', 'W_hh', 'W_out')]; n = sum(w.size for w in W)
     print(f'student {n} parameters; teacher 432 (2429 precision bits, opt_bits)')
 
     def row(tag, Wm, bits):

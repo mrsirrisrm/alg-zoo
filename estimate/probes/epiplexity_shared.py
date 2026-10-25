@@ -23,7 +23,13 @@ STUDENTS = [('h128 distil 2^30', 'probes/epiplexity_scratch_h128_k30_distil_trai
             ('h128 distil s1 2^28', 'probes/epiplexity_scratch_h128_k28_s1_trained_h128-distil.npz'),
             ('h128 label s1 2^28', 'probes/epiplexity_scratch_h128_k28_s1_trained_h128-label.npz'),
             ('h64 distil 2^30', 'probes/epiplexity_scratch_h64_k30_distil_trained_h64-distil.npz'),
-            ('h64 label 2^30', 'probes/epiplexity_scratch_h64_k30_label_trained_h64-label.npz')]
+            ('h64 label 2^30', 'probes/epiplexity_scratch_h64_k30_label_trained_h64-label.npz'),
+            # zoo lr schedule (2^14 warmup, decay to 0.01x) instead of constant lr
+            ('h128 distil zoo 2^30', 'probes/epiplexity_scratch_h128_k30_zoo_distil_trained_h128-distil.npz'),
+            ('h32 distil zoo 2^30', 'probes/epiplexity_scratch_h32_k30_zoo_distil_trained_h32-distil.npz'),
+            ('h32 label zoo 2^30', 'probes/epiplexity_scratch_h32_k30_zoo_label_trained_h32-label.npz'),
+            ('h16 distil zoo 2^30', 'probes/epiplexity_scratch_h16_k30_zoo_distil_trained_h16-distil.npz'),
+            ('h16 label zoo 2^30', 'probes/epiplexity_scratch_h16_k30_zoo_label_trained_h16-label.npz')]
 
 
 def main():

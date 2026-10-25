@@ -1511,7 +1511,9 @@ label-trained continuation from the same init is the task-only control.
     compute, while the label students' fraction keeps falling (h128: 0.275 -> 0.173) as they
     get better than the teacher. What still falls for the distilled students after 2^26 is
     their own extra error (near-tie disagreement 0.076 -> 0.063 -> 0.060 for h128), not the
-    overlap.
+    overlap. **Superseded**: this plateau is the constant-lr noise floor, see the width
+    bullet below; under the zoo's lr decay the h128 student's shared fraction keeps rising
+    through the decay (0.615, 0.677, 0.703, 0.804, 0.834, 0.829 from 2^25) to 0.83.
   - Which errors are recovered (`epiplexity_shared.out`). Of the teacher's near-tie errors,
     0.192 are made by no other seed (teacher-unique) and 0.808 by at least one (0.025 by all
     five). The distilled h128 recovers **0.533** of the teacher-unique errors (seed 1 at
@@ -1537,12 +1539,24 @@ label-trained continuation from the same init is the task-only control.
     function to a finite resolution: the missed third is the thin-margin part of the
     teacher's error set, where the teacher itself is nearly right, not the wide-gap
     idiosyncratic part, which it gets at the same rate as the strips.
+    The same analysis on the zoo-schedule h128 student (`epiplexity_which_zoo.out`,
+    control the constant-lr h128 label student): recovered 0.829; by octile of the
+    teacher's margin 0.476, 0.643, 0.777, 0.866, 0.931, 0.961, 0.983, 0.995 (control
+    0.15-0.20); by min(g1, g2) 0.874 (gap < 0.005) to 0.737 (0.07-0.1); the student gives
+    the teacher's wrong answer on 0.977 of recovered errors; missed errors have median
+    teacher margin 0.35 (recovered 1.50). So the lr decay sharpened the copy, moving the
+    resolution limit inward: above margin 1.2 the student now reproduces 93-99.5% of the
+    teacher's errors, and what is missed is a thinner thin-margin band. The margin
+    dependence is the student's resolution, set by training noise, not a fixed property
+    of the pattern.
   - Can the student be shortened (`epiplexity_prune.py/.out`)? The student has 17,792
     parameters, 2.8e5 bits at 16 bits each, 100x the teacher's 2.4 kbits. Without
     retraining it is brittle: magnitude-pruning 50% per matrix, or uniform 6-bit
     quantisation, puts it at chance (accuracy 0.10-0.21); 8-bit quantisation alone halves
     the accuracy (0.69). No small or coarse part of it carries the pattern. Retrained sparse
-    or quantised students are a different test and were not run.
+    or quantised students are a different test and were not run. The zoo-schedule h128
+    student is the same (`epiplexity_prune_zoo.out`: 8-bit 0.82, 6-bit or 50% pruned at
+    chance).
   - Width: capacity or basin? (`epiplexity_scratch_h16_k30_*.out`, `h32_k30_*.out`.) The
     other-basin h16 inits recover none of the pattern; a same-width h16 student trained
     from scratch under distillation ends in a basin of its own, so it separates the two
@@ -1558,30 +1572,64 @@ label-trained continuation from the same init is the task-only control.
     accuracy 0.866 at 2^30 where the zoo's h16 reaches 0.953 at the same budget, its late
     near-tie disagreement bouncing 0.212 / 0.224 / 0.237 over the last three doublings
     (h32 reaches 0.939, label 0.934, in the same way). So at h16 and h32 the constant-lr
-    students are noise-floor limited, not capacity limited, and the width row above cannot
-    be read as capacity until the same students are trained with the zoo's schedule
-    (`--zoo-schedule`; runs in progress, h16, h32 and h128 distil).
+    students are noise-floor limited, not capacity limited.
+    Rerun under the zoo's schedule (`--zoo-schedule`, `*_k30_zoo_*.out`,
+    `epiplexity_shared.out`), near-tie error / shared fraction / recovery of the
+    teacher-unique errors:
+
+    | student | distil | label |
+    |---|---|---|
+    | h16 | 0.121 / 0.486 / 0.292 (acc 0.935) | 0.189 / 0.444 / 0.311 (acc 0.894) |
+    | h32 | 0.076 / 0.669 / 0.556 (acc 0.958) | 0.009 / 0.053 / 0.010 (acc 0.994) |
+    | h128 | 0.082 / **0.829** / **0.796** (acc 0.955) | not run (constant-lr label 0.037 / 0.173 / 0.060) |
+
+    The h128 distilled student now disagrees with the teacher on 2.5% of near-tie inputs
+    (constant lr 6.0%), shares 0.83 of its near-tie errors and recovers 0.80 of the errors
+    unique to this teacher, while its sharing with the other seeds' errors (0.17-0.26) is
+    unchanged at seed2's level. The h16 student from scratch under distillation behaves as
+    an independent seed: its recovery of the teacher-unique errors (0.29 at error 0.12)
+    is what the label-trained h16 gets (0.31 at error 0.19) and what a sixth seed would
+    get at that error rate, and its sharing with seeds 0-4 (0.26-0.34) is at the seeds'
+    own level. It reaches accuracy 0.935, inside the zoo's h16 spread (seeds 0.87-0.95),
+    so it is a trained h16 in a basin of its own, and distillation did not pull it into
+    the teacher's. The h32 student does learn the teacher's pattern (0.56 of the unique
+    errors, label 0.01). So the axis is width: at the teacher's own width the pattern is
+    unreachable by SGD from any init tried, another seed's basin or scratch, and at twice
+    the width it is mostly reachable from scratch. The label-trained h32 under the zoo's
+    schedule reaches accuracy 0.994 and near-tie error 0.009, so h32 is also ample for
+    the task itself.
   - Reading, final for K1. The seed-specific part of the near-tie pattern is learnable from
-    input-output pairs: a 4-8x wider student at 4-64x the teacher's training compute
-    recovers about half of the errors that are unique to this teacher and two thirds of
-    its near-tie errors overall, and a same-width student in another basin recovers none
-    of it. Beyond 2^26 more compute buys no more of the pattern: the recovered fraction is
-    flat at two thirds over 16x, and the missed third is the part of the error set within
-    a small margin of the teacher's own decision boundary. In Finzi's split, two thirds of
-    the pattern is S_T for a wide learner at ~1e13 FLOPs and the thin-margin third is H_T
-    up to 1e15 at least. Against the J5 surprise accounting this is the first account other
-    than the weights that predicts the teacher-specific errors at all, but it is a
+    input-output pairs by a wider student: trained with the zoo's own schedule, an 8x
+    wider student at 64x the teacher's training compute reproduces 0.83 of the teacher's
+    near-tie errors and 0.80 of the errors unique to this teacher, disagreeing with the
+    teacher on 2.5% of near-tie inputs, and a 2x wider student at 4x the compute gets 0.67
+    and 0.56. A same-width student gets none of it, whether started in another seed's
+    basin or from scratch: the from-scratch h16 ends as one more independent seed. The
+    earlier plateau at two thirds was the constant-lr noise floor, not a property of the
+    pattern; with lr decay the recovered fraction was still rising at the end of the run,
+    and what is missed is a thin band around the teacher's decision boundary whose width
+    is the student's resolution. In Finzi's split, at least 0.83 of the pattern is S_T for
+    an h128 learner at 1e15 FLOPs, and nothing found so far bounds H_T away from zero at
+    larger T; for the h16 architecture outside the basin it is H_T at every budget tried.
+    Against the J5 surprise accounting this is the first account other than the weights
+    that predicts the teacher-specific errors, and it predicts most of them, but it is a
     17,792-parameter network trained on 2^30 pairs that cannot be pruned or quantised
     without retraining, so it does not shorten the description: the short-code question
-    (I6) is open as before, with the new fact that the thing to be coded is two thirds
-    learnable and that its unlearnable part is the thin-margin set.
-- Caveats: late marks move by 0.02-0.03 between doublings, so single marks are
-  trajectory-noisy, though the second student seed, the last five marks and both widths
-  agree; one seed per cell for h64 and for the other-basin inits; the h64 label student at
-  2^30 is at a worse point than at 2^28 (0.9604 against 0.9758, lr 0.005 with no decay);
-  the lr sweep for the other-basin inits covers 1e-4 to 3e-3 under AdamW with the zoo's
-  weight decay; a learner with a different inductive bias (wider, or given the family as
-  advice) is a different observer and bound, which is what the h64 and h128 runs test.
+    (I6) is open as before, with the new fact that the thing to be coded is almost all
+    learnable from I/O by a 2-8x wider network and not at all by one of the teacher's
+    width.
+- Caveats: the constant-lr students (every run before `--zoo-schedule`) are noise-floor
+  limited at the end of training, h16 and h32 badly (accuracy 0.866 / 0.939) and h128
+  measurably (near-tie disagreement 0.060 against 0.025 with the zoo's decay), so their
+  final marks understate what the student learns and their prequential S/H split is for
+  a worse learner; h64 and the other-basin inits were not rerun under the zoo's schedule,
+  and the other-basin inits were fine-tuned at small constant lr, which is a different
+  regime; one seed per cell for the zoo-schedule students; the h128 label control in the
+  which-errors and shared tables is the constant-lr one; late marks move by 0.02-0.03
+  between doublings; the lr sweep for the other-basin inits covers 1e-4 to 3e-3 under
+  AdamW with the zoo's weight decay; a learner with a different inductive bias (wider, or
+  given the family as advice) is a different observer and bound, which is what the h32,
+  h64 and h128 runs test.
 
 ## ARC's cumulant propagation on the unrolled RNN (`probes/kprop_rnn.py`, `kprop_rnn*.raw/.json`, `kprop_control.out`, `kprop_joint.out`; PLAN K2)
 Wu et al. (2026, `mlp_cumulant_propagation`) estimate E[output] of a random MLP from the
