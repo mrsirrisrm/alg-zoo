@@ -1,0 +1,22 @@
+
+trained: acc 0.9532; held-out 1048576 inputs; regions mass all 1.000 near-tie 0.438 sign 0.011 far 0.551
+  seed ref seed0   : disagree y / c  all 0.1038/0.0974  near-tie 0.1998/0.1933  sign 0.6985/0.3805  far 0.0160/0.0158
+  seed ref seed1   : disagree y / c  all 0.1327/0.1247  near-tie 0.2217/0.2136  sign 0.7275/0.3261  far 0.0506/0.0503
+  seed ref seed2   : disagree y / c  all 0.0696/0.0628  near-tie 0.1333/0.1289  sign 0.7096/0.2613  far 0.0067/0.0065
+  seed ref seed3   : disagree y / c  all 0.0806/0.0732  near-tie 0.1562/0.1503  sign 0.7098/0.2713  far 0.0084/0.0081
+  seed ref seed4   : disagree y / c  all 0.1218/0.1144  near-tie 0.2249/0.2172  sign 0.6763/0.3049  far 0.0292/0.0290
+  student h128-distil (1140s, 2.68e+14 FLOPs): acc 0.9466
+    prequential code of y: 4.266e+07 bits = S 2.993e+06 + N x H 0.1478
+    prequential code of c: 3.755e+07 bits = S 2.678e+06 + N x H 0.1299
+    held-out disagreement with teacher y / c, bits_c: all 0.0383/0.0354 0.130  near-tie 0.0792/0.0761 0.275  sign 0.2349/0.1021 0.327  far 0.0020/0.0019 0.011
+    N: 2^14 2^15 2^16 2^17 2^18 2^19 2^20 2^21 2^22 2^23 2^24 2^25 2^26 2^27 2^28
+    near-tie dis_c: 0.824 0.799 0.739 0.699 0.723 0.518 0.340 0.182 0.138 0.113 0.102 0.116 0.080 0.067 0.076
+    near-tie bits_c: 3.052 3.049 3.036 2.567 2.083 1.607 1.084 0.627 0.482 0.403 0.367 0.432 0.287 0.238 0.275
+  student h128-label (1156s, 2.68e+14 FLOPs): acc 0.9735
+    prequential code of y: 1.038e+08 bits = S 5.566e+06 + N x H 0.3660
+    prequential code of c: 7.851e+07 bits = S 4.526e+06 + N x H 0.2756
+    held-out disagreement with teacher y / c, bits_c: all 0.0553/0.0524 0.276  near-tie 0.1050/0.1030 0.527  sign 0.7566/0.5568 2.427  far 0.0024/0.0024 0.035
+    N: 2^14 2^15 2^16 2^17 2^18 2^19 2^20 2^21 2^22 2^23 2^24 2^25 2^26 2^27 2^28
+    near-tie dis_c: 0.824 0.799 0.739 0.697 0.719 0.518 0.320 0.205 0.149 0.127 0.140 0.114 0.103 0.104 0.103
+    near-tie bits_c: 3.052 3.049 3.036 2.567 2.081 1.588 1.023 0.681 0.529 0.489 0.585 0.542 0.505 0.546 0.527
+  references at N = 2^28: weights 2429 bits; family 171 + N x 0.1902 = 5.106e+07 bits; constant 7.322e+07

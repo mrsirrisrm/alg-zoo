@@ -1453,9 +1453,50 @@ label-trained continuation from the same init is the task-only control.
   flat at 0.09-0.11 since 2^23. Its H_c is 0.175 bits/input, at the family's 0.19: a
   stronger learner with 100x the compute of the seed-initialised runs lands on the same
   task-level account, not on the teacher's pattern.
-- Caveats: one student seed per cell; the lr sweep covers 1e-4 to 3e-3 under AdamW with
-  the zoo's weight decay; a learner with a different inductive bias (wider, or given the
-  family as advice) is a different observer and bound, which is what the h64 run tests.
+- 2^28 samples on the GPU box (`epiplexity_*_k28.out/.json`; RTX 3090, `--device cuda`,
+  same seeds and trajectory as CPU to 3 decimals; 4.6e12 FLOPs per h16 run, 6.8e13 h64,
+  2.7e14 h128, i.e. 4x and 16x the original training's cost):
+  - Other-basin h16 init is still flat at 4x the budget. seed0 -> trained distil
+    0.191 -> 0.202 (lr 1e-4) and 0.194 -> 0.209 (3e-4) against label controls 0.188 and
+    0.196; seed2 -> trained 0.128 -> 0.124 against label 0.128. Accuracy falls as before
+    (0.8975 against 0.9135; 0.9398 against 0.9474). What does move is the sign region
+    (seed2 distil 0.203 against label 0.276), which lifts the overall shared-error fraction
+    (below) from 38-42% to 50% with nothing from the near-tie set.
+  - From scratch and wide, the picture changes between 2^26 and 2^28. Near-tie
+    disagreement distil / label by mark from 2^23: h64 0.110/0.140, 0.129/0.120,
+    0.094/0.103, 0.100/0.116, 0.110/0.109, **0.077/0.096**; h128 0.113/0.127, 0.102/0.140,
+    0.116/0.114, 0.080/0.103, 0.067/0.104, **0.076/0.103**. Both distilled students end
+    below the teacher's own near-tie error rate 0.085, which a perfect task-solver cannot
+    do: they reproduce the teacher's errors. Overall shared errors, o = (t + s - d)/2 with
+    t the teacher's error 0.0468, s the student's, d the disagreement on c (2^20 held-out
+    inputs, se 0.0004): distilled h64 and h128 share 0.032 of the teacher's 0.047 (68-69%),
+    label-trained h64/h128 0.011 (22-24%), the independent h16 seeds 0.018-0.020 (38-42%),
+    chance t x s 0.0025. The distilled students are also worse at the task (0.947 against
+    0.974-0.976 for the label students): they moved toward the teacher. Prequential code of
+    c: h128 3.8e7 bits = S 2.7e6 + N x 0.130, h64 4.3e7 = S 6.5e6 + N x 0.136, against the
+    label students' H_c 0.276/0.247, the family's 0.19 and the constant 0.27. The wide
+    student's final H_c of 0.13 is below the family's: at this budget it predicts the
+    teacher's correctness bit better than the J5 family does.
+  - Revised reading. For SGD on the teacher's own architecture outside its basin the
+    per-input pattern is time-bounded entropy, now to 2^28. For a 4-8x wider student at
+    4-16x the original training's FLOPs it is slow structure: about two thirds of the
+    teacher's errors are recovered from input-output pairs alone, up from near zero at
+    2^26, with the curves still falling. So "no bounded learner recovers it" was too
+    strong. The right statement is that the budget to learn the pattern from I/O exceeds
+    the budget that produced it (factor unknown, > 4x) and needs more capacity than the
+    teacher (h16 students from scratch were at 0.31 at 2^24). In Finzi's split that is S_T
+    at large T, not H_T. For ARC's question it cuts both ways: the pattern is learnable, so
+    it is structure in their sense, but the learner that gets it has 16-64x the teacher's
+    parameters and its program is not short. Whether that student's account compresses
+    below the teacher's 2.4 kbits is the surprise-accounting question again, for a
+    2^14-parameter student; open.
+- Caveats: one student seed per cell; late marks move by 0.02-0.03 between doublings, so
+  single marks are trajectory-noisy, though distil sits below label at the last three
+  marks for h128 and the shared-error fractions are on 2^20 held-out inputs; student
+  weights were not saved, so the shared fraction is overall, not near-tie only; the lr
+  sweep covers 1e-4 to 3e-3 under AdamW with the zoo's weight decay; a learner with a
+  different inductive bias (wider, or given the family as advice) is a different observer
+  and bound, which is what the h64 and h128 runs test.
 
 ## ARC's cumulant propagation on the unrolled RNN (`probes/kprop_rnn.py`, `kprop_rnn*.raw/.json`, `kprop_control.out`, `kprop_joint.out`; PLAN K2)
 Wu et al. (2026, `mlp_cumulant_propagation`) estimate E[output] of a random MLP from the

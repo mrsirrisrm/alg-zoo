@@ -21,7 +21,7 @@ inputs fall well below an independent seed's (the pattern is learnable structure
 at this budget), or does it sit at the seed level (time-bounded entropy for SGD at this
 budget, though a 432-parameter program for it exists)?
 
-Usage: uv run python probes/epiplexity.py [--k 24] [--h 16,64] [--names trained,seed0,seed2]
+Usage: uv run python probes/epiplexity.py [--k 24] [--h 16,64] [--names trained,seed0,seed2] [--device cuda]
 """
 import sys, json, time, argparse
 sys.path.insert(0, '.'); sys.path.insert(0, 'probes')
@@ -34,11 +34,12 @@ PREC = {'trained': 2429, 'seed0': 2516, 'seed2': 3247}
 H_FAM = {'trained': 0.1902, 'seed0': 0.3738, 'seed2': 0.2085}    # fam-logit bits/input, surprise_family.out
 FAM_DESC = 116 + 5 * 11
 B = 1024; WARM = 1024; T = 10; NB = 1 << 20
+DEV = 'cpu'                                    # set by --device; data generated on CPU (seeded), moved over
 th.set_num_threads(8)
 
 
 def tens(W):
-    return [th.tensor(a, dtype=th.float32) for a in W]
+    return [th.tensor(a, dtype=th.float32, device=DEV) for a in W]
 
 
 def flops_per_sample(h):
@@ -47,7 +48,7 @@ def flops_per_sample(h):
 
 def init(h, gen):
     k = 1 / h ** 0.5                           # torch.nn.RNN / Linear default: U(-1/sqrt(h), 1/sqrt(h))
-    return [((th.rand(s, generator=gen) * 2 - 1) * k).requires_grad_() for s in ((h,), (h, h), (10, h))]
+    return [((th.rand(s, generator=gen) * 2 - 1) * k).to(DEV).requires_grad_() for s in ((h,), (h, h), (10, h))]
 
 
 def regions(F, x):
@@ -59,11 +60,11 @@ def regions(F, x):
 def evaluate(P, xb, yT, lab, reg):
     with th.no_grad():
         lp = th.log_softmax(forward(xb, *P), -1).double()
-    ar = th.arange(len(xb)); y = lp.argmax(-1)
-    bits_y = (-lp[ar, yT] / np.log(2)).numpy()
+    ar = th.arange(len(xb), device=DEV); y = lp.argmax(-1)
+    bits_y = (-lp[ar, yT] / np.log(2)).cpu().numpy()
     q = lp[ar, lab].exp().clamp(1e-9, 1 - 1e-9); c = (yT == lab).double()
-    bits_c = (-(c * q.log() + (1 - c) * (1 - q).log()) / np.log(2)).numpy()
-    dis = (y != yT).numpy(); disc = ((y == lab) != (yT == lab)).numpy()
+    bits_c = (-(c * q.log() + (1 - c) * (1 - q).log()) / np.log(2)).cpu().numpy()
+    dis = (y != yT).cpu().numpy(); disc = ((y == lab) != (yT == lab)).cpu().numpy()
     out = {'acc': (y == lab).double().mean().item()}
     for k, m in reg.items():
         out[k] = dict(bits_y=float(bits_y[m].mean()), bits_c=float(bits_c[m].mean()),
@@ -74,17 +75,17 @@ def evaluate(P, xb, yT, lab, reg):
 def run(Wt, h, target, k, seed, xb, yTb, labb, reg, W0=None, lr=None):
     """W0: student's initial weights (None: random init of width h); lr: None = zoo's 0.04/sqrt(h)."""
     gen = th.Generator().manual_seed(1000 + seed)
-    P = init(h, gen) if W0 is None else [th.tensor(a, dtype=th.float32).requires_grad_() for a in W0]
+    P = init(h, gen) if W0 is None else [th.tensor(a, dtype=th.float32, device=DEV).requires_grad_() for a in W0]
     opt = th.optim.AdamW(P, lr=lr or 0.04 / h ** 0.5, weight_decay=1e-3)
     warm = WARM if W0 is None else 64
     sched = th.optim.lr_scheduler.LambdaLR(opt, lambda s: min((s + 1) / warm, 1.0))
     gx = th.Generator().manual_seed(seed)
     tot_y = tot_c = 0.0; marks = {}; nxt = 1 << 14; t0 = time.time()
     for step in range(1 << (k - 10)):
-        x = th.randn(B, T, generator=gx)
+        x = th.randn(B, T, generator=gx).to(DEV)
         with th.no_grad():
             yT = forward(x, *Wt).argmax(-1); lab = x.topk(2, -1).indices[:, 1]
-        lp = th.log_softmax(forward(x, *P), -1); ar = th.arange(B)
+        lp = th.log_softmax(forward(x, *P), -1); ar = th.arange(B, device=DEV)
         with th.no_grad():                              # code the batch before the update
             tot_y += (-lp[ar, yT]).sum().item() / np.log(2)
             q = lp[ar, lab].double().exp().clamp(1e-9, 1 - 1e-9); c = (yT == lab).double()
@@ -105,7 +106,9 @@ def main():
     ap.add_argument('--init', default='scratch', help="'scratch' or comma-separated model names to start the student from")
     ap.add_argument('--lr', type=float, default=None)
     ap.add_argument('--out', default='probes/epiplexity.json')
+    ap.add_argument('--device', default='cpu')
     a = ap.parse_args(); L = loaders(); hs = [int(v) for v in a.h.split(',')]
+    global DEV; DEV = a.device
     inits = [(None, h) for h in hs] if a.init == 'scratch' else [(nm, 16) for nm in a.init.split(',')]
 
     def init_weights(nm, W):                 # 'noisy:0.005' = teacher + sigma x rms per matrix (noisy_models.py)
@@ -113,20 +116,20 @@ def main():
         rng = np.random.default_rng(a.seed); s = float(nm.split(':')[1])
         return [w + s * np.sqrt((w ** 2).mean()) * rng.standard_normal(w.shape) for w in W]
     xb = th.randn(NB, T, generator=th.Generator().manual_seed(2)); F = feats(xb); reg = regions(F, xb)
-    labb = F['label']; res = {}
+    xb = xb.to(DEV); labb = F['label'].to(DEV); res = {}
     for name in a.names.split(','):
         Wt = tens(L[name]())
         with th.no_grad(): yTb = forward(xb, *Wt).argmax(-1)
-        cT = (yTb == labb).numpy()
+        cT = (yTb == labb).cpu().numpy()
         print(f'\n{name}: acc {cT.mean():.4f}; held-out {NB} inputs; regions mass ' +
               ' '.join(f'{r} {m.mean():.3f}' for r, m in reg.items()))
         # independent-learner reference: the other trained seeds against this teacher
         for other in ('trained', 'seed0', 'seed1', 'seed2', 'seed3', 'seed4'):
             if other == name: continue
             with th.no_grad(): yo = forward(xb, *tens(L[other]())).argmax(-1)
-            co = (yo == labb).numpy()
+            co = (yo == labb).cpu().numpy(); dyo = (yo != yTb).cpu().numpy()
             print(f'  seed ref {other:8s}: disagree y / c  ' + '  '.join(
-                f'{r} {(yo != yTb).numpy()[m].mean():.4f}/{(co != cT)[m].mean():.4f}' for r, m in reg.items()))
+                f'{r} {dyo[m].mean():.4f}/{(co != cT)[m].mean():.4f}' for r, m in reg.items()))
         res[name] = {}
         for nm, h in inits:
             if nm == name: continue
