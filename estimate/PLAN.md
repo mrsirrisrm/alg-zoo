@@ -277,6 +277,7 @@ estimator (fail the deduction test or are at their ceiling: MAP, ARC_REPORT, I6a
   random-init RNNs at h16, T = 2..10, widening h to find the h/T crossover against MC, to put
   the J7 "architectural difficulty" on ARC's own n/L axis (challenge write-ups: 10-12x at
   n/L 64, 2-4x at n/L 8; M(16,10) is at 1.6).
+- [x] K4. (no: width-weighted, 0.45-0.50 of the sliver lies in its wall cell, the rest crosses kinks into neighbours; layout is mostly a slab with a per-cell width that has no cluster structure, k-means groups of (width, tilt) at K = 256 give Jaccard 0.70 | 0.49 (S/R | M/S) against 0.81 | 0.59 per cell and 0.62 | 0.37 for one affine width per skeleton-side; a gate-bit tree to the group label gives 0.17-0.28 on held-out skeletons) Group cells by the layout of the error sliver within them (Martin's question; `probes/sliver_groups.py`).
 - [ ] K3. Write to Jacob: ARC_REPORT.md against Christiano's Aug 2026 claim that purely
   computational systems can be fully explained, plus K1.
 

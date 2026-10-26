@@ -1700,6 +1700,51 @@ h16 T10) and kprop their own FLOP counter; gain > 1 means kprop beats MC at equa
   J7's statement should be read as: the *region count* and the BnB crossover are set by
   the architecture; the cumulant route's failure is set by training.
 
+## Grouping cells by the layout of the error sliver inside them (`probes/sliver_groups.py`, `.out`; Martin's question)
+Per tie skeleton (64 per tie kind, 48 fitted, 16 held out; 2^13 fit and 2^14 test draws
+each), cells = kink-set patterns over all ten steps at the wall, read one-sidedly (gap
++-1e-7, because at an M/S tie the comparator sits exactly on the wall). The true sliver per
+background u is the error interval next to the wall from the exact network (grid scan +
+bisection, capped at 0.1); each side-cell gets a mean width w_c and a tilt g_c (ridge slope
+of the width in u, in tie-relative coordinates). Scored on new draws with gap U(-0.1, 0.1)
+against the exact network's in-pair errors; Jaccard of predicted and true error sets.
+- The wall cell's affine piece is not the sliver. Width-weighted, the far edge of the
+  sliver lies in the wall cell for 0.45 (S/R) / 0.50 (M/S) by the kink set, 0.37 / 0.44 by
+  all 16 neurons; the rest crosses into neighbour cells, where the margin bends (the
+  wall-cell affine prediction per input: Jaccard 0.73 S/R, 0.67 M/S, M/S over-predicting
+  1.1x). The sliver is a band along the wall that cuts across cells, not a piece of one.
+- Count: per skeleton, side-cells holding any error median 555 (S/R) / 1680 (M/S), and 90 /
+  610 of them for 90% of the error mass. Error mass is balanced between "earlier position
+  wrongly favoured" and "later" (0.53 / 0.47 S/R, 0.56 / 0.44 M/S). Layout is mostly a slab:
+  tilt across the cell under half the mean width for 0.63 (S/R) / 0.50 (M/S) of the mass,
+  over twice it for 0.09 / 0.11.
+- Ladder (Jaccard, S/R | M/S): one constant per side 0.24 | 0.23; constant per skeleton-side
+  0.54 | 0.32; affine per skeleton-side 0.62 | 0.37; per cell width only 0.69 | 0.50; per
+  cell width + tilt 0.81 | 0.59 (M/S limited by draws: only 0.45 of its error mass is in
+  cells with >= 16 fit draws); true width per input 0.97 | 0.96.
+- Grouping does not compress. k-means on (w_c, g_c), error-mass weighted, each cell's sliver
+  replaced by its centroid: K = 8 0.47 | 0.33, K = 32 0.58 | 0.39, K = 256 0.70 | 0.49, so
+  256 layout groups are worse than giving every cell its own width and no tilt, and below
+  8 groups are worse than one constant per skeleton. Splitting the descriptor: keeping each
+  cell's own width and taking the tilt from its group loses almost nothing at any K (S/R
+  shared/precision 0.80/0.82 at K = 1 against 0.80/0.83 for width only), keeping its own
+  tilt and taking the width from its group loses precision down to 0.22 (K = 1) - 0.81
+  (K = 256). The tilt is small and generic; the width is the per-cell number and it has no
+  cluster structure.
+- No rule from gate bits. A decision tree from the core gates at steps b..b+2 (on the
+  input's side), the side and the tie layout to the K = 8 or 32 group label, on held-out
+  skeletons: Jaccard 0.17-0.26 (S/R) / 0.20-0.28 (M/S) at depth 3-10, against the
+  held-out skeleton's own affine-per-side fit 0.65 / 0.36.
+- Reading: the answer to "can the cells be grouped by where the sliver sits in them" is no,
+  for two reasons. The sliver is mostly not inside one cell (more than half its width
+  crosses a kink), and where it is, its layout is a slab whose width is an idiosyncratic
+  per-cell number: the only grouping that carries information is the smooth skeleton-level
+  one (one affine width per tie configuration and side, 0.62 / 0.37), and each further
+  0.1 of Jaccard costs hundreds of cells' worth of parameters. Same conclusion as the
+  pattern-vs-error entry (four fifths of the error entropy is within-region position) and
+  the J5 bottom line, now at the level of cell geometry. Caveats: trained model only, one
+  KSET; M/S per-cell numbers under-resolved at 2^13 draws.
+
 ## Evaluation harness
 - σ = 0.005 (relative RMS, per matrix) noisy copies: accuracy 0.83–0.94 (mean 0.896).
   Justification and the seeds 0-4 set: see "Protocol fixes and ceilings".
